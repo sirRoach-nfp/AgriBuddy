@@ -1,35 +1,92 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
+import { ScrollView } from 'react-native-gesture-handler';
 
+
+
+
+
+
+import CropMinCard from '@/components/genComponents/cropMinCard';
 
 const crops = () => {
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedOption, setSelectedOption] = useState<String>('crops');
 
-  const handleIndexChange = (index: number) => {
-    setSelectedIndex(index);
+  const handleSegmentChange = (value:String) => {
+    setSelectedOption(value);
   };
 
   
   return (
-    <View>
+    <SafeAreaView style={styles.mainContainer}>
 
-      <SegmentedControlTab
-        values={['Crops', 'Rotation Plan']}
-        selectedIndex={selectedIndex}
-        onTabPress={handleIndexChange}
-        tabsContainerStyle={styles.tabContainer}
-        tabStyle={styles.tabStyle}
-        activeTabStyle={styles.activeTabStyle}
-        tabTextStyle={styles.tabTextStyle}
-        activeTabTextStyle={styles.activeTabTextStyle}
-      />
+      
 
-    </View>
+      <View style={styles.segmentContainer}>
+        <TouchableOpacity
+          style={styles.segmentButton}
+          onPress={() => handleSegmentChange('crops')}
+        >
+          <Text
+            style={[
+              styles.segmentText,
+              selectedOption === 'crops' && styles.activeText,
+            ]}
+          >
+            Crops
+          </Text>
+          {selectedOption === 'crops' && (
+            <View style={styles.activeLine} />
+          )}
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.segmentButton}
+          onPress={() => handleSegmentChange('plans')}
+        >
+          <Text
+            style={[
+              styles.segmentText,
+              selectedOption === 'plans' && styles.activeText,
+            ]}
+          >
+            Plans
+          </Text>
+          {selectedOption === 'plans' && (
+            <View style={styles.activeLine} />
+          )}
+        </TouchableOpacity>
+      </View>
+
+
+      <ScrollView style={styles.scrollContentWrapper} contentContainerStyle={{alignItems:'center'}}>
+          <Text style={styles.huge}>Test</Text>
+          <Text style={styles.huge}>Test</Text>
+          <Text style={styles.huge}>Test</Text>
+          <Text style={styles.huge}>Test</Text>
+          <Text style={styles.huge}>Test</Text>
+          <Text style={styles.huge}>Test</Text>
+          <Text style={styles.huge}>Test</Text>
+          <Text style={styles.huge}>Test</Text>
+          <Text style={styles.huge}>Test</Text>
+          <Text style={styles.huge}>Test</Text>
+          <Text style={styles.huge}>Test</Text>
+          
+
+          <CropMinCard/>
+
+      </ScrollView>
+
+
+
+
+
+    </SafeAreaView>
+
   )
 }
 
@@ -37,25 +94,54 @@ export default crops
 
 const styles = StyleSheet.create({
 
+
+  mainContainer : {
+    borderWidth:1,
+    flex:1,
+    display:'flex',
+    flexDirection:'column'
+  },
+
+  scrollContentWrapper: {
+    borderWidth:1,
+    display:'flex',
+    flexDirection:'column',
+ 
+  },
+
+  huge: {
+    fontSize:70
+  },
+
+
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#fff',
+    //backgroundColor: '#fff',
   },
-  tabContainer: {
-    marginBottom: 20,
+  segmentContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    //borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
-  tabStyle: {
-    borderColor: '#6200ee',
+  segmentButton: {
+    alignItems: 'center',
+    paddingVertical: 10,
   },
-  activeTabStyle: {
-    backgroundColor: '#6200ee',
+  segmentText: {
+    color: 'black',
+    fontSize: 16,
   },
-  tabTextStyle: {
+  activeText: {
+    fontWeight: 'bold',
     color: '#6200ee',
   },
-  activeTabTextStyle: {
-    color: '#fff',
+  activeLine: {
+    marginTop: 4,
+    height: 2,
+    width: '100%',
+    backgroundColor: '#6200ee',
   },
   content: {
     paddingTop: 20,
