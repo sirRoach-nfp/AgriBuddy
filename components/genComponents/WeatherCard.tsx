@@ -31,7 +31,7 @@ const WeatherCard = () => {
         </View>
       
     </View>
-  )
+  ) 
 }
 
 export default WeatherCard
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
 
     container : {
         width: '95%',
-        height:200,
+        height:220,
         paddingTop:10,
         paddingBottom:10,
        // borderColor: 'black',
@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
         backgroundColor:'#CFFFDC',
         marginTop:10,
         borderRadius:5,
+     
     },
 
 
@@ -60,7 +61,8 @@ const styles = StyleSheet.create({
         flexDirection:'column',
         //: 'black',
         //borderWidth: 1,
-        justifyContent:'center'
+        justifyContent:'center',
+    
         
     },
 
