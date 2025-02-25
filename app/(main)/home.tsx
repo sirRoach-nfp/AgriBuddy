@@ -13,6 +13,7 @@ import ArticleCard from '@/components/genComponents/ArticleCard'
 
 
 import { ScrollView } from 'react-native-gesture-handler'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 
 
@@ -22,57 +23,68 @@ const home = () => {
   return (
 
     <>  
-     
-    
+
+      <SafeAreaView style={styles.mainContainer}>
+
+
         <ScrollView style={styles.container} contentContainerStyle={{alignItems:'center'}}>
 
-            <WeatherCard/>
-            <TaskCard/>
+          <WeatherCard/>
+          <TaskCard/>
 
 
-            <View style={styles.AgriInsightContainer}>
+          <View style={styles.AgriInsightContainer}>
 
-              <View style={styles.AgriInsightHeader} >
-                <FontAwesomeIcon icon={faNewspaper} size={20} color='#2E6F40' style={styles.iconstyle}/>
-                <Text style={styles.AgriInsightH}>Agri Insights</Text>
-                <Text style={styles.AgriInsightSeeMore}>See More</Text>
-              
-              </View> 
+            <View style={styles.AgriInsightHeader} >
+              <FontAwesomeIcon icon={faNewspaper} size={20} color='#2E6F40' style={styles.iconstyle}/>
+              <Text style={styles.AgriInsightH}>Agri Insights</Text>
+              <Text style={styles.AgriInsightSeeMore}>See More</Text>
+            
+            </View> 
 
 
 
-              <View style={styles.AgriInsightContentContainer} >
+            <View style={styles.AgriInsightContentContainer} >
 
-                <View style={styles.fullWidthContainer}>
-                  <ArticleCard/>
+              <View style={styles.fullWidthContainer}>
+                <ArticleCard/>
+              </View>
+
+
+
+              <View style={styles.gridContainer}>
+
+                <View style={styles.gridItem}>
+                  <ArticleCard />
                 </View>
 
+                <View style={styles.gridItem}>
+                  <ArticleCard />
+                </View>
 
+            </View>
 
-                <View style={styles.gridContainer}>
-
-                  <View style={styles.gridItem}>
-                    <ArticleCard />
-                  </View>
-
-                  <View style={styles.gridItem}>
-                    <ArticleCard />
-                  </View>
-
-              </View>
-
-
-
-
-
-              </View>
 
 
 
 
             </View>
 
+
+
+
+          </View>
+
         </ScrollView>
+
+
+
+
+
+      </SafeAreaView>
+     
+    
+        
     
     
     </>
@@ -84,6 +96,12 @@ export default home
 
 const styles = StyleSheet.create({
 
+
+    mainContainer: {
+      flex:1,
+      display:'flex',
+      flexDirection:'column'
+    },
     container : {
         flex: 1,
         borderColor:'black',

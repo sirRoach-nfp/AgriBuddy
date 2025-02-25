@@ -1,19 +1,47 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
 import { ScrollView } from 'react-native-gesture-handler';
 
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
-
-
+import { cropDataDummy } from '../Datas/crops';
 
 
 import CropMinCard from '@/components/genComponents/cropMinCard';
+import PlanMinCard from '@/components/genComponents/PlanMinCard';
+
+type Crop = {
+  commonname: string;
+  scientificname: string;
+  imgurl: string;
+};
+
+type CropData = {
+  [key: string]: Crop;
+};
+
+
 
 const crops = () => {
+
+
+
+  const [cropData,SetCropData] = useState<CropData>({})
+
+
+
+
+  useEffect(()=> {
+
+    SetCropData(cropDataDummy)
+
+
+  },[])
 
   const [selectedOption, setSelectedOption] = useState<String>('crops');
 
@@ -62,24 +90,49 @@ const crops = () => {
         </TouchableOpacity>
       </View>
 
+      
 
+
+
+      {selectedOption === 'crops' && 
+      
       <ScrollView style={styles.scrollContentWrapper} contentContainerStyle={{alignItems:'center'}}>
-          <Text style={styles.huge}>Test</Text>
-          <Text style={styles.huge}>Test</Text>
-          <Text style={styles.huge}>Test</Text>
-          <Text style={styles.huge}>Test</Text>
-          <Text style={styles.huge}>Test</Text>
-          <Text style={styles.huge}>Test</Text>
-          <Text style={styles.huge}>Test</Text>
-          <Text style={styles.huge}>Test</Text>
-          <Text style={styles.huge}>Test</Text>
-          <Text style={styles.huge}>Test</Text>
-          <Text style={styles.huge}>Test</Text>
-          
+        {Object.keys(cropData).map((key)=>(
+          <CropMinCard  key={key} commonName={cropData[key].commonname} scientificName={cropData[key].scientificname} imgUrl={cropData[key].imgurl}/>
+        ))}
+      </ScrollView> 
 
-          <CropMinCard/>
+      }
 
-      </ScrollView>
+
+      {selectedOption === 'plans' && 
+      
+      <ScrollView style={styles.scrollContentWrapper} contentContainerStyle={{alignItems:'center'}}>
+        <PlanMinCard/>
+        <PlanMinCard/>
+        <PlanMinCard/>
+        <PlanMinCard/>
+
+
+
+        <View style={styles.CreatePlan}> 
+
+          <View style={styles.createPlanThumb}>
+            <FontAwesomeIcon icon={faPlus} size={40} color='#FFFFFF'/>
+          </View>
+
+          <View style={styles.createPlanTextWrap}>
+            <Text style={styles.createPlanText}>
+              Create A New Plan
+            </Text>
+          </View>
+
+
+        </View>
+      </ScrollView> 
+
+      }
+
 
 
 
@@ -95,17 +148,60 @@ export default crops
 const styles = StyleSheet.create({
 
 
-  mainContainer : {
+  //Add new Plan
+
+  CreatePlan:{
+    width:'95%',
+    display:'flex',
+    flexDirection:'row',
+    //borderWidth:1
+  },
+
+  createPlanThumb:{
+    width:65,
+    height:65,
+    //borderWidth:1,
+    borderTopLeftRadius:5,
+    borderBottomLeftRadius:5,
+    backgroundColor:'#D2D2D2',
+    display:'flex',
+    alignItems:'center',
+    justifyContent:'center',
+  },
+
+  createPlanTextWrap:{
+    marginLeft: 10,
     borderWidth:1,
+    flex:1,
+    borderTopRightRadius:5,
+    borderBottomRightRadius:5,
+    borderStyle:'dotted',
+    display:'flex',
+    alignItems:'center',
+    justifyContent:'center',
+    borderColor:'#9B9B9B'
+    
+  },
+
+  createPlanText:{
+    fontSize:15,
+    fontWeight:600,
+    color:'#9B9B9B'
+  },
+  
+
+  mainContainer : {
+    //borderWidth:1,
     flex:1,
     display:'flex',
     flexDirection:'column'
   },
 
   scrollContentWrapper: {
-    borderWidth:1,
+    //borderWidth:1,
     display:'flex',
     flexDirection:'column',
+    paddingTop:10
  
   },
 

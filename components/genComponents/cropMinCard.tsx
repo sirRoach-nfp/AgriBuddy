@@ -1,20 +1,27 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
+import { Image } from 'react-native';
+type CropMinCardProps = {
+    commonName: string;
+    scientificName: string;
+    imgUrl:string;
+  };
+  
 
-const CropMinCard = () => {
+const CropMinCard = ({commonName,scientificName,imgUrl}: CropMinCardProps) => {
   return (
     <View style={styles.container}>
 
         <View style={styles.thumbnail}>
-            
+            <Image source={{uri:imgUrl}} style={styles.img}/>
         </View>
 
 
 
         <View style={styles.infoWrapper}>
 
-            <Text style={styles.commonName}>Common Name</Text>
-            <Text style={styles.scientificName}>Scientific Name</Text>
+            <Text style={styles.commonName}>{commonName}</Text>
+            <Text style={styles.scientificName}>{scientificName}</Text>
 
             
             <View style={styles.statusWrapper}> 
@@ -46,16 +53,17 @@ const styles = StyleSheet.create({
 
     container: {
         width:'95%',
-        borderWidth:1,
+        //borderWidth:1,
         display:'flex',
-        flexDirection:'row'
+        flexDirection:'row',
+        marginBottom:15
 
     },
 
     infoWrapper:{
         display:'flex',
         flexDirection:'column',
-        borderWidth:1,
+        //borderWidth:1,
         flex:2
 
     },
@@ -69,16 +77,28 @@ const styles = StyleSheet.create({
 
     },
     thumbnail: {
-        width:80,
-        height:80,
-        borderWidth:1,
+        width:60,
+        height:60,
+        //borderWidth:1,
+    },
+
+    img:{
+        width:'100%',
+        height:'100%',
+        resizeMode:'cover',
+        borderRadius:5,
+        elevation:5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
     },
     commonName: {
         
         fontSize:15,
         fontWeight:600,
         color:'#253D2C',
-        marginLeft:5,
+        marginLeft:15,
 
 
 
@@ -90,7 +110,7 @@ const styles = StyleSheet.create({
         fontStyle:'italic',
         marginTop:'auto',
         marginBottom:'auto',
-        marginLeft:5,
+        marginLeft:15,
 
 
     },
@@ -101,7 +121,7 @@ const styles = StyleSheet.create({
         backgroundColor:'#80E900',
         width:10,
         height:10,
-        marginLeft:5,
+        marginLeft:15,
         marginRight:5
     },
     statusText:{
