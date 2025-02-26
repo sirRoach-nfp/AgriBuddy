@@ -1,6 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { Image } from 'react-native';
+import { router } from 'expo-router';
 type CropMinCardProps = {
     commonName: string;
     scientificName: string;
@@ -9,8 +10,21 @@ type CropMinCardProps = {
   
 
 const CropMinCard = ({commonName,scientificName,imgUrl}: CropMinCardProps) => {
+
+
+
+  const navigateToView = () => {
+    router.push({
+        pathname: '/CropProfile',
+        params: {
+          commonName,
+          scientificName,
+          imgUrl,
+        },
+      });
+  }
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={navigateToView} >
 
         <View style={styles.thumbnail}>
             <Image source={{uri:imgUrl}} style={styles.img}/>
@@ -43,7 +57,7 @@ const CropMinCard = ({commonName,scientificName,imgUrl}: CropMinCardProps) => {
 
 
 
-    </View>
+    </TouchableOpacity>
   )
 }
 
