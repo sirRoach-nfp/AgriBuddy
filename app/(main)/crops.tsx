@@ -231,13 +231,13 @@ const styles = StyleSheet.create({
   },
   activeText: {
     fontWeight: 'bold',
-    color: '#6200ee',
+    color: '#2E6F40',
   },
   activeLine: {
     marginTop: 4,
     height: 2,
     width: '100%',
-    backgroundColor: '#6200ee',
+    backgroundColor: '#2E6F40',
   },
   content: {
     paddingTop: 20,

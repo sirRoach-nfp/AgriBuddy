@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ScrollView } from 'react-native-gesture-handler'
 
@@ -17,19 +17,20 @@ import { useSearchParams } from 'expo-router/build/hooks';
 
 const CropProfile = () => {
 
-    const [searchParams] = useSearchParams();
+    const searchParams = useSearchParams();
 
-    const { commonName, scientificName, imgUrl } = useSearchParams() as {
-        commonName?: string;
-        scientificName?: string;
-        imgUrl?: string;
-      };
+    const commonName = searchParams.get('commonName'); // should return "bellpepper"
+    const scientificName = searchParams.get('scientificName');
+    const imgUrl = searchParams.get('imgUrl');
+
+
+
     
   return (
     <SafeAreaView style={styles.mainContainer}>
         
-        <View style={styles.thumbnail}>
-
+        <View style={styles.thumbnail}>\
+            <Image source={{uri:imgUrl as string}}/>
         </View>
 
 

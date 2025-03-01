@@ -14,14 +14,8 @@ const CropMinCard = ({commonName,scientificName,imgUrl}: CropMinCardProps) => {
 
 
   const navigateToView = () => {
-    router.push({
-        pathname: '/CropProfile',
-        params: {
-          commonName,
-          scientificName,
-          imgUrl,
-        },
-      });
+    const queryString = `?commonName=${encodeURIComponent(commonName)}&scientificName=${encodeURIComponent(scientificName)}&imgUrl=${encodeURIComponent(imgUrl)}`;
+    router.push(`/CropProfile${queryString}` as any);
   }
   return (
     <TouchableOpacity style={styles.container} onPress={navigateToView} >
@@ -61,89 +55,89 @@ const CropMinCard = ({commonName,scientificName,imgUrl}: CropMinCardProps) => {
   )
 }
 
-export default CropMinCard
+    export default CropMinCard
 
-const styles = StyleSheet.create({
+    const styles = StyleSheet.create({
 
-    container: {
-        width:'95%',
-        //borderWidth:1,
-        display:'flex',
-        flexDirection:'row',
-        marginBottom:15
+        container: {
+            width:'95%',
+            //borderWidth:1,
+            display:'flex',
+            flexDirection:'row',
+            marginBottom:15
 
-    },
+        },
 
-    infoWrapper:{
-        display:'flex',
-        flexDirection:'column',
-        //borderWidth:1,
-        flex:2
+        infoWrapper:{
+            display:'flex',
+            flexDirection:'column',
+            //borderWidth:1,
+            flex:2
 
-    },
+        },
 
-    statusWrapper:{
-        width:'100%',
-        //borderWidth:1,
-        display:'flex',
-        flexDirection:'row',
-        alignItems:'center'
+        statusWrapper:{
+            width:'100%',
+            //borderWidth:1,
+            display:'flex',
+            flexDirection:'row',
+            alignItems:'center'
 
-    },
-    thumbnail: {
-        width:60,
-        height:60,
-        //borderWidth:1,
-    },
+        },
+        thumbnail: {
+            width:60,
+            height:60,
+            //borderWidth:1,
+        },
 
-    img:{
-        width:'100%',
-        height:'100%',
-        resizeMode:'cover',
-        borderRadius:5,
-        elevation:5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-    },
-    commonName: {
-        
-        fontSize:15,
-        fontWeight:600,
-        color:'#253D2C',
-        marginLeft:15,
-
-
-
-
-    },
-    scientificName:{
-        fontWeight:300,
-        color:'#253D2C',
-        fontStyle:'italic',
-        marginTop:'auto',
-        marginBottom:'auto',
-        marginLeft:15,
-
-
-    },
-
-
-    statusIndi:{
-        borderRadius:'50%',
-        backgroundColor:'#80E900',
-        width:10,
-        height:10,
-        marginLeft:15,
-        marginRight:5
-    },
-    statusText:{
-        fontWeight:300,
-        color:'#253D2C',
-        fontStyle:'italic',
-    },
+        img:{
+            width:'100%',
+            height:'100%',
+            resizeMode:'cover',
+            borderRadius:5,
+            elevation:5,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.2,
+            shadowRadius: 4,
+        },
+        commonName: {
+            
+            fontSize:15,
+            fontWeight:600,
+            color:'#253D2C',
+            marginLeft:15,
 
 
 
-})
+
+        },
+        scientificName:{
+            fontWeight:300,
+            color:'#253D2C',
+            fontStyle:'italic',
+            marginTop:'auto',
+            marginBottom:'auto',
+            marginLeft:15,
+
+
+        },
+
+
+        statusIndi:{
+            borderRadius:'50%',
+            backgroundColor:'#80E900',
+            width:10,
+            height:10,
+            marginLeft:15,
+            marginRight:5
+        },
+        statusText:{
+            fontWeight:300,
+            color:'#253D2C',
+            fontStyle:'italic',
+        },
+
+
+
+    })
