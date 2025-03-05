@@ -1,11 +1,21 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faCloudSun} from '@fortawesome/free-solid-svg-icons'
+import { router } from 'expo-router';
 
 
 
 const WeatherCard = () => {
+
+
+  const navigateToWeather = ()=>{
+
+
+    router.push('/(screens)/WeatherForecast')
+  }
+
+  
   return (
     <View style={styles.container}>
 
@@ -25,7 +35,10 @@ const WeatherCard = () => {
             </View>
 
             <View style={styles.bottomPartDiv2}>
-                <Text style={styles.seeMore}>See more</Text>
+                <TouchableOpacity onPress={navigateToWeather}>
+                    <Text style={styles.seeMore}>See more</Text>
+                </TouchableOpacity>
+                
             </View>
 
         </View>

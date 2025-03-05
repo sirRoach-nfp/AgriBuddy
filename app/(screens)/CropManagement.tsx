@@ -277,12 +277,12 @@ const CropManagement = () => {
                     hideTags
                     items={pestData}
                     uniqueKey="id"
-                    ref={(component) => { multiSelectRef.current = component }}
+                    ref={(component: any) => { multiSelectRef.current = component }}
                     onSelectedItemsChange={onSelectedItemsChange}
                     selectedItems={selectedItems}
                     selectText="Select Pest(s)"
                     searchInputPlaceholderText={""}
-                    onChangeInput={ (text)=> console.log(text)}
+                    onChangeInput={ (text: any)=> console.log(text)}
                     altFontFamily="ProximaNova-Light"
                     tagRemoveIconColor="#CCC"
                     tagBorderColor="#CCC"
@@ -337,12 +337,12 @@ const CropManagement = () => {
                     hideTags
                     items={diseaseData}
                     uniqueKey="id"
-                    ref={(component) => { multiSelectRef.current = component }}
+                    ref={(component: any) => { multiSelectRef.current = component }}
                     onSelectedItemsChange={onSelectedDiseaseChange}
                     selectedItems={selectedDiseases}
                     selectText="Select Disease(s)"
                     searchInputPlaceholderText={""}
-                    onChangeInput={ (text)=> console.log(text)}
+                    onChangeInput={ (text: any)=> console.log(text)}
                     altFontFamily="ProximaNova-Light"
                     tagRemoveIconColor="#CCC"
                     tagBorderColor="#CCC"
@@ -403,7 +403,7 @@ const CropManagement = () => {
                 <TextInput
                   label=""
                   value={pesticide}
-                  onChangeText={text => setPesticide(text)}
+                  onChangeText={(text: React.SetStateAction<string>) => setPesticide(text)}
                   mode='flat'
                   style={{ backgroundColor: 'transparent' }}
                   theme={{ colors: { primary: '#2E6F40' } }}
@@ -431,7 +431,7 @@ const CropManagement = () => {
                 <TextInput
                   label=""
                   value={pesticide}
-                  onChangeText={text => setPesticide(text)}
+                  onChangeText={(text: React.SetStateAction<string>) => setPesticide(text)}
                   mode='flat'
                   style={{ backgroundColor: 'transparent' }}
                   theme={{ colors: { primary: '#2E6F40' } }}
@@ -462,7 +462,7 @@ const CropManagement = () => {
                   multiline
                   numberOfLines={4}
                   maxLength={100}
-                  onChangeText={text => onChangeNotes(text)}
+                  onChangeText={(text: string) => onChangeNotes(text)}
                   value={notes}
                   placeholder='Additional Observations....'
                   style={{width:'100%',backgroundColor: '#f0f0f0',borderRadius:5}}
