@@ -6,7 +6,19 @@ import Fontisto from '@expo/vector-icons/Fontisto';
 import Feather from '@expo/vector-icons/Feather';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
-const ExpandedWeatherCard = () => {
+
+type currentWeather = {
+
+  temperature:string,
+  status:string,
+  humidity:string,
+  windSpeed:string,
+  chanceOfRain:string,
+  pressure:string,
+}
+
+
+const ExpandedWeatherCard = ({temperature,status,humidity,windSpeed,chanceOfRain,pressure}:currentWeather) => {
   return (
     <View style={styles.mainWrapper}>
       
@@ -23,8 +35,8 @@ const ExpandedWeatherCard = () => {
 
         <View style={styles.mainWeatherDetailWrapper}>
             <Text style={styles.dateMainText}>Date</Text>
-            <Text style={styles.tempMainText}>Temp°C</Text>
-            <Text style={styles.statusMainText}>Status</Text>
+            <Text style={styles.tempMainText}>{temperature}°C</Text>
+            <Text style={styles.statusMainText}>{status}</Text>
         </View>
 
       </View>
@@ -38,10 +50,10 @@ const ExpandedWeatherCard = () => {
 
         <View style={styles.subInfoContainer}>
           
-          <Fontisto name="wind" size={30} color="#253D2C"  style={{marginLeft:10}}/>
+          <Fontisto name="wind" size={30} color="#253D2C"  style={{marginLeft:20}}/>
 
           <View style={styles.statusTextWrapper}>
-            <Text>status</Text>
+            <Text>{windSpeed} km/h</Text>
             <Text style={styles.subStatusContext}>Wind</Text>
           </View>
           
@@ -49,9 +61,9 @@ const ExpandedWeatherCard = () => {
 
         <View style={styles.subInfoContainer}>
           
-        <Fontisto name="rain" size={30} color="#253D2C"  style={{marginLeft:10}}/>
+        <Fontisto name="rain" size={30} color="#253D2C"  style={{marginLeft:20}}/>
           <View style={styles.statusTextWrapper}>
-            <Text>status</Text>
+            <Text>{chanceOfRain}%</Text>
             <Text style={styles.subStatusContext}>Chance of rain</Text>
           </View>
         </View>
@@ -59,9 +71,9 @@ const ExpandedWeatherCard = () => {
 
         <View style={styles.subInfoContainer}>
           
-        <Feather name="thermometer"  size={30} color="#253D2C"  style={{marginLeft:10}}/>
+        <Feather name="thermometer"  size={30} color="#253D2C"  style={{marginLeft:20}}/>
           <View style={styles.statusTextWrapper}>
-            <Text>status</Text>
+            <Text>{pressure} mbar</Text>
             <Text style={styles.subStatusContext}>Pressure</Text>
           </View>
         </View>
@@ -69,9 +81,9 @@ const ExpandedWeatherCard = () => {
 
         <View style={styles.subInfoContainer}>
           
-        <Feather name="droplet"  size={30} color="#253D2C"  style={{marginLeft:10}}/>
+        <Feather name="droplet"  size={30} color="#253D2C"  style={{marginLeft:20}}/>
           <View style={styles.statusTextWrapper}>
-            <Text>status</Text>
+            <Text>{humidity}%</Text>
             <Text style={styles.subStatusContext}>Humidity</Text>
           </View>
         </View>
@@ -143,7 +155,7 @@ const styles = StyleSheet.create({
     },
     substatus:{
       width:30,height:30,backgroundColor:'black',
-      marginLeft:10
+      marginLeft:20
     },
     subStatusContext:{
       fontWeight:500
