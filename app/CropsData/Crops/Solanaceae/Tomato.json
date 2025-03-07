@@ -1,0 +1,52 @@
+{
+    "Tomato": {
+        "thumbnail":"https://cdn.mos.cms.futurecdn.net/2Aco4s8mLGwfvD6zS4LQ5j.jpg",
+        "scientificName": "Solanum Lycopersicum",
+        "family":"Solanaceae",
+        "commonName":"Tomato",
+        "growthTime": "45",
+        "bestSeason": "",
+        "soilType": "Loamy",
+        "soilPh": "5.0-8.0",
+        "commonPests": ["thrips", "fruitworm", "whiteflies"],
+        "commonDiseases": ["nematodes", "bacterial wilt", "mosaic virus"],
+        "guide": {
+            "1": {
+                "header": "Soil Preparation",
+                "content": "content text long paragraph"
+            },
+            "2": {
+                "header": "Seedling Care",
+                "content": "Protect the seedlings from direct sunlight and heavy rain by creating temporary shade using indigenous materials such as plastic, cogon grass, reeds, or coconut leaves. Construct the shade with a height of 12 centimeters on the east side and 60 centimeters on the west side.\n\nWater the seedlings in the morning to prevent damping-off. Ensure proper watering to keep the soil moist but not overly saturated, as excessive watering can cause damping-off and weak seedlings.\n\nApply one teaspoon of urea (45-0-0) dissolved in one gallon of water 10 days after germination. Immediately water the seedlings after fertilization to prevent leaf damage.\n\nOne week before transplanting, strengthen the seedlings by gradually exposing them to sunlight and adjusting watering."
+            },
+            "3": {
+                "header": "Preparing the Planting Bed",
+                "content": "1. Using Plastic Mulch: Create a planting bed that is 1 meter wide and 20 centimeters high.\n\n2. Conventional Method: During the dry season, make furrows.\n\nDuring the rainy season, form ridges with 1-meter spacing between them."
+            },
+            "4": {
+                "header": "Transplanting",
+                "content": "During the rainy season, use one-month-old seedlings as they are sturdier, taller, and can withstand heavy rain.\n\nPlant spacing:\n- Dry season: 50 cm apart\n- Rainy season: 75 cm apart\n\nFor the dry season, transplant 25-day-old seedlings immediately after watering the furrows."
+            },
+            "5": {
+                "header": "Proper Transplanting Technique",
+                "content": "To prevent stem damage, hold the seedling by the roots using your thumb and forefinger. Plant it 3 to 5 cm deep, depending on the stem length.\n\nIf using seedling trays, transplant the seedling along with the soil from the tray hole.\n\nTransplant in the afternoon or on cloudy days to reduce stress on the seedlings.\n\nCover newly transplanted seedlings with banana leaves or any available shading materials to protect them."
+            },
+            "6": {
+                "header": "Trellising",
+                "content": "Install a trellis for the plants 15 days after transplanting using available materials. This provides support, promotes better air circulation, and prevents fruit rot."
+            },
+            "7": {
+                "header": "Cultivation and Weeding",
+                "content": "Loosen the soil between the plant rows through off-barring 14-21 days after transplanting.\n\nHill-up the soil 28-35 days after transplanting to provide better root support and promote healthy plant growth."
+            },
+            "8": {
+                "header": "Watering",
+                "content": "Water the plants as needed. Irrigate the field four to five times from transplanting until 14 days before the final harvest, depending on the soil type.\n\nTomatoes are highly sensitive to flooding, so watering should be done only to moisten the soil and roots, especially from the flowering stage to harvest. Quickly irrigate the furrows to prevent soil erosion and promote better fruit development."
+            },
+            "9": {
+                "header": "Pruning",
+                "content": "Pruning is done to promote healthy plant growth, ensure uniform fruit size, and speed up the harvesting process. It is performed 10–20 days after transplanting or when the branches have grown large. Remove excess branches in the morning to allow the plant wounds to heal faster."
+            }
+        }
+    }
+}

@@ -11,6 +11,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { cropDataDummy } from '../Datas/crops';
 
+import cropsData from '../CropsData/Crops/Crops.json'
 
 import CropMinCard from '@/components/genComponents/cropMinCard';
 import PlanMinCard from '@/components/genComponents/PlanMinCard';
@@ -21,24 +22,41 @@ type Crop = {
   imgurl: string;
 };
 
-type CropData = {
-  [key: string]: Crop;
-};
+interface guideStep{
+  header: string;
+  content: string;
+}
 
+interface CropData{
+  thumbnail: string;
+  scientificName: string;
+  commonName:string,
+  family: string;
+  growthTime: string;
+  bestSeason: string;
+  soilType: string;
+  soilPh: string;
+  commonPests: string[];
+  commonDiseases: string[];
+  guide: Record<string, guideStep>;
+}
 
+interface CropsData {
+  [key: string]: CropData;
+}
 
 const crops = () => {
 
 
-
-  const [cropData,SetCropData] = useState<CropData>({})
+  const [cropDataMain,SetCropDataMain] = useState({})
+  const [cropData,SetCropData] = useState<CropsData>({})
 
 
 
 
   useEffect(()=> {
 
-    SetCropData(cropDataDummy)
+    SetCropData(cropsData)
 
 
   },[])
@@ -98,7 +116,7 @@ const crops = () => {
       
       <ScrollView style={styles.scrollContentWrapper} contentContainerStyle={{alignItems:'center'}}>
         {Object.keys(cropData).map((key)=>(
-          <CropMinCard  key={key} commonName={cropData[key].commonname} scientificName={cropData[key].scientificname} imgUrl={cropData[key].imgurl}/>
+          <CropMinCard  key={key} commonName={cropData[key].commonName} scientificName={cropData[key].scientificName} imgUrl={cropData[key].thumbnail}/>
         ))}
       </ScrollView> 
 

@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Feather from '@expo/vector-icons/Feather';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import CropPlanCard from '@/components/genComponents/CropPlanCard';
 
 const PlotManagementScreen = () => {
 
@@ -49,6 +50,9 @@ const PlotManagementScreen = () => {
                 <FontAwesomeIcon icon={faPlus} size={40} color='#FFFFFF'/>
             </View>
         </View>
+
+
+        <CropPlanCard/>
 
 
 
