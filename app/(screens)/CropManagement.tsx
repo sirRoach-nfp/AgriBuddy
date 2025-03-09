@@ -12,14 +12,94 @@ import Collapsible from 'react-native-collapsible';
 
 import { SelectList } from 'react-native-dropdown-select-list';
 import MultiSelect from 'react-native-multiple-select';
+import { Menu, Divider, PaperProvider,Portal, Dialog } from 'react-native-paper';
 
 
 //react native paper imports
 import { Button } from 'react-native-paper';
 import { TextInput } from 'react-native-paper';
+import { useSearchParams } from 'expo-router/build/hooks'
 
+
+import { Image } from 'react-native';
+
+
+
+interface guideStep{
+  header: string;
+  content: string;
+}
+
+interface CropDataLocal{
+  cropId:string,
+  thumbnail: string;
+  scientificName: string;
+  commonName:string,
+  family: string;
+  growthTime: string;
+  bestSeason: string;
+  soilType: string;
+  soilPh: string;
+  commonPests: string[];
+  commonDiseases: string[];
+  guide: Record<string, guideStep>;
+}
+
+interface CropsDataLocal {
+  [key: string]: CropDataLocal;
+}
+
+interface PlotData{
+  PlotId : string,
+  PlotName: string
+}
+
+interface Plots{
+  plot:PlotData[],
+}
+
+
+
+
+
+
+
+
+import TomatoData from '../CropsData/Crops/Solanaceae/Tomato.json'
+import { diseaseImages, pestImages } from '../Pestdat'
+import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore'
+import { db } from '../firebaseconfig'
 
 const CropManagement = () => {
+
+  //firebase datas
+
+  const [plots,setPlots] = useState<Plots>({plot:[]})
+  
+
+  // local data
+  const [localCropData,setLocalCropData] = useState<CropsDataLocal>({});
+  var selectedCrop
+
+  //loading
+
+
+  const [isLoading,setLoading] = useState(true);
+
+  //passed params
+
+  const searchParams = useSearchParams();
+
+  const cropName = searchParams.get('cropName');
+  const cropId = searchParams.get('cropId');
+  const sessionId = searchParams.get('SessionId');
+  const PlotAssoc= searchParams.get('PlotAssoc');
+  const PlotName = searchParams.get('PlotName');
+  
+
+  //crop session datas
+
+  const [assocPlot,setAssocPlot] = useState<string | null>("")
 
   const [selectedOption,setSelectedOption] = useState<String>('CareGuide')
 
@@ -29,7 +109,16 @@ const CropManagement = () => {
   };
 
 
-  const [isCollapsed, setIsCollapsed] = useState(true);
+
+  const [collapsedStates, setCollapsedStates] = useState<{ [key: number]: boolean }>({});
+  const toggleCollapse = (index: number) => {
+    setCollapsedStates((prev) => ({
+      ...prev,
+      [index]: !prev[index], // Toggle the specific section
+    }));
+  };
+
+  const [isCollapsed, setIsCollapsed] = useState<number | null>(null);
   const [isCollapsed2, setIsCollapsed2] = useState(true);
   const [isCollapsed3, setIsCollapsed3] = useState(true);
   const [isCollapsed4, setIsCollapsed4] = useState(true);
@@ -90,9 +179,173 @@ const CropManagement = () => {
 
 
 
+
+  useEffect(()=>{
+    setLoading(true)
+
+    switch(cropName){
+      case 'Tomato' :
+        console.log('entered')
+        setLocalCropData(TomatoData)
+        console.log("First Initialize", localCropData)
+        console.log('Data has been set')
+        break
+      default:
+        console.log('entered default')
+        setLocalCropData(TomatoData)
+        console.log("First Initialize", localCropData)
+        console.log('data has been set default')
+        break
+    }
+
+    setAssocPlot(PlotAssoc)
+
+
+    const fetchPlots = async()=> {
+      console.log('fetching plots')
+
+      try{
+        console.log('fetching plots 1')
+        const ref = doc(db,"Plots",'xt4foVBpVYqoM4kdAWBC');
+
+        const docSnap = await getDoc(ref);
+
+        if(docSnap.exists()){
+
+          const rawData = docSnap.data().Plots as any[];
+
+          const filteredPlots:PlotData[] = rawData.map(crop=>({
+            PlotName: crop.PlotName,
+            PlotId: crop.PlotId
+          }));
+
+          console.log('fetching plots 2 success')
+          setPlots({plot:filteredPlots})
+
+          console.log(filteredPlots)
+
+
+        }
+
+
+      }catch(err){console.error(err)}
+    }
+
+
+    fetchPlots()
+
+
+
+    console.log(localCropData)
+    console.log(cropName)
+
+
+
+
+
+    
+  },[cropName])
+
+
+  useEffect(() => {
+    console.log("Updated localCropData", localCropData);
+    setLoading(false)
+ 
+
+  }, [localCropData]);
+
+
+
+  //select crop data
+
+  
+  const [visible, setVisible] = React.useState(false);
+
+  const openMenu = () => setVisible(true);
+
+  const closeMenu = () => setVisible(false);
+
+
+
+  // Select Plot
+
+  const [selectedPlot, setSelectedPlot] = useState<string | null>(null);
+  const [selectedPlotAssoc, setSelectedPlotAssoc] = useState<string | null>(null);
+
+  const [dialogVisible,setDialogVisible] = useState(false);
+  const showDialog = (plotNumber:any, newPlotAssoc:any) => {
+    setSelectedPlot(plotNumber);
+    setSelectedPlotAssoc(newPlotAssoc);
+    console.log("Select plot name ", plotNumber, " Select plot assoc ", newPlotAssoc)
+    setDialogVisible(true);
+  };
+
+  const hideDialog = () => {
+    setDialogVisible(false);
+  };
+
+
+  
+  //read / write to firebase
+
+  const setPlot = async(plotAssoc:string,plotName:string)=>{
+
+    try{
+
+      const cropRef = doc(db,"CurrentCrops","zFmpiZQL51Q7xqG8KJ2k");
+      const cropRefSnap = await getDoc(cropRef);
+
+
+      const currentCrop = cropRefSnap.data()?.CurrentCrops as any[];
+
+      const updatedCrops = currentCrop.map(crop => 
+        crop.CropId === cropId 
+          ? { ...crop, PlotAssoc: plotAssoc, PlotName:plotName } 
+          : crop
+      );
+
+  
+      // Update Firestore with the modified array
+      await updateDoc(cropRef, { CurrentCrops: updatedCrops });
+
+    }catch(err){
+      console.error(err)
+    }
+  }
+
+
+  const renderDialog = () => (
+    <Portal>
+      <Dialog visible={dialogVisible} onDismiss={hideDialog}>
+        <Dialog.Title>Assign to Plot?</Dialog.Title>
+        <Dialog.Content>
+          <Text>Assign to plot #{selectedPlot}?</Text>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button onPress={hideDialog}>Cancel</Button>
+          <Button onPress={() => console.log(setAssocPlot(selectedPlot))}>Ok</Button>
+        </Dialog.Actions>
+      </Dialog>
+    </Portal>
+  );
   return (
+
+    <PaperProvider>
+
+
     <SafeAreaView style={styles.mainContainer}>
 
+      {renderDialog()}
+
+
+      {isLoading ? (
+        <View >
+          <Text>Loading...</Text>
+        </View>
+        ) : (
+        <> 
+        
+        
         <View style={styles.segmentContainer}>
           <TouchableOpacity
             style={styles.segmentButton}
@@ -150,18 +403,22 @@ const CropManagement = () => {
        
        
         <ScrollView style={styles.contentWrapper}>
-          <View  style={styles.Thumbnail}>
 
+          <View  style={styles.Thumbnail}>
+            <Image source={{ uri: Object.values(localCropData)[0]?.thumbnail }} style={{width:'100%',height:'100%',objectFit:'contain'}} />
 
 
           </View>
 
 
+         
+
+
           <View style={styles.headerWrapper} >
 
             <View style={styles.nameWrapper}>
-              <Text style={styles.cropName}>CropName</Text>
-              <Text style={styles.scientificName}>(Scientific Name)</Text>
+              <Text style={styles.cropName}>{Object.values(localCropData)[0]?.commonName || 'Loading...'}</Text>
+              <Text style={styles.scientificName}>({Object.values(localCropData)[0]?.scientificName})</Text>
             </View>
 
             <View style={styles.counterWrapper}>
@@ -170,80 +427,63 @@ const CropManagement = () => {
             </View>
 
 
+
+            <View>
+
+              {assocPlot ? (
+                <Text>{assocPlot}</Text>
+              ):(
+
+                <Menu
+                  visible={visible}
+                  onDismiss={closeMenu}
+                  anchor={
+                    <TouchableOpacity style={stylesButtons.plotAssign} onPress={openMenu}>
+                      <Text>Not assigned to any plot</Text>
+                    </TouchableOpacity>
+                  }
+                >
+
+                  {plots.plot.map((item, index) => (
+                    <Menu.Item key={index} onPress={() => {
+                      closeMenu()
+                      showDialog(item.PlotName, item.PlotId)}} title={item.PlotName}  />
+                  ))}
+
+                </Menu>
+
+
+              ) }
+
+
+    
+            </View>
+
+
           </View>
 
 
 
 
-          <View style={stylesCollapsible.collapseWrapper}>
+          {Object.values(localCropData)[0]?.guide &&
+            Object.values(Object.values(localCropData)[0].guide).map((item, index) => (
+              <View key={index} style={stylesCollapsible.collapseWrapper}>
+                <TouchableOpacity onPress={() => setIsCollapsed(index)}>
+                  <Text style={stylesCollapsible.header}>{item.header}</Text>
+                </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => setIsCollapsed(!isCollapsed)}>
-              <Text style={stylesCollapsible.header}>Soil Preparation</Text>
-            </TouchableOpacity>
-
-            <Collapsible collapsed={isCollapsed}>
-
-              <View >
-                <Text style={stylesCollapsible.contentText}>If possible, prepare the planting soil early to allow enough time for weeds and residues from the previous crop to decompose. Plow and hallow the soil two to three times alternately, with a one-week interval between each session. Plow the soil to a depth of 15-20 centimeters. Harrow twice to break up clumps and level the soil. Refining the soil to improve air circulation and promotes healthy root growth.</Text>
+                <Collapsible collapsed={isCollapsed !== index}>
+                  <View>
+                    <Text style={stylesCollapsible.contentText}>{item.content}</Text>
+                  </View>
+                </Collapsible>
               </View>
-
-            </Collapsible>
-
-          </View>
+            ))
+          }
 
 
 
-          <View style={stylesCollapsible.collapseWrapper}>
 
-            <TouchableOpacity onPress={() => setIsCollapsed2(!isCollapsed2)}>
-              <Text style={stylesCollapsible.header}>Seedling Care</Text>
-            </TouchableOpacity>
-
-            <Collapsible collapsed={isCollapsed2}>
-
-              <View >
-                <Text style={stylesCollapsible.contentText}>If possible, prepare the planting soil early to allow enough time for weeds and residues from the previous crop to decompose. Plow and hallow the soil two to three times alternately, with a one-week interval between each session. Plow the soil to a depth of 15-20 centimeters. Harrow twice to break up clumps and level the soil. Refining the soil to improve air circulation and promotes healthy root growth.</Text>
-              </View>
-
-            </Collapsible>
-
-          </View>
-
-
-
-          <View style={stylesCollapsible.collapseWrapper}>
-
-            <TouchableOpacity onPress={() => setIsCollapsed3(!isCollapsed3)}>
-              <Text style={stylesCollapsible.header}>Preparing The Planting Bed</Text>
-            </TouchableOpacity>
-
-            <Collapsible collapsed={isCollapsed3}>
-
-              <View >
-                <Text style={stylesCollapsible.contentText}>If possible, prepare the planting soil early to allow enough time for weeds and residues from the previous crop to decompose. Plow and hallow the soil two to three times alternately, with a one-week interval between each session. Plow the soil to a depth of 15-20 centimeters. Harrow twice to break up clumps and level the soil. Refining the soil to improve air circulation and promotes healthy root growth.</Text>
-              </View>
-
-            </Collapsible>
-
-          </View>
-
-
-
-          <View style={stylesCollapsible.collapseWrapper}>
-
-            <TouchableOpacity onPress={() => setIsCollapsed4(!isCollapsed4)}>
-              <Text style={stylesCollapsible.header}>Transplanting</Text>
-            </TouchableOpacity>
-
-            <Collapsible collapsed={isCollapsed4}>
-
-              <View >
-                <Text style={stylesCollapsible.contentText}>If possible, prepare the planting soil early to allow enough time for weeds and residues from the previous crop to decompose. Plow and hallow the soil two to three times alternately, with a one-week interval between each session. Plow the soil to a depth of 15-20 centimeters. Harrow twice to break up clumps and level the soil. Refining the soil to improve air circulation and promotes healthy root growth.</Text>
-              </View>
-
-            </Collapsible>
-
-          </View>
 
         </ScrollView>
        
@@ -510,21 +750,24 @@ const CropManagement = () => {
 
               <View style={stylesAiles.badgeContainer}>
 
+
+
+
+                {Object.values(localCropData)[0]?.guide &&
+                Object.values(Object.values(localCropData)[0].commonPests.map((pest,index)=>(
+
+                      
                   <View style={stylesAiles.badgeWrapper}>
                       
-                    
-                      <Text  style={stylesAiles.badgesText}>Loamy</Text>
+                    <Image source={pestImages[pest.toLowerCase() as string]} style={{width:60,height:60,marginBottom:5, borderRadius:'50%'}}/>
+                    <Text  style={stylesAiles.badgesText}>{pest}</Text>
 
                   </View>
 
-                  <View style={stylesAiles.badgeWrapper}>
-                      <Text style={stylesAiles.badgesText}>Sandy</Text>
-                  </View>
+                )))}
 
-                  <View style={stylesAiles.badgeWrapper}>
-                      <Text style={stylesAiles.badgesText}>Clayey</Text>
-                  </View>
-                  </View>
+
+              </View>
 
 
         
@@ -545,19 +788,28 @@ const CropManagement = () => {
 
               <View style={stylesAiles.badgeContainer}>
 
-                  <TouchableOpacity style={stylesAiles.badgeWrapper}>
-                      
-                      <Text  style={stylesAiles.badgesText}>Loamy</Text>
 
-                  </TouchableOpacity>
+                {Object.values(localCropData)[0]?.guide &&
+                  Object.values(Object.values(localCropData)[0].commonDiseases.map((disease,index)=>(
 
-                  <View style={stylesAiles.badgeWrapper}>
-                      <Text style={stylesAiles.badgesText}>Sandy</Text>
-                  </View>
+                        
+                    <View style={stylesAiles.badgeWrapper}>
+                        
+                      <Image source={diseaseImages[disease.toLowerCase() as string]} style={{width:60,height:60,marginBottom:5, borderRadius:'50%'}}/>
+                      <Text  style={stylesAiles.badgesText}>{disease}</Text>
 
-                  <View style={stylesAiles.badgeWrapper}>
-                      <Text style={stylesAiles.badgesText}>Clayey</Text>
-                  </View>
+                    </View>
+
+                  )))}
+
+
+
+
+
+
+         
+
+
               </View>
 
 
@@ -576,6 +828,12 @@ const CropManagement = () => {
        
        
        }
+        
+        
+        
+        </>)}
+
+        
 
 
 
@@ -584,11 +842,31 @@ const CropManagement = () => {
 
         
     </SafeAreaView>
+
+    </PaperProvider>
   )
 }
 
 export default CropManagement
 
+
+
+const stylesButtons = StyleSheet.create({
+  plotAssign:{
+    ///borderWidth:1,
+    alignSelf:'flex-start',
+    display:'flex',
+    paddingTop:5,
+    paddingBottom:5,
+    paddingLeft:10,
+    paddingRight:10,
+    backgroundColor:'#E9A800',
+    borderRadius:5,
+    marginTop:15,
+    marginBottom:15
+    //width:'fit-content',
+  }
+})
 
 const stylesCollapsible = StyleSheet.create({
   collapseWrapper:{
@@ -619,7 +897,7 @@ const stylesCollapsible = StyleSheet.create({
 const stylesAiles = StyleSheet.create({
   contentWrapper:{
     width:'100%',
-    borderWidth:1,
+    //borderWidth:1,
     display:'flex',
     flexDirection:'column',
     alignItems:'center',
@@ -657,16 +935,20 @@ badgeWrapper:{
 subContainerHeaderPest:{
   color:'#A94442',
   fontWeight:500,
-  fontSize:14,
-  marginBottom:5,
-  marginLeft:10
+  fontSize:15,
+  marginBottom:20,
+  marginTop:10,
+  marginLeft:10,
+
   
 },
 badgesText:{
   color:'#253D2C',
-  fontWeight:300,
-  fontSize:13,
-  fontStyle:'italic'
+  fontWeight:400,
+  fontSize:16,
+  fontStyle:'italic',
+  marginTop:10,
+  marginBottom:10
 },
 
 
@@ -766,11 +1048,12 @@ const styles = StyleSheet.create({
 
   headerWrapper:{
     width:'100%',
-    borderWidth:1,
+    //borderWidth:1,
     marginTop:10,
     display:'flex',
     flexDirection:'column',
-    marginBottom:20
+    marginBottom:50,
+    paddingTop:10
 
   },
   nameWrapper:{
@@ -791,7 +1074,7 @@ const styles = StyleSheet.create({
 
   cropName:{
     color:'#253D2C',
-    fontSize:28,
+    fontSize:30,
     fontWeight:600,
     marginRight:5
   },
@@ -813,8 +1096,8 @@ const styles = StyleSheet.create({
   Thumbnail:{
     width:'100%',
     height:230,
-    backgroundColor:'red',
-    borderRadius:10
+    //backgroundColor:'red',
+    borderRadius:10,
   },
 
 

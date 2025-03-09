@@ -1,5 +1,6 @@
 {
     "Tomato": {
+        "cropId":"TomatoDef0001-Sol",
         "thumbnail":"https://cdn.mos.cms.futurecdn.net/2Aco4s8mLGwfvD6zS4LQ5j.jpg",
         "scientificName": "Solanum Lycopersicum",
         "family":"Solanaceae",
@@ -9,7 +10,7 @@
         "soilType": "Loamy",
         "soilPh": "5.0-8.0",
         "commonPests": ["thrips", "fruitworm", "whiteflies"],
-        "commonDiseases": ["nematodes", "bacterial wilt", "mosaic virus"],
+        "commonDiseases": ["nematodes", "bacterialWilt", "mosaicVirus"],
         "guide": {
             "1": {
                 "header": "Soil Preparation",

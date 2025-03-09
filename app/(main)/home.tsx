@@ -1,5 +1,5 @@
-import { Dimensions, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { Stack } from 'expo-router'
 
 
@@ -14,12 +14,77 @@ import ArticleCard from '@/components/genComponents/ArticleCard'
 
 import { ScrollView } from 'react-native-gesture-handler'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import RecordMinCard from '@/components/genComponents/recordMinCard'
+import { db } from '../firebaseconfig'
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
 
 
 
 const { width } = Dimensions.get('window');
 
+
+
+
+
+interface cropType{
+  CropName:string,
+  SessionId:string,
+  CropId:string,
+  PlotName:string,
+  PlotAssoc:string
+
+}
+
+
+interface CurrentCrop{
+  crop:cropType[]
+}
+
 const home = () => {
+
+
+  const [currentCrop, setCurrentCrop] = useState<CurrentCrop>({crop:[]})
+
+
+
+  useEffect(()=>{
+    const fetchCurrentCrop = async()=>{
+      try{
+        const userRef = doc(db,"CurrentCrops","zFmpiZQL51Q7xqG8KJ2k");
+
+        const docSnap = await getDoc(userRef);
+
+        if(docSnap.exists()){
+          const rawData = docSnap.data().CurrentCrops as any[];
+          const filteredCrops: cropType[] = rawData.map(crop => ({
+            CropName: crop.CropName,
+            CropId: crop.CropId,
+            SessionId: crop.SessionId,
+            PlotAssoc: crop.PlotAssoc,
+            PlotName: crop.PlotName
+          }));
+          setCurrentCrop({ crop: filteredCrops });
+ 
+          //console.log(docSnap.data().CurrentCrops)
+        }else{
+          console.log("document does not exist")
+        }
+
+      }catch(err){
+        console.error(err)
+      }
+    }
+
+    fetchCurrentCrop()
+  },[])
+
+
+  const testDataFetched = () => {
+    console.log(currentCrop)
+  }
+
+
+  
   return (
 
     <>  
@@ -31,6 +96,32 @@ const home = () => {
 
           <WeatherCard/>
           <TaskCard/>
+
+
+
+
+
+          <View style={styles.currentCropContainer}>
+
+            <View style={styles.currentCropHeader}>
+              <FontAwesomeIcon icon={faNewspaper} size={20} color='#2E6F40' style={styles.iconstyle}/>
+              <Text style={styles.currentCropHeaderTitle }>Current Crop</Text>
+            </View>
+
+            {currentCrop.crop?.map((crop,index)=>(
+              <RecordMinCard key={index} 
+              cropName={crop.CropName} 
+              cropId={crop.CropId} 
+              status={crop.SessionId} 
+              SessionId={crop.SessionId}
+              PlotAssoc={crop.PlotAssoc}
+              PlotName={crop.PlotName} 
+              datePlanted="01/01/2023"/>
+            ))}
+
+            <TouchableOpacity onPress={testDataFetched}>Test</TouchableOpacity>
+          
+          </View>
 
 
           <View style={styles.AgriInsightContainer}>
@@ -96,7 +187,26 @@ export default home
 
 const styles = StyleSheet.create({
 
-
+  currentCropHeader:{
+    width:'100%',
+    //borderWidth:1,
+    display:'flex',
+    flexDirection:'row',
+    marginBottom:10,
+    paddingTop:10,
+    paddingBottom:10
+  },
+  currentCropHeaderTitle : {
+    color:'#253D2C',
+    fontSize:16,
+    fontWeight:600,
+    marginLeft:5
+  },
+  currentCropContainer : {
+    width:'95%',
+    marginBottom:25,
+    //borderWidth:1,
+  },
     mainContainer: {
       flex:1,
       display:'flex',

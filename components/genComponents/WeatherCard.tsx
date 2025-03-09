@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
         backgroundColor:'#CFFFDC',
         marginTop:10,
         borderRadius:5,
-        marginBottom:10,
+        marginBottom:25,
         elevation:3
      
     },

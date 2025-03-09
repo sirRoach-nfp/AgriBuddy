@@ -3,15 +3,20 @@ import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ScrollView } from 'react-native-gesture-handler'
 
-import {pestImages} from '../Pestdat'
+import {pestImages,diseaseImages,soilImages} from '../Pestdat'
 
-
+//firestore imports
+import { doc, updateDoc, arrayUnion, DocumentReference } from "firebase/firestore";
+import {db} from "../firebaseconfig"
 
 
 import { Image } from 'react-native';
 import { useSearchParams } from 'expo-router/build/hooks';
 
 import TomatoData from '../CropsData/Crops/Solanaceae/Tomato.json'
+import { Button } from 'react-native-paper'
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import { faFileArrowDown,faLeaf } from '@fortawesome/free-solid-svg-icons'
 
 interface guideStep{
     header: string;
@@ -19,6 +24,7 @@ interface guideStep{
   }
   
   interface CropData{
+    cropId:string,
     thumbnail: string;
     scientificName: string;
     commonName:string,
@@ -39,6 +45,41 @@ interface guideStep{
 
 
 const CropProfile = () => {
+
+    const getCurrentDate = () => {
+        const date = new Date();
+        const day = String(date.getDate()).padStart(2, "0"); // Ensures two digits
+        const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+        const year = date.getFullYear();
+      
+        return `${day}-${month}-${year}`;
+      };
+
+    const AddToCurrent = async(id:string,commonName:string) => {
+
+        try{
+
+            const userRef = doc(db,"CurrentCrops","zFmpiZQL51Q7xqG8KJ2k");
+
+            await updateDoc(userRef,{
+                CurrentCrops:arrayUnion({
+                    SessionId:Date.now().toString(),
+                    PlotAssoc:null,
+                    CropName:commonName,
+                    CropId:id,
+                    Date: getCurrentDate(),
+                    DiseaseLogs: [],
+                    PestLogs: [],
+                    PesticideApplication:[],
+                    FertilizerApplication:[]
+                })
+            })
+
+            console.log("success")
+        }catch(err){
+            console.error(err)
+        }
+    }
 
     const [loading,setLoading] = useState(true)
 
@@ -63,6 +104,7 @@ const CropProfile = () => {
                  break;
         }
         setLoading(false)
+        console.log(cropData)
 
         
     },[commonName])
@@ -110,16 +152,18 @@ const CropProfile = () => {
 
                             <View style={subContainer.badgeWrapper}>
                                 
-                                <Image/>
+                                <Image source={soilImages['loamy']} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
                                 <Text  style={styles.badgesText}>Loamy</Text>
 
                             </View>
 
                             <View style={subContainer.badgeWrapper}>
+                                <Image source={soilImages['sandy']} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
                                 <Text style={styles.badgesText}>Sandy</Text>
                             </View>
 
                             <View style={subContainer.badgeWrapper}>
+                                 <Image source={soilImages['clay']} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
                                 <Text style={styles.badgesText}>Clayey</Text>
                             </View>
                             </View>
@@ -189,7 +233,7 @@ const CropProfile = () => {
                             {selectedCrop.commonDiseases.map((disease,index)=>(
                                 <View style={subContainer.badgeWrapper} key={index}>
         
-                                    <Image/>
+                                    <Image source={diseaseImages[disease.toLowerCase() as string]} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
                                     <Text  style={styles.badgesText}>{disease}</Text>
         
                                 </View>
@@ -210,6 +254,11 @@ const CropProfile = () => {
 
 
                     </View>
+
+                    <Button onPressIn={()=>{AddToCurrent(selectedCrop.cropId,selectedCrop.commonName)}} style={{marginTop:20,marginBottom:20,borderRadius:5}} icon={() => <FontAwesomeIcon icon={faLeaf} size={20} color="#FFFFFF" />} mode="contained-tonal" onPress={() => console.log('Pressed')} buttonColor="#2E6F40" textColor="#FFFFFF"
+                    >
+                        Start Planting
+                    </Button>
 
 
 

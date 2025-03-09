@@ -9,17 +9,22 @@ type recordMinCardProps = {
     cropId:string,
     status: string,
     datePlanted:string,
+
+    SessionId:string,
+    PlotName:string,
+    PlotAssoc:string
+
 }
 import { Image } from 'react-native';
 
-const RecordMinCard = ({cropName,cropId,status,datePlanted}: recordMinCardProps) => {
+const RecordMinCard = ({cropName,cropId,status,datePlanted,SessionId,PlotAssoc,PlotName}: recordMinCardProps) => {
 
 
     const navigateToManagement = () =>{
   
   
   
-        const queryString = `?cropName=${encodeURIComponent(cropName)}&status=${encodeURIComponent(status)}&datePlanted=${encodeURIComponent(datePlanted)}`;
+        const queryString = `?cropName=${encodeURIComponent(cropName)}&status=${encodeURIComponent(status)}&datePlanted=${encodeURIComponent(datePlanted)}&cropId=${encodeURIComponent(cropId)}&SessionId=${encodeURIComponent(SessionId)}$PlotAssoc=${encodeURIComponent(PlotAssoc)}&PlotName=${encodeURIComponent(PlotName)}`;
         router.push(`/CropManagement${queryString}` as any);
   
   
@@ -36,26 +41,10 @@ const RecordMinCard = ({cropName,cropId,status,datePlanted}: recordMinCardProps)
     
     
     
-            <View style={styles.infoWrapper}>
+           
     
-                <Text style={styles.commonName}>{cropName}</Text>
-                <Text style={styles.scientificName}>{datePlanted}</Text>
-    
-                
-                <View style={styles.statusWrapper}> 
-                    <View style={styles.statusIndi}>
-    
-                    </View>
-                    <Text style={styles.statusText}>{status}</Text>
-    
-    
-                    
-    
-                </View>
-    
-    
-    
-            </View>
+            <Text style={styles.commonName}>{cropName}</Text>
+
     
     
     
@@ -72,18 +61,27 @@ export default RecordMinCard
 const styles = StyleSheet.create({
 
     container: {
-        width:'95%',
+        width:150,
         //borderWidth:1,
         display:'flex',
-        flexDirection:'row',
-        marginBottom:15
+        flexDirection:'column',
+        marginBottom:15,
+        elevation:7,
+        backgroundColor:'#E8DFCD',
+        borderRadius:10,
+        alignItems:'center',
+        justifyContent:'center',
+        paddingTop:15,
+        paddingBottom:15
 
     },
 
     infoWrapper:{
         display:'flex',
         flexDirection:'column',
-        //borderWidth:1,
+        alignItems:'center',
+        marginTop:5,
+        borderWidth:1,
         flex:2
 
     },
@@ -97,14 +95,15 @@ const styles = StyleSheet.create({
 
     },
     thumbnail: {
-        width:60,
-        height:60,
+        width:70,
+        height:70,
         //borderWidth:1,
         backgroundColor:'#4C9142',
-        borderRadius:5,
+        borderRadius:'50%',
         display:'flex',
         alignItems:'center',
-        justifyContent:'center'
+        justifyContent:'center',
+        
     },
     icon:{
 
@@ -126,7 +125,9 @@ const styles = StyleSheet.create({
         fontSize:15,
         fontWeight:600,
         color:'#253D2C',
-        marginLeft:15,
+        marginTop:10,
+      
+       
 
 
 
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
         fontStyle:'italic',
         marginTop:'auto',
         marginBottom:'auto',
-        marginLeft:15,
+       
 
 
     },

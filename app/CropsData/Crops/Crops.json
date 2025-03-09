@@ -9,7 +9,7 @@
         "soilType": "Loamy",
         "soilPh": "5.0-8.0",
         "commonPests": ["thrips", "fruitworm", "whiteflies"],
-        "commonDiseases": ["nematodes", "bacterial wilt", "mosaic virus"],
+        "commonDiseases": ["nematodes", "bacterialWilt", "mosaicVirus"],
         "guide": {
             "1": {
                 "header": "Soil Preparation",
