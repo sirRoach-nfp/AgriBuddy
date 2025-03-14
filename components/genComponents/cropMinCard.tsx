@@ -2,6 +2,8 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { Image } from 'react-native';
 import { router } from 'expo-router';
+
+
 type CropMinCardProps = {
     commonName: string;
     scientificName: string;

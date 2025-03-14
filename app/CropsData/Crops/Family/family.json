@@ -1,0 +1,81 @@
+{
+    "Solanaceae": {
+        "crops": [
+            {
+                "CropName": "Tomato",
+                "CropId": "TomatoDef0001_sol",
+                "CropRoot": "Deep-Rooted"
+            },
+            {
+                "CropName": "Eggplant",
+                "CropId": "EggplantDef0002_sol",
+                "CropRoot": "Deep-Rooted"
+            },
+            {
+                "CropName": "Bell Pepper",
+                "CropId": "BellPepperDef0003_sol",
+                "CropRoot": "Shallow-Rooted"
+            },
+            {
+                "CropName": "Potato",
+                "CropId": "PotatoDef0004_sol",
+                "CropRoot": "Deep-Rooted"
+            },
+            {
+                "CropName": "Chilli Pepper",
+                "CropId": "ChilliPepperDef0005_sol",
+                "CropRoot": "Shallow-Rooted"
+            }
+        ]
+    },
+
+    "Cucurbitaceae": {
+        "crops": [
+            {
+                "CropName": "Squash",
+                "CropId": "SquashDef0001_cuc",
+                "CropRoot": "Deep-Rooted"
+            },
+            {
+                "CropName": "Bottle Gourd",
+                "CropId": "BottleGourdDef0002_cuc",
+                "CropRoot": "Deep-Rooted"
+            },
+            {
+                "CropName": "Sponge Gourd",
+                "CropId": "SpongeGourdDef0003_cuc",
+                "CropRoot": "Shallow-Rooted"
+            },
+            {
+                "CropName": "Cucumber",
+                "CropId": "CucumberDef0004_cuc",
+                "CropRoot": "Shallow-Rooted"
+            },
+            {
+                "CropName": "Bitter Gourd",
+                "CropId": "BitterGourdDef0005_cuc",
+                "CropRoot": "Shallow-Rooted"
+            }
+        ]
+    },
+
+    "Fabaceae": {
+        "crops": [
+            {
+                "CropName": "Mung Beans",
+                "CropId": "MungBeansDef0001_fab",
+                "CropRoot": "Shallow-Rooted"
+            },
+            {
+                "CropName": "Sitaw",
+                "CropId": "SitawDef0002_fab",
+                "CropRoot": "Shallow-Rooted"
+            },
+            {
+                "CropName": "Peanut",
+                "CropId": "PeanutDef0003_fab",
+                "CropRoot": "Deep-Rooted"
+            }
+        ]
+    }
+}

@@ -11,7 +11,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
-
+import { CropProvider } from './Context/CropContext';
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
@@ -30,6 +30,7 @@ export default function RootLayout() {
 
   return (
 
+    <CropProvider>
     <SafeAreaProvider>
 
 
@@ -60,6 +61,8 @@ export default function RootLayout() {
 
 
     </SafeAreaProvider>
+    
+    </CropProvider>
 
 
   );

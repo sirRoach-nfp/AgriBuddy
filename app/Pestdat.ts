@@ -17,6 +17,39 @@ interface SoilImage{
   sandy: any;
   clay: any;  
 }
+
+interface CropsImage {
+  [key: string]: any;
+  TomatoDef0001_sol: any;
+  EggplantDef0002_sol: any;
+  BellPepperDef0003_sol: any;
+  PotatoDef0004_sol: any;
+  ChilliPepperDef0005_sol: any;
+  SquashDef0001_cuc: any;
+  BottleGourdDef0002_cuc: any;
+  SpongeGourdDef0003_cuc: any;
+  CucumberDef0004_cuc: any;
+  BitterGourdDef0005_cuc: any;
+  MungBeansDef0001_fab: any;
+  SitawDef0002_fab: any;
+  PeanutDef0003_fab: any;
+}
+
+const cropsImages: CropsImage = {
+  TomatoDef0001_sol: require('../assets/images/Crops/Tomato.jpg'),
+  EggplantDef0002_sol: require('../assets/images/Crops/Eggplant.jpg'),
+  BellPepperDef0003_sol: require('../assets/images/Crops/BellPepper.jpg'),
+  PotatoDef0004_sol: require('../assets/images/Crops/Potato.jpg'),
+  ChilliPepperDef0005_sol: require('../assets/images/Crops/ChilliPepper.jpg'),
+  SquashDef0001_cuc: require('../assets/images/Crops/Squash.jpg'),
+  BottleGourdDef0002_cuc: require('../assets/images/Crops/BottleGourd.jpg'),
+  SpongeGourdDef0003_cuc: require('../assets/images/Crops/SpongeGourd.jpg'),
+  CucumberDef0004_cuc: require('../assets/images/Crops/Cucumber.jpg'),
+  BitterGourdDef0005_cuc: require('../assets/images/Crops/BitterGourd.jpg'),
+  MungBeansDef0001_fab: require('../assets/images/Crops/MungBeans.jpg'),
+  SitawDef0002_fab: require('../assets/images/Crops/Sitaw.jpg'),
+  PeanutDef0003_fab: require('../assets/images/Crops/Peanut.jpg'),
+};
  const pestImages : PestImages ={
     whiteflies: require('../assets/images/Pests/whiteflies.jpg'),
     fruitworm: require('../assets/images/Pests/fruitworm.jpg'),
@@ -40,4 +73,4 @@ interface SoilImage{
   };
 
 
-export {pestImages,diseaseImages,soilImages}
+export {pestImages,diseaseImages,soilImages,cropsImages}

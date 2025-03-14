@@ -15,6 +15,9 @@ import cropsData from '../CropsData/Crops/Crops.json'
 
 import CropMinCard from '@/components/genComponents/cropMinCard';
 import PlanMinCard from '@/components/genComponents/PlanMinCard';
+import { router } from 'expo-router';
+
+
 
 type Crop = {
   commonname: string;
@@ -66,6 +69,11 @@ const crops = () => {
   const handleSegmentChange = (value:String) => {
     setSelectedOption(value);
   };
+
+
+  const navigateToCreatePlan = () => {
+    router.push('/(screens)/CropRotationSelect')
+  }
 
   
   return (
@@ -133,7 +141,7 @@ const crops = () => {
 
 
 
-        <View style={styles.CreatePlan}> 
+        <TouchableOpacity style={styles.CreatePlan} onPress={navigateToCreatePlan}> 
 
           <View style={styles.createPlanThumb}>
             <FontAwesomeIcon icon={faPlus} size={40} color='#FFFFFF'/>
@@ -146,7 +154,7 @@ const crops = () => {
           </View>
 
 
-        </View>
+        </TouchableOpacity>
       </ScrollView> 
 
       }
