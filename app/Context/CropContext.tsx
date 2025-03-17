@@ -32,6 +32,8 @@ export const CropProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const clearCrops = () => {
     setSelectedCrops([]);
+    console.log("cleared crops")
+    console.log(selectedCrops)
   };
 
   return (

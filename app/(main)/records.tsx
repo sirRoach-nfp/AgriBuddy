@@ -44,9 +44,7 @@ const records = () => {
       </View>
 
       <ScrollView style={styles.contentContainer}>
-        {Object.keys(recordData).map((key)=>(
-          <RecordMinCard key={key} cropName={recordData[key].cropName} cropId={recordData[key].cropId} status={recordData[key].status} datePlanted={recordData[key].datePlanted}/>
-        ))}
+
       </ScrollView>
 
 

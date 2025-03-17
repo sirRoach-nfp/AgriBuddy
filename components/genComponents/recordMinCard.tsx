@@ -16,6 +16,7 @@ type recordMinCardProps = {
 
 }
 import { Image } from 'react-native';
+import { cropsImages } from '@/app/Pestdat';
 
 const RecordMinCard = ({cropName,cropId,status,datePlanted,SessionId,PlotAssoc,PlotName}: recordMinCardProps) => {
 
@@ -36,7 +37,7 @@ const RecordMinCard = ({cropName,cropId,status,datePlanted,SessionId,PlotAssoc,P
         <TouchableOpacity style={styles.container} onPress={navigateToManagement}  >
     
             <View style={styles.thumbnail}>
-                <FontAwesomeIcon icon={faSeedling} size={30} color='#FFFFFF'/>
+                <Image source={cropsImages[cropId]} style={{width:'100%',height:'100%',objectFit:'contain',borderRadius:'50%'}}  />
             </View>
     
     
@@ -44,6 +45,12 @@ const RecordMinCard = ({cropName,cropId,status,datePlanted,SessionId,PlotAssoc,P
            
     
             <Text style={styles.commonName}>{cropName}</Text>
+
+
+            <View style={styles.badgeWrapperNoPlot}>
+                <Text style={styles.badgeText}>No Plot</Text>
+            </View>
+            
 
     
     
@@ -59,15 +66,42 @@ export default RecordMinCard
 
 
 const styles = StyleSheet.create({
+    badgeWrapperNoPlot:{
+        width:80,
+        //borderWidth:1,
+        display:'flex',
+        flexDirection:'column',
+        alignItems:'center',
+        justifyContent:'center',
+        marginTop:5,
+        borderRadius:5,
+        backgroundColor:'#E9A800'
+    },
+    badgeWrapperPlot:{
+        width:80,
+        //borderWidth:1,
+        display:'flex',
+        flexDirection:'column',
+        alignItems:'center',
+        justifyContent:'center',
+        marginTop:5,
+        borderRadius:5,
+        backgroundColor:'#2E6F40'
+    },
+    badgeText:{
+        fontSize:14,
+        fontWeight:400,
+        //color:'#253D2C',
 
+    },
     container: {
         width:150,
         //borderWidth:1,
         display:'flex',
         flexDirection:'column',
-        marginBottom:15,
+        //marginBottom:15,
         elevation:7,
-        backgroundColor:'#E8DFCD',
+        backgroundColor:'#D8D8C0',
         borderRadius:10,
         alignItems:'center',
         justifyContent:'center',

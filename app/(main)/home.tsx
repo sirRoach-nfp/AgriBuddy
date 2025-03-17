@@ -108,18 +108,25 @@ const home = () => {
               <Text style={styles.currentCropHeaderTitle }>Current Crop</Text>
             </View>
 
-            {currentCrop.crop?.map((crop,index)=>(
-              <RecordMinCard key={index} 
-              cropName={crop.CropName} 
-              cropId={crop.CropId} 
-              status={crop.SessionId} 
-              SessionId={crop.SessionId}
-              PlotAssoc={crop.PlotAssoc}
-              PlotName={crop.PlotName} 
-              datePlanted="01/01/2023"/>
-            ))}
 
-            <TouchableOpacity onPress={testDataFetched}>Test</TouchableOpacity>
+            <View style={styles.currentCropContentWrapper}>
+
+              {currentCrop.crop?.map((crop,index)=>(
+                <RecordMinCard key={index} 
+                cropName={crop.CropName} 
+                cropId={crop.CropId} 
+                status={crop.SessionId} 
+                SessionId={crop.SessionId}
+                PlotAssoc={crop.PlotAssoc}
+                PlotName={crop.PlotName} 
+                datePlanted="01/01/2023"/>
+              ))}
+
+            </View>
+
+
+
+           
           
           </View>
 
@@ -202,6 +209,14 @@ const styles = StyleSheet.create({
     fontWeight:600,
     marginLeft:5
   },
+  currentCropContentWrapper:{
+    //borderWidth:1,
+    display:'flex',
+    flexDirection:'row',
+    flexWrap:'wrap',
+    justifyContent:'center',
+    gap:20
+  },
   currentCropContainer : {
     width:'95%',
     marginBottom:25,
@@ -215,7 +230,7 @@ const styles = StyleSheet.create({
     container : {
         flex: 1,
         borderColor:'black',
-        borderWidth:1,
+        //borderWidth:1,
         flexDirection:'column',
         
 

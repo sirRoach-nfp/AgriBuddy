@@ -22,7 +22,7 @@ import { useSearchParams } from 'expo-router/build/hooks'
 
 
 import { Image } from 'react-native';
-
+import { router } from 'expo-router'
 
 
 interface guideStep{
@@ -793,12 +793,12 @@ const CropManagement = () => {
                   Object.values(Object.values(localCropData)[0].commonDiseases.map((disease,index)=>(
 
                         
-                    <View style={stylesAiles.badgeWrapper}>
+                    <TouchableOpacity style={stylesAiles.badgeWrapper} onPress={()=>{router.push('/(screens)/DiseasePestScreen')}}>
                         
                       <Image source={diseaseImages[disease.toLowerCase() as string]} style={{width:60,height:60,marginBottom:5, borderRadius:'50%'}}/>
                       <Text  style={stylesAiles.badgesText}>{disease}</Text>
 
-                    </View>
+                    </TouchableOpacity>
 
                   )))}
 
@@ -1052,7 +1052,7 @@ const styles = StyleSheet.create({
     marginTop:10,
     display:'flex',
     flexDirection:'column',
-    marginBottom:50,
+    marginBottom:30,
     paddingTop:10
 
   },

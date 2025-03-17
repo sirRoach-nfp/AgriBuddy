@@ -1,66 +1,69 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { faArrowsSpin } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-const PlanMinCard = () => {
+
+
+interface PlanData{
+    CropName: string,
+    CropId:string,
+    CropFamily:string,
+    CropRoot:string
+  }
+  
+
+
+interface props{
+    SessionId?:string,
+    Title:String,
+    Plan:PlanData[]
+}
+const PlanMinCard = ({Title,SessionId,Plan}:props) => {
+
+
+
+  const checkPlan = ()=> {
+    console.log(Plan)
+  }
   return (
     <View style={styles.wrapper}>
       
-      <View style={styles.thumbnail}>
+      <TouchableOpacity style={styles.thumbnail} onPress={checkPlan}>
         <FontAwesomeIcon icon={faArrowsSpin} size={40} color='#fff'/>
-      </View>
+      </TouchableOpacity>
       
 
       <View style={styles.infoWrapper}> 
         
 
-        <Text style={styles.planTitle}>Test</Text>
+        <Text style={styles.planTitle}>{Title}</Text>
         
 
         <View style={styles.infoBeads}>
+
+
+         {Plan.map((item,index)=>(
+            <View style={styles.infoBead} > 
+                <View style={styles.bead}>
+
+                </View>
+                <Text style={styles.beadText}>
+                    {item.CropName}
+                </Text>
+            </View>
+
+
+         ))}
+
+
+
+
             
-            <View style={styles.infoBead}> 
-                <View style={styles.bead}>
-
-                </View>
-                <Text style={styles.beadText}>
-                    Test
-                </Text>
-            </View>
-
-            <View style={styles.infoBead}> 
-                <View style={styles.bead}>
-
-                </View>
-                <Text style={styles.beadText}>
-                    Test
-                </Text>
-            </View>
-            
-        </View>
-
-
-        <View style={styles.infoBeads}>
-            
-            <View style={styles.infoBead}> 
-                <View style={styles.bead}>
-
-                </View>
-                <Text style={styles.beadText}>
-                    Test
-                </Text>
-            </View>
-
-            <View style={styles.infoBead}> 
-                <View style={styles.bead}>
-
-                </View>
-                <Text style={styles.beadText}>
-                    Test
-                </Text>
-            </View>
             
         </View>
+
+
+
 
       </View>
 
@@ -112,10 +115,11 @@ const styles = StyleSheet.create({
 
     infoBeads:{
         //borderWidth:1,
-        width:'100%',
+        width:'80%',
         display:'flex',
         flexDirection:'row',
-        marginTop:'auto'
+        marginTop:'auto',
+        flexWrap:'wrap'
 
 
     },
@@ -130,11 +134,14 @@ const styles = StyleSheet.create({
     infoBead:{
         flexDirection:'row',
         display:'flex',
-        alignItems:'center'
+        alignItems:'center',
+        //borderWidth:1,
+       width:'50%'
     },
     beadText:{
         marginRight:20,
-        fontWeight:300,
+        fontWeight:400,
+        fontSize:15
 
         
     }

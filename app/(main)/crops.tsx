@@ -16,6 +16,8 @@ import cropsData from '../CropsData/Crops/Crops.json'
 import CropMinCard from '@/components/genComponents/cropMinCard';
 import PlanMinCard from '@/components/genComponents/PlanMinCard';
 import { router } from 'expo-router';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebaseconfig';
 
 
 
@@ -44,6 +46,21 @@ interface CropData{
   guide: Record<string, guideStep>;
 }
 
+
+interface PlanData{
+  CropName: string,
+  CropId:string,
+  CropFamily:string,
+  CropRoot:string
+}
+
+
+interface RotationPlan{
+  PlanTitle:string,
+  Crops:PlanData[],
+  SessionId?:string
+}
+
 interface CropsData {
   [key: string]: CropData;
 }
@@ -53,7 +70,7 @@ const crops = () => {
 
   const [cropDataMain,SetCropDataMain] = useState({})
   const [cropData,SetCropData] = useState<CropsData>({})
-
+  const [rotationPlan,SetRotationPlan] = useState<RotationPlan[]>([])
 
 
 
@@ -73,6 +90,41 @@ const crops = () => {
 
   const navigateToCreatePlan = () => {
     router.push('/(screens)/CropRotationSelect')
+  }
+
+
+  useEffect(()=> {
+
+
+    const fetchPlots = async()=>{
+
+      try{
+
+
+        const docRef = doc(db,'CropRotationPlan','O3fLUlPUpvqLyugpQUGg');
+
+
+        const docSnap = await getDoc(docRef)
+
+
+        if(docSnap.exists()){
+          console.log(docSnap.data().plans)
+          SetRotationPlan(docSnap.data().plans)
+        }else {
+          console.log("Doc doesn't exist")
+        }
+      }catch(err){
+        console.error(err)
+      }
+    }
+
+
+  fetchPlots()
+  },[])
+
+
+  const testPlanData = () => {
+    console.log(rotationPlan[0].Crops)
   }
 
   
@@ -134,10 +186,14 @@ const crops = () => {
       {selectedOption === 'plans' && 
       
       <ScrollView style={styles.scrollContentWrapper} contentContainerStyle={{alignItems:'center'}}>
-        <PlanMinCard/>
-        <PlanMinCard/>
-        <PlanMinCard/>
-        <PlanMinCard/>
+        
+        {rotationPlan.map((plan,index)=>(
+
+          <PlanMinCard key={index} Title={plan.PlanTitle} SessionId={plan.SessionId} Plan={plan.Crops} />
+        ))}
+        
+        
+
 
 
 
@@ -154,6 +210,11 @@ const crops = () => {
           </View>
 
 
+        </TouchableOpacity>
+
+
+        <TouchableOpacity onPress={testPlanData}>
+          Test data
         </TouchableOpacity>
       </ScrollView> 
 

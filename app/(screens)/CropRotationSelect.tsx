@@ -9,10 +9,10 @@ import CropRotationCard from '@/components/genComponents/CropRotationCard';
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import {Dialog, PaperProvider, Portal } from 'react-native-paper';
 
-import { CropProvider,useCropContext } from '../Context/CropContext';
+import { CropProvider,useCropContext} from '../Context/CropContext';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faLeaf, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { router } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import { Button } from 'react-native-paper';
 import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebaseconfig';
@@ -27,13 +27,15 @@ type RootStackParamList = {
 
 const CropRotationSelect = () => {
 
+const navigation = useNavigation();
+
 
 // dialog controller 
 const [visible, setVisible] = React.useState(false);
 
 const hideDialog = () => setVisible(false);
 
-const { selectedCrops, addCrop, removeCrop } = useCropContext();
+const { selectedCrops, addCrop, removeCrop,clearCrops } = useCropContext();
     //data
 
   const [cycleOne, setCycleOne] = React.useState([]);
@@ -91,6 +93,19 @@ const { selectedCrops, addCrop, removeCrop } = useCropContext();
 
 
   }
+
+
+
+  const navigateBack = () => {
+
+
+
+    console.log("Loaded crops : ", selectedCrops)
+    clearCrops();
+
+
+    navigation.goBack();
+  }
   return (
 
 
@@ -105,9 +120,11 @@ const { selectedCrops, addCrop, removeCrop } = useCropContext();
 
         <Portal>
             <Dialog visible={visible} >
+              
+                <Dialog.Content>Crop Rotation Plan Saved</Dialog.Content>
                 <Dialog.Actions>
-                <Button onPress={() => console.log('Cancel')}>Cancel</Button>
-                <Button onPress={() => console.log('Ok')}>Ok</Button>
+                
+                <Button onPress={() => {clearCrops(); navigation.goBack(); }}>Ok</Button>
                 </Dialog.Actions>
             </Dialog>
         </Portal>
