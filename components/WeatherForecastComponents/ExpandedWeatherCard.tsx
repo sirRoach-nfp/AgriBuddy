@@ -5,7 +5,7 @@ import { Image } from 'react-native';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import Feather from '@expo/vector-icons/Feather';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 type currentWeather = {
 
@@ -19,6 +19,36 @@ type currentWeather = {
 
 
 const ExpandedWeatherCard = ({temperature,status,humidity,windSpeed,chanceOfRain,pressure}:currentWeather) => {
+
+
+  const getWeatherIcon = (status:string) => {
+
+    switch(status){
+      case 'Clear sky':
+       return  <MaterialCommunityIcons name="weather-sunny" size={100} color="#253D2C" />
+       break;
+      case 'Partly cloudy':
+        return  <MaterialCommunityIcons name="weather-partly-cloudy" size={100} color="#253D2C" />
+        break;
+      case 'Cloudy':
+        return  <MaterialCommunityIcons name="weather-cloudy" size={100} color="#253D2C" />
+        break;
+      case 'Slight rain' :
+        return  <MaterialCommunityIcons name="weather-rainy" size={100} color="#253D2C" />
+        break;
+
+      case 'Light drizzle':
+        return <Feather name="cloud-drizzle" size={100} color="#253D2C" />
+        break
+
+      case 'Thunderstorm' : 
+        <Ionicons name="thunderstorm-outline" size={100} color="#253D2C" />
+        break
+ 
+     
+    }
+  }
+  
   return (
     <View style={styles.mainWrapper}>
       
@@ -28,7 +58,10 @@ const ExpandedWeatherCard = ({temperature,status,humidity,windSpeed,chanceOfRain
       <View style={styles.mainInfoWrapper}>
 
         <View style={styles.mainWeatherIconWrapper}>
-          <MaterialCommunityIcons name="weather-sunny-alert" size={100} color="#253D2C" />
+
+
+
+         {getWeatherIcon(status)}
 
         </View>
 

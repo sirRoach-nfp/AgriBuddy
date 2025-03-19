@@ -5,6 +5,14 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import WeatherForecastHourly from '@/components/WeatherForecastComponents/WeatherForecastHourly'
 import ExpandedWeatherCard from '@/components/WeatherForecastComponents/ExpandedWeatherCard'
 import DailyForecastCard from '@/components/WeatherForecastComponents/DailyForecastCard'
+
+
+
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+
+
+
+
 const WeatherForecast = () => {
 
   const [weatherData,setWeatherData] = useState<any>(null)
@@ -14,20 +22,20 @@ const WeatherForecast = () => {
   const [HourlyForecast,setHourlyForecast] = useState<any>([])
 
   const weatherDescriptions: { [key: number]: string } = {
-    0: 'Clear sky',
+    0: 'Clear sky',//goods
     1: 'Mainly clear',
-    2: 'Partly cloudy',
+    2: 'Partly cloudy', //goods
     3: 'Overcast',
     45: 'Fog',
     48: 'Depositing rime fog',
-    51: 'Light drizzle',
+    51: 'Light drizzle', // goods
     53: 'Moderate drizzle',
     55: 'Dense drizzle',
     56: 'Light freezing drizzle',
     57: 'Dense freezing drizzle',
-    61: 'Slight rain',
-    63: 'Moderate rain',
-    65: 'Heavy rain',
+    61: 'Slight rain', // Slight rain
+    63: 'Moderate rain', // color  orange 
+    65: 'Heavy rain', // color red
     66: 'Light freezing rain',
     67: 'Heavy freezing rain',
     71: 'Slight snow',
