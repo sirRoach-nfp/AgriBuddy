@@ -7,7 +7,7 @@ import { ScrollView } from 'react-native-gesture-handler'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faClockRotateLeft } from '@fortawesome/free-solid-svg-icons'
 import { faFileArrowDown } from '@fortawesome/free-solid-svg-icons'
-
+import AntDesign from '@expo/vector-icons/AntDesign';
 import Collapsible from 'react-native-collapsible';
 
 import { SelectList } from 'react-native-dropdown-select-list';
@@ -69,6 +69,7 @@ import TomatoData from '../CropsData/Crops/Solanaceae/Tomato.json'
 import { diseaseImages, pestImages } from '../Pestdat'
 import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore'
 import { db } from '../firebaseconfig'
+import { hide } from 'expo-splash-screen'
 
 const CropManagement = () => {
 
@@ -95,11 +96,13 @@ const CropManagement = () => {
   const sessionId = searchParams.get('SessionId');
   const PlotAssoc= searchParams.get('PlotAssoc');
   const PlotName = searchParams.get('PlotName');
+
+
   
 
   //crop session datas
 
-  const [assocPlot,setAssocPlot] = useState<string | null>("")
+  const [assocPlot,setAssocPlot] = useState<string | null>(null);
 
   const [selectedOption,setSelectedOption] = useState<String>('CareGuide')
 
@@ -157,7 +160,10 @@ const CropManagement = () => {
     { id: '4', name: 'None' },
   ];
 
+
+  //pest selected
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [selectedPestnames,setSelectedPestNames] = useState<string[]>([])
   const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
 
 
@@ -165,7 +171,15 @@ const CropManagement = () => {
 
 
   const onSelectedItemsChange = (items:string[]) => {
-    setSelectedItems(items);
+
+
+    const selectedNames = pestData
+    .filter(pest => items.includes(pest.id))
+    .map(pest => pest.name);
+
+    setSelectedItems(items)
+    setSelectedPestNames(selectedNames);
+
   };
 
 
@@ -211,10 +225,13 @@ const CropManagement = () => {
         const docSnap = await getDoc(ref);
 
         if(docSnap.exists()){
+    
 
           const rawData = docSnap.data().Plots as any[];
 
-          const filteredPlots:PlotData[] = rawData.map(crop=>({
+          const filteredPlots: PlotData[] = rawData
+          .filter(crop => !crop.CurrentCrops?.CropAssocId) // Check if CropAssocId is null or empty
+          .map(crop => ({
             PlotName: crop.PlotName,
             PlotId: crop.PlotId
           }));
@@ -272,7 +289,12 @@ const CropManagement = () => {
   const [selectedPlot, setSelectedPlot] = useState<string | null>(null);
   const [selectedPlotAssoc, setSelectedPlotAssoc] = useState<string | null>(null);
 
+  // start of modal dialog handlers >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   const [dialogVisible,setDialogVisible] = useState(false);
+  const [dialogDeleteVisible,setDialogDeleteVisible] = useState(false);
+  const [dialogRemoveVisible,setDialogRemoveVisible] = useState(false);
+
+
   const showDialog = (plotNumber:any, newPlotAssoc:any) => {
     setSelectedPlot(plotNumber);
     setSelectedPlotAssoc(newPlotAssoc);
@@ -280,15 +302,33 @@ const CropManagement = () => {
     setDialogVisible(true);
   };
 
+  const showDeleteDialog = () => {
+    setDialogDeleteVisible(true);
+  }
+
+  const showSuccessRemoveDialog = () => {
+    setDialogRemoveVisible(true);
+  }
+
+  const hideDeleteDialog = () => {
+    setDialogDeleteVisible(false);
+  }
+
+  const hideSuccessRemoveDialog = () => {
+    setDialogRemoveVisible(false);
+  }
+
   const hideDialog = () => {
     setDialogVisible(false);
   };
+
+  // end of Dialog Handlers >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
   
   //read / write to firebase
 
-  const setPlot = async(plotAssoc:string,plotName:string)=>{
+  const setPlotToCurrentCrop = async(plotAssoc:string,plotName:string)=>{
 
     try{
 
@@ -314,7 +354,136 @@ const CropManagement = () => {
   }
 
 
-  const renderDialog = () => (
+  const setCurrentCropToPlot = async (cropId: string, cropName: string, cropAssocId: string, targetPlotId: string) => {
+    try {
+      const plotRef = doc(db, "Plots", "xt4foVBpVYqoM4kdAWBC");
+      const plotDoc = await getDoc(plotRef);
+  
+      if (plotDoc.exists()) {
+        let plotsArray = plotDoc.data().Plots || []; // Ensure it's an array
+  
+        // Find the index of the plot to update
+        const plotIndex = plotsArray.findIndex((plot: any) => plot.PlotId === targetPlotId);
+  
+        if (plotIndex !== -1) {
+          const updatedPlots = [...plotsArray]; // Create a copy of the array
+  
+          updatedPlots[plotIndex] = {
+            ...updatedPlots[plotIndex],
+            CurrentCrops: {
+              CropId: cropId,
+              CropName: cropName,
+              CropAssocId: cropAssocId
+            }
+          };
+  
+          // Update the whole array in Firestore
+          await updateDoc(plotRef, { Plots: updatedPlots });
+        }
+      }
+    } catch (err) {
+      console.log("Error updating plot:", err);
+    } finally {
+      console.log("Updated plot");
+    }
+  };
+
+  const setPlotFun = async(plotId:any,plotName:any,cropId:any,cropName:any,cropSessionId:any)=> {
+    
+
+
+    try{
+      
+
+      await setCurrentCropToPlot(cropId,cropName,cropSessionId,plotId)
+
+      await setPlotToCurrentCrop(plotId,plotName)
+
+      console.log("Updated plot and crop")
+      hideDialog
+
+    }catch(err){
+      console.log(err)
+    }
+  }
+
+
+  const checkSelectedPest = () => {
+
+    console.log(selectedItems)
+    console.log(selectedPestnames)
+  }
+
+
+  const logData = async(cropNameParam:any,plotAssocParam:any)=> {
+
+    console.log("Logging Data....")
+    hideEntryPosteDialog()
+
+
+    try{
+
+      if(selectedPestnames.length === 0) return
+
+
+      const cropName = cropNameParam;
+      const date = new Date().toISOString().slice(0, 10);
+      const plotAssocId = plotAssocParam
+
+
+      const pestLogEntries = selectedPestnames.map((pest)=> ({
+        Pestname:pest,
+        Date:date,
+        CropName:cropName,
+      }))
+
+
+
+
+      const docRef = doc(db, "Records", "aRZmpszYmKkzNKJVzSJt");
+      const docSnap = await getDoc(docRef);
+
+
+      if(!docSnap.exists()){
+          console.log("document not found")
+        return;
+      }
+
+
+
+      const data = docSnap.data();
+      console.log("Returned Data : ", data)
+      const existingLogs = data?.PestLogs || [];
+      console.log("existing Logs : ", existingLogs  )
+      
+      const logIndex = existingLogs.findIndex(
+        (log:any) => log.PlotAssocId === plotAssocParam
+      )
+
+      if(logIndex !== -1){
+        existingLogs[logIndex].PlotPestLog = [
+          ...(existingLogs[logIndex].PlotPestLog || []),
+          ...pestLogEntries
+        ]
+      }
+
+      
+      await updateDoc(docRef,{
+        PestLogs:existingLogs
+      })
+
+
+
+    }catch(err){
+      console.log(err)
+    }finally{
+      console.log("updated META")
+      showEntrySuccessDialog()
+    }
+  }
+
+
+  const renderDialog = (plotId:any,plotName:any,cropId:any,cropName:any,cropSessionId:any) => (
     <Portal>
       <Dialog visible={dialogVisible} onDismiss={hideDialog}>
         <Dialog.Title>Assign to Plot?</Dialog.Title>
@@ -323,11 +492,186 @@ const CropManagement = () => {
         </Dialog.Content>
         <Dialog.Actions>
           <Button onPress={hideDialog}>Cancel</Button>
-          <Button onPress={() => console.log(setAssocPlot(selectedPlot))}>Ok</Button>
+          <Button onPress={() =>setPlotFun(plotId,plotName,cropId,cropName,cropSessionId)}>Ok</Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>
   );
+
+
+  const renderConfirmationDeletion = (plotAssoc:any,sessionId:any) => (
+    <Portal>
+    <Dialog visible={dialogDeleteVisible} onDismiss={hideDeleteDialog}>
+      <Dialog.Title>Remove Crop?</Dialog.Title>
+      <Dialog.Content>
+        <Text>Do you really want to remove {cropName} from your tracklist?</Text>
+      </Dialog.Content>
+      <Dialog.Actions>
+        <Button onPress={hideDeleteDialog}>Cancel</Button>
+        <Button onPress={() => deleteCurrentCrop(plotAssoc,sessionId)}>Confirm</Button>
+      </Dialog.Actions>
+    </Dialog>
+  </Portal>
+  )
+
+
+  const [dialogEntryVisible,setDialogEntryVisible] = useState(false)
+  const [dialogEntrySuccessVisible,setDialogEntrySuccessVisible] = useState(false)
+
+
+  const hideEntryPosteDialog = () => {
+    setDialogEntryVisible(false)
+  }
+
+  const showEntryDialog = () => {
+   setDialogEntryVisible(true)
+  };
+
+
+  const showEntrySuccessDialog = () => {
+    setDialogEntrySuccessVisible(true)
+  }
+
+  const hideEntrySuccessDialog = () => {
+    setDialogEntrySuccessVisible(false)
+  }
+  
+  const renderConfirmationLogEntry= (cropName:any,plotAssoc:any) => (
+    <Portal>
+    <Dialog visible={dialogEntryVisible} onDismiss={hideEntryPosteDialog}>
+      <Dialog.Title>Log Entry?</Dialog.Title>
+      <Dialog.Content>
+        <Text>Do you really want to log this entry to your plot record?</Text>
+      </Dialog.Content>
+      <Dialog.Actions>
+        <Button onPress={hideEntryPosteDialog}>Cancel</Button>
+        <Button onPress={() => logData(cropName,plotAssoc) }>Confirm</Button>
+      </Dialog.Actions>
+    </Dialog>
+  </Portal>
+  )
+
+
+
+
+
+  const renderSuccessLogEntry= () => (
+    <Portal>
+    <Dialog visible={dialogEntrySuccessVisible} onDismiss={() => {}}>
+      <Dialog.Title>Log Entry Success !</Dialog.Title>
+      <Dialog.Content>
+        <Text>Your Log Entry is successfully logged</Text>
+      </Dialog.Content>
+      <Dialog.Actions>
+
+        <Button onPress={hideEntrySuccessDialog}>Continue</Button>
+      </Dialog.Actions>
+    </Dialog>
+  </Portal>
+  )
+
+
+
+
+  const renderDeleteSuccess = () => (
+
+   <Portal>
+      <Dialog visible={dialogRemoveVisible} onDismiss={() => {}}>
+        <Dialog.Icon icon="check" />
+        <Dialog.Title>Remove Success</Dialog.Title>
+        <Dialog.Content>
+          <Text>{cropName} is successfully removed from your tracklist?</Text>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button onPress={()=> {router.back()}}>Go back</Button>
+        </Dialog.Actions>
+      </Dialog>
+  </Portal>
+
+  )
+
+
+
+  const deleteCurrentCrop = async(plotAssoc:any,sessionId:any)=>{
+
+
+    console.log("session id of the crop : ", sessionId)
+
+    try{
+      const cropRef = doc(db, "CurrentCrops", "zFmpiZQL51Q7xqG8KJ2k"); // Change this to your actual document ID
+      const cropDoc = await getDoc(cropRef);
+
+
+      
+  
+      if (cropDoc.exists()) {
+        const currentCrops = cropDoc.data().CurrentCrops || []; // Ensure it's an array
+  
+        // Filter out the object with the matching sessionId
+        const updatedCrops = currentCrops.filter((crop: any) => crop.SessionId !== sessionId);
+  
+        // Update Firestore with the modified array
+        await updateDoc(cropRef, { CurrentCrops: updatedCrops });
+  
+        console.log("Crop deleted successfully!");
+
+
+      
+      } else {
+        console.log("Document does not exist!");
+      }
+
+
+      
+      //remove currentCrop if the crop is assigned to a plot
+
+      if(plotAssoc !== null){
+
+
+        const plotRef = doc(db, "Plots", "xt4foVBpVYqoM4kdAWBC");
+        const plotDoc = await getDoc(plotRef);
+    
+        if (plotDoc.exists()) {
+          let plotsArray = plotDoc.data().Plots || []; // Ensure it's an array
+    
+          // Find the index of the plot to update
+          const plotIndex = plotsArray.findIndex((plot: any) => plot.PlotId === PlotAssoc);
+    
+          if (plotIndex !== -1) {
+            const updatedPlots = [...plotsArray]; // Create a copy of the array
+    
+            updatedPlots[plotIndex] = {
+              ...updatedPlots[plotIndex],
+              CurrentCrops: {
+                CropId: null,
+                CropName: null,
+                CropAssocId: null
+              }
+            };
+    
+            // Update the whole array in Firestore
+            await updateDoc(plotRef, { Plots: updatedPlots });
+          }
+        }
+
+
+
+      }
+
+    }catch(err){
+      console.error(err)
+    }finally{
+      console.log("Deleted crop success META")
+      setDialogDeleteVisible(false)
+      setDialogRemoveVisible(true)
+    }
+  }
+
+
+
+  const displayCropData = ()=> {
+    console.log("plots : ", plots)
+  }
   return (
 
     <PaperProvider>
@@ -335,8 +679,11 @@ const CropManagement = () => {
 
     <SafeAreaView style={styles.mainContainer}>
 
-      {renderDialog()}
-
+      {renderDialog(selectedPlotAssoc,selectedPlot,cropId,cropName,sessionId)}
+      {renderConfirmationDeletion(PlotAssoc,sessionId)}
+      {renderDeleteSuccess()}
+      {renderConfirmationLogEntry(cropName,PlotAssoc)}
+      {renderSuccessLogEntry()}
 
       {isLoading ? (
         <View >
@@ -419,19 +766,29 @@ const CropManagement = () => {
             <View style={styles.nameWrapper}>
               <Text style={styles.cropName}>{Object.values(localCropData)[0]?.commonName || 'Loading...'}</Text>
               <Text style={styles.scientificName}>({Object.values(localCropData)[0]?.scientificName})</Text>
+              <TouchableOpacity onPress={() => setDialogDeleteVisible(true)}><AntDesign name="delete" size={24} color="red" style={{marginLeft:'auto',marginRight:20}} /></TouchableOpacity>
+              
             </View>
 
             <View style={styles.counterWrapper}>
               <FontAwesomeIcon icon={faClockRotateLeft} size={18} color='#2E6F40'/>
               <Text style={styles.plantedText}>20 Days Since Started Growing</Text>
+
+              <TouchableOpacity onPress={displayCropData} >
+                test button 
+              </TouchableOpacity>
             </View>
 
 
 
             <View>
 
-              {assocPlot ? (
-                <Text>{assocPlot}</Text>
+              {assocPlot && assocPlot !== "null" ?(
+
+                <View style={styles.BadgeWrapper}>
+                  <Text style={styles.BadgeText}>{assocPlot}</Text>
+                </View>
+               
               ):(
 
                 <Menu
@@ -444,11 +801,19 @@ const CropManagement = () => {
                   }
                 >
 
-                  {plots.plot.map((item, index) => (
-                    <Menu.Item key={index} onPress={() => {
-                      closeMenu()
-                      showDialog(item.PlotName, item.PlotId)}} title={item.PlotName}  />
-                  ))}
+                  
+                  {plots.plot.length === 0 ? (<Menu.Item title="No plots found" />  ) : (
+
+
+                    plots.plot.map((item, index) => (
+                      <Menu.Item key={index} onPress={() => {
+                        closeMenu()
+                        showDialog(item.PlotName, item.PlotId)}} title={item.PlotName}  />
+                    ))
+
+                  )}
+
+
 
                 </Menu>
 
@@ -725,7 +1090,7 @@ const CropManagement = () => {
           </View>
 
 
-          <Button style={{marginTop:20,marginBottom:20}} icon={() => <FontAwesomeIcon icon={faFileArrowDown} size={20} color="#FFFFFF" />} mode="contained-tonal" onPress={() => console.log('Pressed')} buttonColor="#2E6F40" textColor="#FFFFFF"
+          <Button style={{marginTop:20,marginBottom:20}} icon={() => <FontAwesomeIcon icon={faFileArrowDown} size={20} color="#FFFFFF" />} mode="contained-tonal" onPress={showEntryDialog} buttonColor="#2E6F40" textColor="#FFFFFF"
           >
               Log Crop Data
           </Button>
@@ -1041,6 +1406,27 @@ const stylesRecords = StyleSheet.create({
 
 const styles = StyleSheet.create({
 
+
+  BadgeWrapper:{
+    padding:3,
+    backgroundColor:'#2E6F40',
+
+    alignSelf:'flex-start',
+    display:'flex',
+    paddingTop:5,
+    paddingBottom:5,
+    paddingLeft:25,
+    paddingRight:25,
+    borderRadius:5,
+    marginTop:15,
+    marginBottom:15
+  },
+
+  BadgeText:{
+    color:'#ffffff',
+    fontSize:14,
+    fontWeight:400,
+  },  
   //care guide
 
 
@@ -1060,7 +1446,9 @@ const styles = StyleSheet.create({
     display:'flex',
     flexDirection:'row',
     alignItems:'center',
-    elevation:4
+    elevation:4,
+    //borderWidth:1,
+    justifyContent:'center'
     
   },
 

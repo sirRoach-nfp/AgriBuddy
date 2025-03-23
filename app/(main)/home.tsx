@@ -65,7 +65,7 @@ const home = () => {
           }));
           setCurrentCrop({ crop: filteredCrops });
  
-          //console.log(docSnap.data().CurrentCrops)
+          console.log(docSnap.data().CurrentCrops)
         }else{
           console.log("document does not exist")
         }

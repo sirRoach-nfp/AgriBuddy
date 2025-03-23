@@ -1,10 +1,32 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { router } from 'expo-router'
-const PlotMinCard = () => {
+
+
+interface props{
+
+    plotAssocId:string
+}
+
+
+
+const PlotMinCard = ({plotAssocId}:props) => {
+
+
+
+
+
+
+
+
+
+
+
 
     const navigateToPlot =()=>{
-        router.push('/(screens)/PlotManagementScreen')
+
+        const queryString = `?plotAssocId=${encodeURIComponent(plotAssocId)}`
+        router.push(`/(screens)/PlotManagementScreen${queryString}` as any)
     }
   return (
     <TouchableOpacity style={styles.container} onPress={navigateToPlot}>

@@ -25,7 +25,7 @@ const RecordMinCard = ({cropName,cropId,status,datePlanted,SessionId,PlotAssoc,P
   
   
   
-        const queryString = `?cropName=${encodeURIComponent(cropName)}&status=${encodeURIComponent(status)}&datePlanted=${encodeURIComponent(datePlanted)}&cropId=${encodeURIComponent(cropId)}&SessionId=${encodeURIComponent(SessionId)}$PlotAssoc=${encodeURIComponent(PlotAssoc)}&PlotName=${encodeURIComponent(PlotName)}`;
+        const queryString = `?cropName=${encodeURIComponent(cropName)}&status=${encodeURIComponent(status)}&datePlanted=${encodeURIComponent(datePlanted)}&cropId=${encodeURIComponent(cropId)}&SessionId=${encodeURIComponent(SessionId)}&PlotAssoc=${encodeURIComponent(PlotAssoc)}&PlotName=${encodeURIComponent(PlotName)}`;
         router.push(`/CropManagement${queryString}` as any);
   
   
@@ -46,13 +46,29 @@ const RecordMinCard = ({cropName,cropId,status,datePlanted,SessionId,PlotAssoc,P
     
             <Text style={styles.commonName}>{cropName}</Text>
 
+            {
+                PlotAssoc && PlotAssoc !== "null" ?(    
+                
 
-            <View style={styles.badgeWrapperNoPlot}>
-                <Text style={styles.badgeText}>No Plot</Text>
-            </View>
+
+
+
+                <View style={styles.badgeWrapperPlot}>
+                    <Text style={styles.badgeTextPlot}>{PlotName}</Text>
+                </View>
+                
+                
+                ) : (
+
+
+                <View style={styles.badgeWrapperNoPlot}>
+                    <Text style={styles.badgeText}>No Plot</Text>
+                </View>
+                )
+            }
+
             
 
-    
     
     
     
@@ -75,7 +91,13 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         marginTop:5,
         borderRadius:5,
-        backgroundColor:'#E9A800'
+        backgroundColor:'#E9A800',
+        padding:3
+    },
+    badgeTextPlot:{
+        color:'#ffffff',
+        fontSize:14,
+        fontWeight:400,
     },
     badgeWrapperPlot:{
         width:80,
@@ -86,7 +108,8 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         marginTop:5,
         borderRadius:5,
-        backgroundColor:'#2E6F40'
+        backgroundColor:'#2E6F40',
+        padding:3
     },
     badgeText:{
         fontSize:14,

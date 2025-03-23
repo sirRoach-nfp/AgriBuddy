@@ -1,14 +1,31 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ScrollView } from 'react-native-gesture-handler'
 
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import PlotMinCard from '@/components/PlotComponents/PlotMinCard';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebaseconfig';
+
+
+interface PlotData{
+  PlotId : string,
+  PlotName: string
+}
+
+interface Plots{
+  plot:PlotData[],
+}
+
+
 
 
 const account = () => {
+
+
+  const [plots,setPlots] = React.useState<Plots>({plot:[]});
 
   const [farmPlots, setFarmPlots] = React.useState([
     {
@@ -21,6 +38,39 @@ const account = () => {
       plotName:"Plot 3",
     },
   ]);
+
+
+  useEffect(()=> {
+
+    const fetchPlots = async()=> {
+
+
+      try{
+        const docRef = doc(db,'Plots','xt4foVBpVYqoM4kdAWBC');
+
+        const docSnap = await getDoc(docRef);
+
+        if(docSnap.exists()){
+          const rawData = docSnap.data().Plots as any[];
+
+          const filteredPlots:PlotData[]=rawData.map(crop=>({
+            PlotName: crop.PlotName,
+            PlotId: crop.PlotId
+          }))
+
+
+
+          setPlots({plot:filteredPlots})
+        }
+        
+      }catch(err){
+
+      }
+    }
+
+
+    fetchPlots();
+  }, [])
 
   return (
 
@@ -42,9 +92,9 @@ const account = () => {
 
 
             <View style={styles.plotContentWrapper}>
-              {farmPlots.map((plot,index)=>(
+              {plots.plot.map((plot,index)=>(
 
-                <PlotMinCard key={index}/>
+                <PlotMinCard key={index} plotAssocId={plot.PlotId}/>
               ))}
 
             </View>

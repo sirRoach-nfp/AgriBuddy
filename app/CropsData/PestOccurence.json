@@ -1,0 +1,16 @@
+[
+    { "date": "2024-02-01", "crop": "Tomato", "pest": "Aphids" },
+    { "date": "2024-02-02", "crop": "Tomato", "pest": "Armyworms" },
+    { "date": "2024-02-03", "crop": "Lettuce", "pest": "Slugs" },
+    { "date": "2024-02-04", "crop": "Tomato", "pest": "Aphids" },
+    { "date": "2024-02-05", "crop": "Corn", "pest": "Armyworms" },
+    { "date": "2024-02-06", "crop": "Lettuce", "pest": "Slugs" },
+    { "date": "2024-02-07", "crop": "Tomato", "pest": "Whiteflies" },
+    { "date": "2024-02-08", "crop": "Corn", "pest": "Armyworms" },
+    { "date": "2024-02-09", "crop": "Lettuce", "pest": "Fungal Rot" },
+    { "date": "2024-02-10", "crop": "Tomato", "pest": "Aphids" },
+    { "date": "2024-02-11", "crop": "Corn", "pest": "Armyworms" },
+    { "date": "2024-02-12", "crop": "Lettuce", "pest": "Slugs" },
+    { "date": "2024-02-13", "crop": "Tomato", "pest": "Aphids" }
+  ]
+  
