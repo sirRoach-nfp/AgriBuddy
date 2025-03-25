@@ -1,7 +1,7 @@
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-
+import { router } from 'expo-router';
 
 import Feather from '@expo/vector-icons/Feather';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -46,7 +46,17 @@ interface PestLog {
 
 const PlotManagementScreen = () => {
 
+    //navi
+    //const nav
+    
+    //loaders
+
+
+    const [pestChartLoading,setPestChartLoading] = useState(true);
+
+
     const [pestLogs, setPestLogs] = useState<PestLog[]>([]);
+    const [pestListData,setPestListData] = useState<string[]>([]);
     const [chartData,setChartData] = useState<any>(null);
     /*
     const pestLogs = [
@@ -101,8 +111,9 @@ const PlotManagementScreen = () => {
             const docSnap = await getDoc(docRef);
       
             if (docSnap.exists()) {
-              const rawData = docSnap.data().Plots as any[];
+              const rawData = docSnap?.data().Plots as any[];
       
+
               const foundPlot = rawData.find(plot => plot.PlotId === plotId);
       
               if (foundPlot) {
@@ -151,8 +162,15 @@ const PlotManagementScreen = () => {
                         (log:any) => log.PlotAssocId === plotId
                     )
                     console.log("log index : ", logIndex)
+                    const plotPestLog = existingLogs[logIndex].PlotPestLog;
+
                     
                     console.log( "Filtered Plot Pest log entry", existingLogs[logIndex].PlotPestLog)
+
+                    const pestNames = [...new Set(plotPestLog.map((log: any) => log.Pestname))];
+                    console.log("Pest List Data: ", pestNames);
+
+                    setPestListData(pestNames as string[])
                     setPestLogs(existingLogs[logIndex].PlotPestLog)
 
 
@@ -191,15 +209,28 @@ const PlotManagementScreen = () => {
 
 
 
-        const getWeeklyPestCounts = (logs:any) => {
-            const pests = ["whiteflies", "thrips", "fruitworm"];
+        const getWeeklyPestCounts = (logs:any,pestDataName:string[]) => {
+            console.log("Getting weekly pest counts...")
+            const pests = pestDataName;
+            console.log("Pest names array : ",pests)
             const weeks = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"];
+
+
+            if (!pestListData || pestListData.length === 0) {
+                console.warn("No pests available, skipping chart update.");
+                return;
+            }
           
             // Initialize weekly occurrence count
             const weeklyData = pests.reduce((acc:any, pest) => {
               acc[pest] = new Array(5).fill(0); // 5 weeks, initialized to 0
               return acc;
             }, {});
+
+            const pestColors: { [key: string]: string } = {};
+            pests.forEach((pest) => {
+                pestColors[pest] = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+            });
           
             logs.forEach((log: any) => {
                 const logDate = log.Date || log.date; // Ensure correct date key
@@ -213,19 +244,27 @@ const PlotManagementScreen = () => {
                 }
             });
           
-            return { 
+            return {
                 labels: weeks,
                 datasets: pests.map((pest) => ({
-                    label: pest.charAt(0).toUpperCase() + pest.slice(1), // Capitalize label
-                    data: weeklyData[pest], 
-                 // Assign color
+                    label: pest,
+                    data: weeklyData[pest],
+                    color: () => pestColors[pest], // Assign color to the dataset
                 })),
-             };
+                pestColors, // Return colors for legend
+            };
           };
           
-          setChartData(getWeeklyPestCounts(pestLogs))
+          setChartData(getWeeklyPestCounts(pestLogs,pestListData))
+          console.log(getWeeklyPestCounts(pestLogs,pestListData))
         
-      },[pestLogs])
+      },[pestLogs,pestListData])
+
+
+      useEffect(()=> {
+        setPestChartLoading(false)
+        console.log("Chart data ", chartData)
+      },[chartData])
 
 
  
@@ -246,12 +285,12 @@ const PlotManagementScreen = () => {
 
                 </View>
                 
-                <View style={[styles.badge]}>
+                <View style={[styles.badge, plotData.currentCrops.CropAssocId ? {backgroundColor:"#2E6F40"} : {} ]}>
 
 
                     {plotData.currentCrops.CropAssocId ? (
 
-                        <Text style={styles.status} >
+                        <Text style={[styles.status, {color:'#ffffff'}]} >
                             Growing
                         </Text>
 
@@ -265,12 +304,6 @@ const PlotManagementScreen = () => {
             </View>
         </View>
 
-
-        <TouchableOpacity onPress={checkPlotData}>TEST</TouchableOpacity>
-
-
-        // rotation plan
-        
 
 
 
@@ -290,7 +323,7 @@ const PlotManagementScreen = () => {
                     </Text>
 
                     <Text style={stylesCrop.datePlantedText}>
-                        Date Planted
+                        Current Crop in the plot
                     </Text>
                 </View>
 
@@ -315,52 +348,88 @@ const PlotManagementScreen = () => {
 
 
 
-    <View style={{borderWidth:0}}>
+    <View style={{borderWidth:0,marginTop:30}}>
 
         <View style={styles.chartsHeaderWrapper}>
-            <Text style={styles.chartsHeader}>Pest Occurrences Per Week</Text>
 
-            <Text style={styles.chartsHeaderViewMore}>View In Detail </Text>
+            <View style={styles.chartsHeaderWrapperIcon}>
+
+            </View>
+            <Text style={styles.chartsHeader}>Pest Occurrences Per Week</Text>
+             
+             <TouchableOpacity style={{flexShrink:1,borderWidth:1,marginLeft:'auto'}} onPress={()=> router.push(`/(screens)/PestOccurrencesDetailed?plotAssocId=${encodeURIComponent(plotId as string)}`)}>
+
+                <Text style={styles.chartsHeaderViewMore}>View In Detail </Text>
+
+             </TouchableOpacity>
+            
         </View>
         
 
-    {chartData && (
+    {!pestChartLoading && chartData && pestListData && (
 
-        <LineChart
-            data={{
-                labels: chartData.labels, // Weeks
-                datasets: chartData.datasets, // Pest occurrence per week
-            }}
-            width={Dimensions.get("window").width * .95} // from react-native
-            height={220}
-            //yAxisLabel="$"
-            //yAxisSuffix="k"
-            yAxisInterval={1} // optional, defaults to 1
-            chartConfig={{
-            backgroundColor: "#e26a00",
-            backgroundGradientFrom: "#fb8c00",
-            backgroundGradientTo: "#ffa726",
-            decimalPlaces: 2, // optional, defaults to 2dp
-            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            style: {
+        <>
+        
+        
+        
+            <LineChart
+                data={{
+                    labels: chartData?.labels, // Weeks
+                    datasets: chartData?.datasets, // Pest occurrence per week
+                }}
+                width={Dimensions.get("window").width * .95} // from react-native
+                height={220}
+                //yAxisLabel="$"
+                //yAxisSuffix="k"
+                yAxisInterval={1} // optional, defaults to 1
+                chartConfig={{
+                backgroundColor: "#e26a00",
+                backgroundGradientFrom: "#fb8c00",
+                backgroundGradientTo: "#ffa726",
+                decimalPlaces: 2, // optional, defaults to 2dp
+                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                style: {
+                    borderRadius: 16
+                },
+                propsForDots: {
+                    r: "6",
+                    strokeWidth: "2",
+                    stroke: "#ffa726"
+                }
+                }}
+                bezier
+                style={{
+                marginVertical: 8,
                 borderRadius: 16
-            },
-            propsForDots: {
-                r: "6",
-                strokeWidth: "2",
-                stroke: "#ffa726"
-            }
-            }}
-            bezier
-            style={{
-            marginVertical: 8,
-            borderRadius: 16
-            }}
-        />
+                }}
+            />
+
+            <View style={styles.legendWrapper}> 
 
 
+                {Object.entries(chartData?.pestColors).map(([pest, color]) => (
+                    <View key={pest} style={{ flexDirection: "row", alignItems: "center", marginRight: 10 }}>
+                        {/* Color Indicator */}
+                        <View style={{
+                            width: 15,
+                            height: 15,
+                            backgroundColor: color as string,
+                            marginRight: 5,
+                            borderRadius: 3,
+                            borderWidth:1
+                        }} />
+                        
+                        {/* Pest Name */}
+                        <Text style={{ fontSize: 14,fontWeight:500,color:'#253D2C' }}>{pest}</Text>
+                    </View>
+                ))}
 
+
+            </View>
+
+
+        </>
 
 
     )}
@@ -383,12 +452,34 @@ const PlotManagementScreen = () => {
 export default PlotManagementScreen
 
 const styles = StyleSheet.create({
+    legendWrapper:{
+        width:'100%',
+        //borderWidth:1,
+        display:'flex',
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'center',
+        flexWrap:'wrap'
+    },
+    chartsHeaderWrapperIcon:{
+        width:30,
+        height:30,
+        //borderWidth:1,
+        marginRight:5,
+        backgroundColor:'#E9A800',
+        borderRadius:5,
+    },
     chartsHeaderWrapper:{
         width:'100%',
-        borderWidth:1,
+        //borderWidth:1,
         display:'flex',
         flexDirection:'row',
         alignItems:'center'
+    },
+    chartsHeaderViewMore:{
+        marginLeft:'auto',
+        textDecorationLine:'underline',
+        color:'#253D2C'
     },
     chartsHeader:{
         fontSize:17,
@@ -407,28 +498,36 @@ const styles = StyleSheet.create({
     },
     plotInfoContainer:{
         width:'95%',
-        borderWidth:1,
+        //borderWidth:1,
         display:'flex',
         flexDirection:'row',
-        marginBottom:20
+        marginBottom:20,
+        backgroundColor:'#CFFFDC',
+        borderRadius:5,
+        paddingTop:10,
+        paddingBottom:10,
+        paddingLeft:10,
+        paddingRight:10
     },
     thumbnail:{
         width:140,
         height:90,
-        borderWidth:1
+        borderWidth:1,
+        borderRadius:5
     },
     infoWrapper:{
         marginLeft:10,
         display:"flex",
+        flex:1,
         flexDirection:'column',
-        borderWidth:1,
+        //borderWidth:1,
         marginBottom:'auto',
         height:'100%'
     },
     badge:{
         width:100,
         height:20,
-        borderWidth:1,
+        //borderWidth:1,
         marginTop:'auto',
         display:'flex',
         alignItems:'center',
@@ -521,7 +620,8 @@ const stylesCrop = StyleSheet.create({
         borderWidth:2,
         borderStyle:'dotted',
         borderColor:'#253D2C',
-        borderRadius:10
+        borderRadius:10,
+        backgroundColor:'#D8D8C0'
 
     },
 

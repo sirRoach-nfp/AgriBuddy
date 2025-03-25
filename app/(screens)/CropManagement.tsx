@@ -1090,7 +1090,7 @@ const CropManagement = () => {
           </View>
 
 
-          <Button style={{marginTop:20,marginBottom:20}} icon={() => <FontAwesomeIcon icon={faFileArrowDown} size={20} color="#FFFFFF" />} mode="contained-tonal" onPress={showEntryDialog} buttonColor="#2E6F40" textColor="#FFFFFF"
+          <Button style={{marginTop:20,marginBottom:20}} icon={() => <FontAwesomeIcon icon={faFileArrowDown} size={20} color="#FFFFFF" />} mode="contained-tonal" onPress={showEntryDialog} buttonColor="#2e6f40" textColor="#FFFFFF"
           >
               Log Crop Data
           </Button>
