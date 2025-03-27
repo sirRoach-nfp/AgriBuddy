@@ -17,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import RecordMinCard from '@/components/genComponents/recordMinCard'
 import { db } from '../firebaseconfig'
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
+import { useUserContext } from '../Context/UserContext'
 
 
 
@@ -41,7 +42,7 @@ interface CurrentCrop{
 }
 
 const home = () => {
-
+  const {user} = useUserContext();
 
   const [currentCrop, setCurrentCrop] = useState<CurrentCrop>({crop:[]})
 
@@ -49,8 +50,15 @@ const home = () => {
 
   useEffect(()=>{
     const fetchCurrentCrop = async()=>{
+
+      if (!user?.CurrentCropsRefId) {
+        console.error("CurrentCropsRefId is undefined");
+        return;
+      }
+      console.log("Fetching current crops ......")
       try{
-        const userRef = doc(db,"CurrentCrops","zFmpiZQL51Q7xqG8KJ2k");
+        console.log("Fetching current crops  2 ......")
+        const userRef = doc(db,"CurrentCrops",user?.CurrentCropsRefId as string);
 
         const docSnap = await getDoc(userRef);
 
@@ -76,7 +84,7 @@ const home = () => {
     }
 
     fetchCurrentCrop()
-  },[])
+  },[user])
 
 
   const testDataFetched = () => {
@@ -111,16 +119,24 @@ const home = () => {
 
             <View style={styles.currentCropContentWrapper}>
 
-              {currentCrop.crop?.map((crop,index)=>(
-                <RecordMinCard key={index} 
-                cropName={crop.CropName} 
-                cropId={crop.CropId} 
-                status={crop.SessionId} 
-                SessionId={crop.SessionId}
-                PlotAssoc={crop.PlotAssoc}
-                PlotName={crop.PlotName} 
-                datePlanted="01/01/2023"/>
-              ))}
+
+
+              {currentCrop && (
+
+                currentCrop.crop?.map((crop,index)=>(
+                  <RecordMinCard key={index} 
+                  cropName={crop.CropName} 
+                  cropId={crop.CropId} 
+                  status={crop.SessionId} 
+                  SessionId={crop.SessionId}
+                  PlotAssoc={crop.PlotAssoc}
+                  PlotName={crop.PlotName} 
+                  datePlanted="01/01/2023"/>
+                ))
+
+              )}
+
+              
 
             </View>
 

@@ -12,6 +12,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 import { CropProvider } from './Context/CropContext';
+import { UserProvider } from './Context/UserContext';
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
@@ -30,39 +31,50 @@ export default function RootLayout() {
 
   return (
 
-    <CropProvider>
-    <SafeAreaProvider>
-
-
-      <GestureHandlerRootView style={styles.container}>   
-          
-          
-          
-          <ThemeProvider 
-            value={{
-              ...DefaultTheme,
-              colors: {
-                ...DefaultTheme.colors,
-                background: '#FFFFFF',  // Light gray background
-              }
-            }}>
-            <Stack screenOptions={{headerShown:false}}>
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-            </Stack>
-            <StatusBar style="auto" />
-          </ThemeProvider>
-        
-        
-        
-        
-        
-        </GestureHandlerRootView>
+    <UserProvider>
 
 
 
-    </SafeAreaProvider>
     
-    </CropProvider>
+
+      <CropProvider>
+        <SafeAreaProvider>
+
+
+          <GestureHandlerRootView style={styles.container}>   
+              
+              
+              
+              <ThemeProvider 
+                value={{
+                  ...DefaultTheme,
+                  colors: {
+                    ...DefaultTheme.colors,
+                    background: '#FFFFFF',  // Light gray background
+                  }
+                }}>
+                <Stack screenOptions={{headerShown:false}}>
+                  <Stack.Screen name="index" options={{ headerShown: false }} />
+                </Stack>
+                <StatusBar style="auto" />
+              </ThemeProvider>
+            
+            
+            
+            
+            
+            </GestureHandlerRootView>
+
+
+
+        </SafeAreaProvider>
+      
+      </CropProvider>
+
+      
+
+  </UserProvider>
+
 
 
   );

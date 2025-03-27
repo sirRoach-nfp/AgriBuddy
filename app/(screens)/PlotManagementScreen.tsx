@@ -19,6 +19,7 @@ import {
 
     StackedBarChart
   } from "react-native-chart-kit";
+import { useUserContext } from '../Context/UserContext';
 
 interface PlotData{
     PlotId : string,
@@ -45,6 +46,9 @@ interface PestLog {
   }
 
 const PlotManagementScreen = () => {
+
+
+    const {user} = useUserContext();
 
     //navi
     //const nav
@@ -107,7 +111,7 @@ const PlotManagementScreen = () => {
     useEffect(() => {
         const fetchPlotData = async (plotId: string) => {
           try {
-            const docRef = doc(db, 'Plots', 'xt4foVBpVYqoM4kdAWBC');
+            const docRef = doc(db, 'Plots', user?.PlotsRefId as string);
             const docSnap = await getDoc(docRef);
       
             if (docSnap.exists()) {
@@ -146,7 +150,7 @@ const PlotManagementScreen = () => {
 
 
 
-                const docRef = doc(db,'Records','aRZmpszYmKkzNKJVzSJt')
+                const docRef = doc(db,'Records',user?.RecordsRefId as string)
                 const docSnap = await getDoc(docRef)
 
 
@@ -277,7 +281,9 @@ const PlotManagementScreen = () => {
     <SafeAreaView style={styles.mainContainer}>
 
         <View style={styles.plotInfoContainer}>
-            <View style={styles.thumbnail}></View>
+            <View style={styles.thumbnail}>
+                <Image source={require('../../assets/images/Misc/PlotIcon.svg')} style={{width:'40%',height:'40%',objectFit:'contain'}}  />
+            </View>
             <View style={styles.infoWrapper}>
                 <View style={styles.infoHeaderwrapper}>
                     <Text  style={styles.plotName}>{plotData.PlotName}</Text>
@@ -289,15 +295,26 @@ const PlotManagementScreen = () => {
 
 
                     {plotData.currentCrops.CropAssocId ? (
+                        <View style={{alignSelf:'flex-start',borderWidth:0,paddingHorizontal:20,borderRadius:5,backgroundColor:'#2E6F40'}}>
+                            
+                            
+                            <Text style={[styles.status, {color:'#ffffff'}]} >
+                                Growing
+                            </Text>                            
+                            
+                        </View>
 
-                        <Text style={[styles.status, {color:'#ffffff'}]} >
-                            Growing
-                        </Text>
 
                     ) : (
-                        <Text style={styles.status} >
-                            Resting
-                        </Text>
+
+                        <View style={{alignSelf:'flex-start',borderWidth:0,paddingHorizontal:20,borderRadius:5,backgroundColor:'#E9A800'}}> 
+
+                            <Text style={[styles.status, {color:'#ffffff'}]} >
+                                Resting
+                            </Text>
+
+                        </View>
+
                     )}
 
                 </View>
@@ -348,7 +365,7 @@ const PlotManagementScreen = () => {
 
 
 
-    <View style={{borderWidth:0,marginTop:30}}>
+    <View style={{borderWidth:0,marginTop:30,width:'90%'}}>
 
         <View style={styles.chartsHeaderWrapper}>
 
@@ -366,7 +383,7 @@ const PlotManagementScreen = () => {
         </View>
         
 
-    {!pestChartLoading && chartData && pestListData && (
+    {!pestChartLoading && chartData && pestListData ? (
 
         <>
         
@@ -432,9 +449,16 @@ const PlotManagementScreen = () => {
         </>
 
 
+    ) : (
+        <View style={{width:'100%',borderWidth:0,marginTop:15,backgroundColor:'#D2D2D2',height:220,borderRadius:5,display:'flex',alignItems:'center',justifyContent:'center'}}> 
+            <Text style={{fontSize:15,fontWeight:600,color:'#909090'}}>No Available Data To Display</Text>
+        </View>
     )}
     
     </View>
+
+
+    <Text>{user?.RecordsRefId}</Text>
 
 
 
@@ -512,8 +536,13 @@ const styles = StyleSheet.create({
     thumbnail:{
         width:140,
         height:90,
-        borderWidth:1,
-        borderRadius:5
+        //borderWidth:1,
+        borderRadius:5,
+        display:'flex',
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'center',
+        backgroundColor:'#4C9142'
     },
     infoWrapper:{
         marginLeft:10,

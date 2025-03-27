@@ -14,9 +14,10 @@ import { Image } from 'react-native';
 import { useSearchParams } from 'expo-router/build/hooks';
 
 import TomatoData from '../CropsData/Crops/Solanaceae/Tomato.json'
-import { Button } from 'react-native-paper'
+import { Button, Dialog, PaperProvider, Portal } from 'react-native-paper'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faFileArrowDown,faLeaf } from '@fortawesome/free-solid-svg-icons'
+import { useUserContext } from '../Context/UserContext'
 
 interface guideStep{
     header: string;
@@ -46,6 +47,30 @@ interface guideStep{
 
 const CropProfile = () => {
 
+
+    const [showConfirmationVisible,setShowConfirmationVisible] = useState(false)
+
+
+
+    const renderAddCropConfirmationDialog = (cropId:string,commonName:string) => (
+        <Portal>
+        <Dialog visible={showConfirmationVisible} onDismiss={()=>{}}>
+          <Dialog.Title>Add to your current crops?</Dialog.Title>
+          <Dialog.Content>
+            <Text>Are you sure your want to add this crop to your list?</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={()=>setShowConfirmationVisible(false)}>Cancel</Button>
+            <Button onPress={() => AddToCurrent(cropId,commonName)}>Confirm</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+      )
+
+
+
+    const {user} = useUserContext()
+
     const getCurrentDate = () => {
         const date = new Date();
         const day = String(date.getDate()).padStart(2, "0"); // Ensures two digits
@@ -59,7 +84,7 @@ const CropProfile = () => {
 
         try{
 
-            const userRef = doc(db,"CurrentCrops","zFmpiZQL51Q7xqG8KJ2k");
+            const userRef = doc(db,"CurrentCrops",user?.CurrentCropsRefId as string);
 
             await updateDoc(userRef,{
                 CurrentCrops:arrayUnion({
@@ -68,14 +93,12 @@ const CropProfile = () => {
                     CropName:commonName,
                     CropId:id,
                     Date: getCurrentDate(),
-                    DiseaseLogs: [],
-                    PestLogs: [],
-                    PesticideApplication:[],
-                    FertilizerApplication:[]
+
                 })
             })
 
             console.log("success")
+            setShowConfirmationVisible(false)
         }catch(err){
             console.error(err)
         }
@@ -113,73 +136,107 @@ const CropProfile = () => {
     const selectedCrop = cropData[commonName as string]
   
   return (
-    <SafeAreaView style={styles.mainContainer}>
+
+
+    <PaperProvider>
+
+        {selectedCrop  && renderAddCropConfirmationDialog(selectedCrop.cropId,selectedCrop.commonName)}
 
 
 
-        {loading ? (<Text>Loading</Text>) :
-        
-        
-        
-        <>
-        
-            <View style={styles.thumbnail}>
+    
+        <SafeAreaView style={styles.mainContainer}>
+
+
+
+            {loading ? (<Text>Loading</Text>) :
             
-                <Image source={{ uri: selectedCrop.thumbnail}} style={{width:'100%',height:'100%',objectFit:'contain'}} />
-           
-            </View>
-
-
-            <View style={styles.content}> 
-                <View style={styles.headerWrapper}>
-                    <View style={styles.seasonIndi}></View>
-
-                    <Text style={styles.cropName}>{selectedCrop.commonName}</Text>
-                    <Text style={styles.scientificName}>({selectedCrop.scientificName})</Text>
-                    <Text style={styles.familyName}>From The Family {selectedCrop.family}</Text>
-                    <Text style={styles.bestGrown}>Best Grown From month - to month</Text>
+            
+            
+            <>
+            
+                <View style={styles.thumbnail}>
+                
+                    <Image source={{ uri: selectedCrop.thumbnail}} style={{width:'100%',height:'100%',objectFit:'contain'}} />
+            
                 </View>
 
-                <ScrollView style={styles.bodyWrapper} contentContainerStyle={{alignItems:'center'}}>
+
+                <View style={styles.content}> 
+                    <View style={styles.headerWrapper}>
+                        <View style={styles.seasonIndi}></View>
+
+                        <Text style={styles.cropName}>{selectedCrop.commonName}</Text>
+                        <Text style={styles.scientificName}>({selectedCrop.scientificName})</Text>
+                        <Text style={styles.familyName}>From The Family {selectedCrop.family}</Text>
+                        <Text style={styles.bestGrown}>Best Grown From month - to month</Text>
+                    </View>
+
+                    <ScrollView style={styles.bodyWrapper} contentContainerStyle={{alignItems:'center'}}>
 
 
-                    <View style={subContainer.containerWrappper}>
-                        <Text style={styles.subContainerHeader}>Suitable Soil</Text>
+                        <View style={subContainer.containerWrappper}>
+                            <Text style={styles.subContainerHeader}>Suitable Soil</Text>
 
 
 
-                        <View style={subContainer.badgeContainer}>
+                            <View style={subContainer.badgeContainer}>
 
-                            <View style={subContainer.badgeWrapper}>
-                                
-                                <Image source={soilImages['loamy']} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
-                                <Text  style={styles.badgesText}>Loamy</Text>
+                                <View style={subContainer.badgeWrapper}>
+                                    
+                                    <Image source={soilImages['loamy']} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
+                                    <Text  style={styles.badgesText}>Loamy</Text>
 
+                                </View>
+
+                                <View style={subContainer.badgeWrapper}>
+                                    <Image source={soilImages['sandy']} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
+                                    <Text style={styles.badgesText}>Sandy</Text>
+                                </View>
+
+                                <View style={subContainer.badgeWrapper}>
+                                    <Image source={soilImages['clay']} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
+                                    <Text style={styles.badgesText}>Clayey</Text>
+                                </View>
+                                </View>
+
+
+                                <View style={subContainer.phIndi}>
+                                <Text style={styles.phText}>
+                                    Optimal Soil PH is {selectedCrop.soilPh}
+                                </Text>
                             </View>
 
-                            <View style={subContainer.badgeWrapper}>
-                                <Image source={soilImages['sandy']} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
-                                <Text style={styles.badgesText}>Sandy</Text>
-                            </View>
-
-                            <View style={subContainer.badgeWrapper}>
-                                 <Image source={soilImages['clay']} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
-                                <Text style={styles.badgesText}>Clayey</Text>
-                            </View>
-                            </View>
 
 
-                            <View style={subContainer.phIndi}>
-                            <Text style={styles.phText}>
-                                Optimal Soil PH is {selectedCrop.soilPh}
-                            </Text>
+
+
                         </View>
 
 
 
 
 
-                    </View>
+
+
+                        <View style={subContainer.containerWrappperPest}>
+                            <Text style={styles.subContainerHeaderPest}>Common Pests</Text>
+
+
+
+                            <View style={subContainer.badgeContainer}>
+                                    {selectedCrop.commonPests.map((pest,index)=>(
+                                        <View style={subContainer.badgeWrapper} key={index}>
+                
+                                            <Image source={pestImages[pest.toLowerCase() as string]} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
+                                            <Text  style={styles.badgesText}>{pest}</Text>
+                
+                                        </View>
+
+
+                                    ))}
+
+                            </View>
 
 
 
@@ -187,111 +244,88 @@ const CropProfile = () => {
 
 
 
-                    <View style={subContainer.containerWrappperPest}>
-                        <Text style={styles.subContainerHeaderPest}>Common Pests</Text>
 
 
 
-                        <View style={subContainer.badgeContainer}>
-                                {selectedCrop.commonPests.map((pest,index)=>(
+                        </View>
+
+
+
+
+
+
+                        <View style={subContainer.containerWrappperPest}>
+                            <Text style={styles.subContainerHeaderPest}>Common Diseases</Text>
+
+
+
+                            <View style={subContainer.badgeContainer}>
+                                
+
+                                {selectedCrop.commonDiseases.map((disease,index)=>(
                                     <View style={subContainer.badgeWrapper} key={index}>
             
-                                        <Image source={pestImages[pest.toLowerCase() as string]} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
-                                        <Text  style={styles.badgesText}>{pest}</Text>
+                                        <Image source={diseaseImages[disease.toLowerCase() as string]} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
+                                        <Text  style={styles.badgesText}>{disease}</Text>
             
                                     </View>
 
 
                                 ))}
 
-                        </View>
 
 
 
+                            </View>
 
 
+                    
 
-
-
-
-
-                    </View>
-
-
-
-
-
-
-                    <View style={subContainer.containerWrappperPest}>
-                        <Text style={styles.subContainerHeaderPest}>Common Diseases</Text>
-
-
-
-                        <View style={subContainer.badgeContainer}>
-                            
-
-                            {selectedCrop.commonDiseases.map((disease,index)=>(
-                                <View style={subContainer.badgeWrapper} key={index}>
-        
-                                    <Image source={diseaseImages[disease.toLowerCase() as string]} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
-                                    <Text  style={styles.badgesText}>{disease}</Text>
-        
-                                </View>
-
-
-                            ))}
 
 
 
 
                         </View>
 
-
-                
-
-
-
-
-
-                    </View>
-
-                    <Button onPressIn={()=>{AddToCurrent(selectedCrop.cropId,selectedCrop.commonName)}} style={{marginTop:20,marginBottom:20,borderRadius:5}} icon={() => <FontAwesomeIcon icon={faLeaf} size={20} color="#FFFFFF" />} mode="contained-tonal" onPress={() => console.log('Pressed')} buttonColor="#2E6F40" textColor="#FFFFFF"
-                    >
-                        Start Planting
-                    </Button>
+                        <Button onPressIn={()=>{setShowConfirmationVisible(true)}} style={{marginTop:20,marginBottom:20,borderRadius:5}} icon={() => <FontAwesomeIcon icon={faLeaf} size={20} color="#FFFFFF" />} mode="contained-tonal" onPress={() => console.log('Pressed')} buttonColor="#2E6F40" textColor="#FFFFFF"
+                        >
+                            Start Planting
+                        </Button>
 
 
 
 
 
-                </ScrollView>
-            </View>
-        
-        </>
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        }
+                    </ScrollView>
+                </View>
+            
+            </>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            }
 
 
-        
+            
 
 
 
 
 
-    </SafeAreaView>
+        </SafeAreaView>
+
+    </PaperProvider>
   )
 }
 

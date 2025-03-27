@@ -5,6 +5,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseconfig';
 
 import { Image } from 'react-native';
+import { useUserContext } from '../Context/UserContext';
 
 
 interface Symptoms{
@@ -23,6 +24,9 @@ interface PestData{
 
 
 const DiseasePestScreen = () => {
+
+
+ 
 
 
 

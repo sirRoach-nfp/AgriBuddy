@@ -15,6 +15,7 @@ import { useSearchParams } from 'expo-router/build/hooks';
 import DatePicker from 'react-native-date-picker';
 import { LineChart } from 'react-native-chart-kit';
 import { useNavigation } from 'expo-router';
+import { useUserContext } from '../Context/UserContext';
 
 interface PestLog {
     Date:string,
@@ -23,6 +24,8 @@ interface PestLog {
     Temp:number
 }
 const PestOccurrencesDetailed = () => {
+
+    const {user} = useUserContext();
 
     //comparison handlers 
 
@@ -263,7 +266,7 @@ const PestOccurrencesDetailed = () => {
 
 
 
-                const docRef = doc(db,'Records','aRZmpszYmKkzNKJVzSJt')
+                const docRef = doc(db,'Records',user?.RecordsRefId as string)
                 const docSnap = await getDoc(docRef)
 
 
