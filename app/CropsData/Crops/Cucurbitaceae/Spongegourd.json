@@ -1,0 +1,49 @@
+{
+    "Spongegourd": {
+        "cropId":"SpongeGourdDef0003_cuc",
+        "thumbnail":"https://rukminim3.flixcart.com/image/850/1000/xif0q/plant-seed/b/t/m/50-vlr-220-luffa-acutangula-seeds-angled-ridge-gourd-turai-50-original-imaggry97gwyc63h.jpeg?q=20&crop=false",
+        "scientificName": "Luffa acutangula",
+        "family":"Curcurbitaceae",
+        "commonName":"Spongegourd",
+        "growthTime": "45",
+        "bestSeason": "",
+        "soilType": "Loamy",
+        "soilPh": "5.5-8.3",
+        "commonPests": ["fruitfly"],
+        "commonDiseases": ["downyMildew"],
+        "guide": {
+            "1": {
+                "header": "Soil and Climatic Requirements",
+                "content": "Patola can be grown throughout the year in rainfed and irrigated farms with soil that are well-drained and high in organic matter.\nThis crop is usually planted in the months of June to September during the wet season and February to May during the dry season."
+            },
+            "2": {
+                "header": "Land Preparation",
+                "content": "Prepare the field thoroughly to obtain good crop stand and optimum yield. Plow the field at a depth of 15-20 cm 2 - 3 times at one week interval to prevent growth of weeds. Harrow every after plowing to pulverize and level the field. A well-pulverized soil promotes good soil aeration and enhances root formation. Make furrows after the last harrowing at a distance of 2.5 – 3.0 meters."
+            },
+            "3": {
+                "header": "Planting",
+                "content": "Patola can either be direct-seeded or transplanted. For hybrids, transplanting is recommended to save on seeds and ensure seedling survival. A one (1) hectare farm requires 1-2 kg of seeds.\nTo facilitate germination, soak the seeds overnight with clean water before planting. Wrap the seeds with moist cloth and place in dark and cool place until the seed coat breaks or the radicals have emerged.\nPlant 1-2 pre-germinated seeds per hill at a distance of 1.0 m. Cover seeds with thin layer of soil. Plant patola in ridges or raised beds during the wet season to prevent rotting of seeds or seedlings due to flooding.\nTo grow seedlings for transplanting, prepare soil media composed of one part compost or organic fertilizer, one part garden soil and one part carbonized rice hull (CRH). A ready mixed commercial soil media for seedling production can also be used. Fill the seedling trays with the prepared media. Water the potting media before sowing. Sow one pre-germinated seed per hole at least 1-2 cm deep and cover with fine soil. Place the seedling trays under a temporary shade. Water the seedlings regularly.\nOne week before transplanting, harden the seedlings by gradually reducing the frequency of watering and exposing them to direct sunlight. Seedlings are ready for transplanting 10-15 days after emergence (DAE) or when true leaves have developed. Transplant one seedling per hill at a distance of 1 m between hills. To prevent transplanting shock, transplant in the afternoon or during cloudy days. Replant missing hills within 5-7 days after transplanting (DAT)."
+            },
+            "4": {
+                "header": "Trellising",
+                "content": "Provide the plants with trellis to produce good quality fruits. Trellis is usually essential especially during the wet season to keep the fruit from the ground and eventually minimize fruit rotting and malformation.\nConstruct overhead trellises at a distance of 2-3 m wide and 2 m high using ipil-ipil or bamboo poles. Provide strong roof trellis by intertwining tie wire or nylon twine crosswise and lengthwise on top of the trellis. Provide a ladder-like trellis or vertical pole for each patola plant to facilitate the vines to climb.\nTrain the vines to climb the trellis by tying the stem lightly on the vertical pole or ladder-like trellis until it reaches the overhead trellis."
+            },
+            "5": {
+                "header": "Pruning",
+                "content": "Pruning is usually practiced in patola production to promote branching and fruiting. Remove all the lateral branches and female buds that appear on the climbing part of the main stem below the overhead trellis. Remove also the tip of the main vine when it reaches the top of the overhead trellis and the lower lateral branches to facilitate fruit setting."
+            },
+            "6": {
+                "header": "Irrigation",
+                "content": "Sound water management is necessary to maintain good crop stand and attain optimum harvest. Irrigate the crop two (2) weeks after emergence. Repeat irrigation at seven (7) days interval throughout the growing season. Furrow irrigation is generally recommended during dry season."
+            },
+            "7": {
+                "header": "Weeding",
+                "content": "Weed the area at 14 days after emergence (DAE). Cut the weeds close to the ground every 14 days or as needed. Do not uproot the weeds or cultivate in between the rows to prevent root injury. Disturbed roots affect the growth of vines and result to low yield.\nPractice regular weeding until the crop has attained considerable vegetative size to cover the trellis. When the trellis is completely covered with the vines it controls the sunlight that promotes the growth of newly germinating weeds thus, suppressing weed growth."
+            },
+            "8": {
+                "header": "Harvesting",
+                "content": "Generally, the best stage to harvest patola for food consumption is when the fruits are still immature. This usually occurs five (5) days after fruit setting. Cut the peduncle using a sharp knife. To maintain the freshness of the harvest pack the fruits using polyethylene bags. Harvest in the morning to avoid the damaging effect of sunlight."
+            }
+        }
+    }
+}

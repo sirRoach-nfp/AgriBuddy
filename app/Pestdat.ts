@@ -1,9 +1,33 @@
+/*
+
 interface PestImages {
   [key: string]: any; // Index signature
   whiteflies: any;
   fruitworm: any;
   thrips: any;
 }
+
+*/
+
+interface PestImages {
+  [key: string]: any; // Index signature
+  aphids: any;
+  beanfly: any;
+  cutworms: any;
+  fruitborer: any;
+  //fruitfly: any;
+  fruitworm: any;
+  leafhoppers: any;
+  podborer: any;
+  //spidermites: any;
+  spottedladybeetle: any;
+  squashbeetle: any;
+  thrips: any;
+  whiteflies: any;
+  //yellowbeetle: any;
+}
+
+
 interface DiseaseImages {
   [key: string]: any; // Index signature
   nematodes: any;
@@ -20,19 +44,19 @@ interface SoilImage{
 
 interface CropsImage {
   [key: string]: any;
-  TomatoDef0001_sol: any;
-  EggplantDef0002_sol: any;
-  BellPepperDef0003_sol: any;
-  PotatoDef0004_sol: any;
-  ChilliPepperDef0005_sol: any;
-  SquashDef0001_cuc: any;
-  BottleGourdDef0002_cuc: any;
-  SpongeGourdDef0003_cuc: any;
-  CucumberDef0004_cuc: any;
-  BitterGourdDef0005_cuc: any;
-  MungBeansDef0001_fab: any;
-  SitawDef0002_fab: any;
-  PeanutDef0003_fab: any;
+  TomatoDef0001_sol: any; //goods
+  EggplantDef0002_sol: any; // goods
+  BellPepperDef0003_sol: any; // pass 
+  PotatoDef0004_sol: any; // goods
+  ChilliPepperDef0005_sol: any; // goods
+  SquashDef0001_cuc: any; //goods
+  BottleGourdDef0002_cuc: any; //goods
+  SpongeGourdDef0003_cuc: any;//goods
+  CucumberDef0004_cuc: any; //goods
+  BitterGourdDef0005_cuc: any; //goods
+  MungBeansDef0001_fab: any; // goods
+  SitawDef0002_fab: any; //goods
+  PeanutDef0003_fab: any;// goods
 }
 
 const cropsImages: CropsImage = {
@@ -50,12 +74,33 @@ const cropsImages: CropsImage = {
   SitawDef0002_fab: require('../assets/images/Crops/Sitaw.jpg'),
   PeanutDef0003_fab: require('../assets/images/Crops/Peanut.jpg'),
 };
+
+/*
  const pestImages : PestImages ={
     whiteflies: require('../assets/images/Pests/whiteflies.jpg'),
     fruitworm: require('../assets/images/Pests/fruitworm.jpg'),
     thrips: require('../assets/images/Pests/thrips.jpg'),
     // Add more images...
   };
+
+  */
+
+  const pestImages: PestImages = {
+    aphids: require('../assets/images/Pests/aphids.jpg'),
+    beanfly: require('../assets/images/Pests/beanfly.jpg'),
+    cutworms: require('../assets/images/Pests/cutworms.jpg'),
+    fruitborer: require('../assets/images/Pests/fruitborer.jpg'),
+    //fruitfly: require('../assets/images/Pests/fruitfly.jpg'),
+    fruitworm: require('../assets/images/Pests/fruitworm.jpg'),
+    leafhoppers: require('../assets/images/Pests/leafhoppers.jpg'),
+    podborer: require('../assets/images/Pests/podborer.jpg'),
+    //spidermites: require('../assets/images/Pests/spidermites.jpg'),
+    spottedladybeetle: require('../assets/images/Pests/spottedladybeetle.jpg'),
+    squashbeetle: require('../assets/images/Pests/squashbeetle.jpg'),
+    thrips: require('../assets/images/Pests/thrips.jpg'),
+    whiteflies: require('../assets/images/Pests/whiteflies.jpg'),
+    //yellowbeetle: require('../assets/images/Pests/yellowbeetle.jpg'),
+};
 
 
   const diseaseImages : DiseaseImages ={

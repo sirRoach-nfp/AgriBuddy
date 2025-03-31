@@ -14,6 +14,18 @@ import { Image } from 'react-native';
 import { useSearchParams } from 'expo-router/build/hooks';
 
 import TomatoData from '../CropsData/Crops/Solanaceae/Tomato.json'
+import EggplantData from '../CropsData/Crops/Solanaceae/Eggplant.json'
+import Squash from '../CropsData/Crops/Cucurbitaceae/Squash.json'
+import ChilliPepper from '../CropsData/Crops/Solanaceae/ChilliPepper.json'
+import Potato from '../CropsData/Crops/Solanaceae/Potato.json'
+import Sitaw from '../CropsData/Crops/Fabaceae/Sitaw.json'
+import Bittergourd from "../CropsData/Crops/Cucurbitaceae/Bittergourd.json"
+import Bottlegourd from '../CropsData/Crops/Cucurbitaceae/Bottlegourd.json'
+import Cucumber from '../CropsData/Crops/Cucurbitaceae/Cucumber.json'
+import MungBean from '../CropsData/Crops/Fabaceae/Mungbean.json'
+import Peanut from '../CropsData/Crops/Fabaceae/Peanut.json'
+import Spongegourd from '../CropsData/Crops/Cucurbitaceae/Spongegourd.json'
+
 import { Button, Dialog, PaperProvider, Portal } from 'react-native-paper'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faFileArrowDown,faLeaf } from '@fortawesome/free-solid-svg-icons'
@@ -117,11 +129,62 @@ const CropProfile = () => {
     
 
     useEffect(()=>{
+        console.log("Common name passed : ",commonName)
+        console.log(ChilliPepper)
+        console.log("Squash Data : ", Squash)
         setLoading(true)
         switch(commonName){
             case 'Tomato' : 
                 setCropData(TomatoData)
                 break;
+
+            case 'Eggplant':
+                setCropData(EggplantData)
+                break;
+
+            case 'Squash':
+                setCropData(Squash)
+                break;
+
+            case 'ChilliPepper':
+
+                console.log("Ticked")
+                setCropData(ChilliPepper)
+                console.log("Set crop data successful with this data :",ChilliPepper)
+                break;
+                
+            case 'Potato':
+                setCropData(Potato)
+                break;
+
+            case 'Sitaw':
+                setCropData(Sitaw)
+                break;
+
+            case 'Bittergourd':
+                setCropData(Bittergourd)
+                break;
+
+            case 'Bottlegourd':
+                setCropData(Bottlegourd)
+                break;
+
+            case 'Cucumber':
+                setCropData(Cucumber)
+                break;
+
+            case 'Mungbean':
+                setCropData(MungBean)
+                break;
+
+            case 'Peanut':
+                setCropData(Peanut)
+                break;
+
+            case 'Spongegourd':
+                setCropData(Spongegourd)
+                break;
+
             default:
                  setCropData(TomatoData)
                  break;
@@ -131,6 +194,14 @@ const CropProfile = () => {
 
         
     },[commonName])
+
+
+
+    useEffect(()=>{
+       
+        console.log("Data Set : ", cropData)
+        
+    },[cropData])
 
 
     const selectedCrop = cropData[commonName as string]
@@ -157,7 +228,7 @@ const CropProfile = () => {
             
                 <View style={styles.thumbnail}>
                 
-                    <Image source={{ uri: selectedCrop.thumbnail}} style={{width:'100%',height:'100%',objectFit:'contain'}} />
+                    <Image source={{ uri: selectedCrop?.thumbnail}} style={{width:'100%',height:'100%',objectFit:'contain'}} />
             
                 </View>
 
@@ -166,9 +237,9 @@ const CropProfile = () => {
                     <View style={styles.headerWrapper}>
                         <View style={styles.seasonIndi}></View>
 
-                        <Text style={styles.cropName}>{selectedCrop.commonName}</Text>
-                        <Text style={styles.scientificName}>({selectedCrop.scientificName})</Text>
-                        <Text style={styles.familyName}>From The Family {selectedCrop.family}</Text>
+                        <Text style={styles.cropName}>{selectedCrop?.commonName}</Text>
+                        <Text style={styles.scientificName}>({selectedCrop?.scientificName})</Text>
+                        <Text style={styles.familyName}>From The Family {selectedCrop?.family}</Text>
                         <Text style={styles.bestGrown}>Best Grown From month - to month</Text>
                     </View>
 
@@ -203,7 +274,7 @@ const CropProfile = () => {
 
                                 <View style={subContainer.phIndi}>
                                 <Text style={styles.phText}>
-                                    Optimal Soil PH is {selectedCrop.soilPh}
+                                    Optimal Soil PH is {selectedCrop?.soilPh}
                                 </Text>
                             </View>
 
@@ -225,7 +296,7 @@ const CropProfile = () => {
 
 
                             <View style={subContainer.badgeContainer}>
-                                    {selectedCrop.commonPests.map((pest,index)=>(
+                                    {selectedCrop?.commonPests.map((pest,index)=>(
                                         <View style={subContainer.badgeWrapper} key={index}>
                 
                                             <Image source={pestImages[pest.toLowerCase() as string]} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
@@ -262,7 +333,7 @@ const CropProfile = () => {
                             <View style={subContainer.badgeContainer}>
                                 
 
-                                {selectedCrop.commonDiseases.map((disease,index)=>(
+                                {selectedCrop?.commonDiseases.map((disease,index)=>(
                                     <View style={subContainer.badgeWrapper} key={index}>
             
                                         <Image source={diseaseImages[disease.toLowerCase() as string]} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
@@ -491,7 +562,11 @@ const subContainer = StyleSheet.create({
         
         display:'flex',
         flexDirection:'row',
-        justifyContent:'space-between',
+        //justifyContent:'space-between',
+        alignItems:'center',
+        justifyContent:'center',
+        gap:30,
+        flexWrap:'wrap',
         marginBottom:10
     },
     badgeWrapper:{

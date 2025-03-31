@@ -1,0 +1,45 @@
+{
+    "Squash": {
+        "cropId":"SquashDef0001_cuc",
+        "thumbnail":"https://gardenerspath.com/wp-content/uploads/2018/08/Grow-Kabocha-Squash.jpg",
+        "scientificName": "Cucurbita maxima",
+        "family":"Cucurbitaceae",
+        "commonName":"Squash",
+        "growthTime": "45",
+        "bestSeason": "",
+        "soilType": "Loamy",
+        "soilPh": "5.5-8.5",
+        "commonPests": ["spottedladybeetle","aphids"],
+        "commonDiseases": ["powderyMildew", "mosaicVirus"],
+        "guide": {
+            "1": {
+                "header": "Soil Preparation",
+                "content": "Plow and harrow the field two to three times at one-week intervals to prevent weed growth.\n\nAfter the final leveling, create furrows depending on the season. During the rainy season, the furrow spacing should be three meters. In the dry season, the spacing should be two and a half meters.\n\nCreate drainage canals to prevent the plants from falling over during the rainy season.\n\nZero tillage or no-tillage farming can be applied when planting squash. Before planting, clean the area by manually cutting weeds or applying herbicide.\n"
+            },
+            "2": {
+                "header": "Transplanting",
+                "content": "Prepare the following growing media:\n\nOne part compost or organic fertilizer\nOne part clay soil\nOne part burned rice hull\n\nFill plastic bags, potlets, or seedbeds with the prepared media.\n\nWater the potting media before planting.\n\nPlant one newly sprouted seed per pot or planting hole.\n\nPlace the seedlings in a shaded area.\n\nWater the seedlings regularly as needed.\n\nHarden the seedlings by gradually reducing water and exposing them to direct sunlight.\n\nTransplant the seedlings with a spacing of one meter per hill, 15 days after sprouting or when the true leaves are fully developed.\n\nTransplant in the afternoon or during cloudy weather.\n\nReplant immediately in spots where plants did not survive.\n"
+            },
+            "3": {
+                "header": "Cultivation and Weeding",
+                "content": "Remove weeds around the plants 7-14 days after germination. Repeat weeding as needed."
+            },
+            "4": {
+                "header": "Fertilizer Guide",
+                "content":"The type and amount of fertilizer needed by a plant depend on the results of a soil analysis. If soil testing is not done, follow these recommendations:\n• In lowland areas, apply decomposed animal manure or compost fertilizer during plowing, before planting. In highland areas, apply 100 grams of organic fertilizer mixed with one tablespoon of complete fertilizer in each hole before planting.\n\nWATERING\nWater plays a crucial role in plant growth, especially for squash during the fruiting stage.\n• Side Dressing - Apply one teaspoon of urea to each hill one month after planting or when the plant has one-meter-long vines.\n• Two weeks after side-dressing, apply 10 grams of potash (0-0-60) and 60 grams of solophos (0-18-0) to each plant.\n• Additional urea or potash may be applied 15 days later depending on the plant's condition."
+            },
+            "5": {
+                "header": "Watering",
+                "content": "Water plays a crucial role in plant growth, especially for squash during the fruiting stage.\n\nFurrow irrigation is used for large-scale planting. For backyard squash growers, using a sprinkler or any modified irrigation system is recommended.\n\nIrrigate once a week or water each hill with one liter of water per day. Perform irrigation after fertilization.\n\nStop watering when the fruit reaches the mature green stage, as continued irrigation at this stage may result in lower-quality fruits.\n"
+            },
+            "6":{
+                "header":"Polination",
+                "content":"To increase fruit production when insect pollinators are scarce, perform hand pollination by covering or inserting the male flower, which is the same age as the female flower, between 6:00 and 8:00 in the morning."
+            },
+            "7": {
+                "header": "Harvesting",
+                "content": "Harvest young fruits 30-40 days after pollination. Cut a piece of the stem or peduncle using a knife if the fruit is not yet ready for sale to prevent damage.\n\nIf seeds are needed, the fruit should show signs of powdery mildew or a white coating on its surface. A hard rind indicates that the squash fruit is fully matured. At this stage, the seeds are fully developed.\n\nHarvest fully matured squash when the fruit has a brownish-orange color if you only need the seeds. Select fruits without symptoms of viral infection (mosaic, yellowing of leaves). This is necessary to avoid transmitting viruses through seeds for the next planting season.\n"
+            }
+        }
+    }
+}

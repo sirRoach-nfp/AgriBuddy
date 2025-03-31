@@ -14,8 +14,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { signOut } from 'firebase/auth';
 import { router } from 'expo-router';
 import { useUserContext } from '../Context/UserContext';
-
-
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { LinearGradient } from 'expo-linear-gradient';
 interface CurrentCrops{
 
   CropAssocId:string | null
@@ -242,12 +242,29 @@ const account = () => {
 
 
     
+    
+      <SafeAreaView style={styles.mainContainer}  >
+      
+        <LinearGradient style={styles.profileHeader}  
+              colors={['#d2e8d4', '#fdfcfb']}
+              start={{ x: 0, y: 1 }}
+              end={{ x: 1, y: 0 }}
+            >
 
-      <SafeAreaView style={styles.mainContainer}>
-        <View style={styles.profileHeader}>
           
+            <View style={styles.profileIconWrapper}>
+              <FontAwesome name="user-circle" size={65} color="#253D2C" />
+            </View>
 
-        </View>
+            <View style={styles.profileInfoWrapper}>
+                <Text numberOfLines={1} ellipsizeMode="tail" style={{ overflow: 'hidden', fontSize:18,fontWeight:700,color:'#253D2C' }}>{user?.Email}</Text>
+            </View>
+
+            <View style={styles.profileSettingWrapper}>
+              <FontAwesome name="gears" size={24} color="#253D2C" />
+            </View>
+
+        </LinearGradient> 
 
         <ScrollView style={styles.scrollWrapperContainer} contentContainerStyle={{alignItems:'center'}}>
 
@@ -295,7 +312,7 @@ const account = () => {
 
 
 
-      </SafeAreaView>
+        </SafeAreaView>
 
       
 
@@ -312,21 +329,66 @@ const styles = StyleSheet.create({
 
 
   mainContainer:{
-    borderWidth:1,
+    //borderWidth:1,
     flex:1,
     borderColor:'red',
     flexDirection:'column',
-    display:"flex"
+    display:"flex",
+    paddingTop:10
+    
   },
   profileHeader:{
     width:'100%',
     height:100,
-    borderWidth:1
+    //borderWidth:1,
+    //backgroundColor:'#4C9142',
+    display:'flex',
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'center',
+   
   },
-  scrollWrapperContainer:{
+  profileInfoWrapper:{
     //borderWidth:1,
     flex:1,
-    marginTop:20
+    width:100,
+    display:'flex',
+    flexDirection:'column',
+    height:70,
+    marginLeft:20,
+    marginRight:20,
+    //alignItems:'center',
+    justifyContent:'center',
+
+  },profileSettingWrapper:{
+    //borderWidth:1,
+    width:40,
+    height:40,
+    marginRight:10,
+    display:'flex',
+    alignItems:'center',
+    justifyContent:'center'
+    
+  },
+
+  profileIconWrapper:{
+    //borderWidth:1,
+    borderRadius:'50%',
+    width:70,
+    height:70,
+    marginLeft:10,
+    display:'flex',
+    alignItems:'center',
+    justifyContent:'center'
+  },
+
+  scrollWrapperContainer:{
+    borderWidth:1,
+    flex:1,
+    marginTop:20,
+    borderTopLeftRadius:15,
+    borderTopRightRadius:15,
+    backgroundColor:'#ffffff'
   },
 
 

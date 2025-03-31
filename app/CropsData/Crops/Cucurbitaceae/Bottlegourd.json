@@ -1,0 +1,45 @@
+{
+    "Bottlegourd": {
+        "cropId":"BottleGourdDef0002_cuc",
+        "thumbnail":"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh50_FlvDt8FDK7n9McgbAuV22UVXGFyDayXy_zgIPUNfKlPv54XnQ_fo0ilMqP-zWGxelRTR9rmxND5rKmNUMM7lLMUEeR5ZwiEiRAsSkZOvjusQka1tf9lnITfaZp4rAHPhGhnfKD0MQ2/s690/upo+tambuli.jpg",
+        "scientificName": "Lagenaria siceraria",
+        "family":"Curcurbitaceae",
+        "commonName":"Bottlegourd",
+        "growthTime": "45",
+        "bestSeason": "",
+        "soilType": "Loamy",
+        "soilPh": "5.5-7.5",
+        "commonPests": ["yellowbeetle"],
+        "commonDiseases": ["fruitRot"],
+        "guide": {
+            "1": {
+                "header": "Land Preparation",
+                "content": "Prepare the field as early as possible to give enough time for the weeds and stubbles of previous crops to decompose. Plow and harrow 2 to 3 times alternately at one-week intervals. Plow at a depth of 15 to 20 cm. Harrow twice to break the clods and level the field. A well-pulverized soil promotes good soil aeration and enhances root formation."
+            },
+            "2": {
+                "header": "Seed Preparation, Sowing & Transplanting",
+                "content": "A hectare of farm requires 1 to 2 kg of seeds.\n\n1. Soak the seeds in clean water for 24 hours.\n2. Pre-germinate the seeds by wrapping them in a moist cloth and placing them in a cool and dark place. Incubate until the seed coat breaks.\n\nIf direct planting:\n- Plant one pre-germinated seed per hill at a distance of one meter between hills.\n- Cover the seeds with a thin layer of soil.\n- During the wet season, plant in ridges or above furrows to prevent rotting of seedlings due to flooding.\n\nIf using seedbeds:\n- Use a prepared media of one part compost or organic fertilizer, one part clay soil, and one part carbonized rice hull.\n- A ready-mixed commercial soil media for seedling production can also be used.\n- Fill plastic bags, potlets, or seedling trays with the prepared media.\n- Water the potting media before sowing. Sow one pre-germinated seed per potlet.\n- Place the seedling trays or potlets under temporary shade.\n- Maintain the seedlings by watering regularly when needed.\n- Harden the seedlings by gradually reducing the frequency of watering and exposing them to direct sunlight.\n\nTransplanting:\n- Transplant one seedling per hill at a distance of one meter between hills 15 days after emergence or when true leaves have developed.\n- Transplant in the afternoon or during cloudy days.\n- Replant missing hills immediately."
+            },
+            "3": {
+                "header": "Trellising",
+                "content": "Provide the plants with trellises to produce fruits of good quality. Trellising is also essential during the wet season to minimize fruit rotting and malformation.\n\n- Construct overhead trellises at a distance of 2 to 3 meters wide and 2 meters high using ipil-ipil or bamboo poles.\n- Provide strong roof trellis by intertwining tie wire or nylon twine crosswise and lengthwise on top of the trellis.\n- Provide a ladder-like trellis or vertical pole for each plant to facilitate the vines to climb up.\n- Train the vines to climb the trellis by tying the stem lightly on the vertical pole or ladder-like trellis until it reaches the overhead trellis."
+            },
+            "4": {
+                "header": "Pruning",
+                "content": "To promote branching and fruiting, remove the tip of the main vine and the lower lateral branches that appear on the climbing part of the main stem."
+            },
+            "5": {
+                "header": "Weeding & Cultivation",
+                "content": "Bottle gourd is moderately deep-rooted with an extensive lateral root system. Hill-up at 15 to 20 days after emergence. Minimize cultivation during the fruiting stage to avoid disturbing the roots. Hand weeding is recommended during this stage."
+            },
+            "6": {
+                "header": "Water Management",
+                "content": "Bottle gourd is sensitive to excessive soil moisture, which favors disease infection.\n\n- Provide adequate drainage during the wet season to avoid waterlogging.\n- Furrow irrigation is recommended during the dry season at weekly intervals.\n- Spread rice straw around the base of the plants as mulch to conserve moisture and minimize watering during the dry season."
+            },
+            "7": {
+                "header": "Harvest",
+                "content": "Fruits develop very fast and require much attention at harvest time. It usually takes 15 days to reach marketable size from the day of fruit set or 60 to 80 days from sowing.\n\n- Harvest fruits using a sharp knife by cutting the peduncle, leaving approximately 5 cm length.\n- Put harvested fruits in a woven basket lined with banana leaves to avoid skin bruises.\n- Pack marketable fruits in plastic bags."
+            }
+        }
+    }
+}

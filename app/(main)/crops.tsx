@@ -69,7 +69,7 @@ const crops = () => {
 
 
   const [cropDataMain,SetCropDataMain] = useState({})
-  const [cropData,SetCropData] = useState<CropsData>({})
+  const [cropData,SetCropData] = useState<any>({})
   const [rotationPlan,SetRotationPlan] = useState<RotationPlan[]>([])
 
 

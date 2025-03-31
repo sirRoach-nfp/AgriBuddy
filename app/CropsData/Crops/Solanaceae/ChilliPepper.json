@@ -1,0 +1,45 @@
+{
+    "ChilliPepper": {
+        "cropId":"ChilliPepperDef0005_sol",
+        "thumbnail":"https://www.tastingtable.com/img/gallery/20-types-of-peppers-that-will-set-your-mouth-on-fire/intro-1645288845.jpg",
+        "scientificName": "Capsicum annuum",
+        "family":"Solanaceae",
+        "commonName":"Chilli Pepper",
+        "growthTime": "45",
+        "bestSeason": "",
+        "soilType": "Loamy",
+        "soilPh": "5.5-7",
+        "commonPests": ["spidermites","aphids","leafhoppers"],
+        "commonDiseases": ["anthracnose", "bacterialWilt"],
+        "guide": {
+            "1": {
+                "header": "Soil And Climactic Requirements",
+                "content": "Green chili is a sun-loving crop. It can be planted from May to September during the rainy season and from October to February during the dry season. It grows in almost any type of soil. To achieve the highest yield, plant it in sandy loam or clay loam soil with plenty of organic matter, adequate water, and good drainage."
+            },
+            "2": {
+                "header": "Preparation of the Planting Area / Soil Preparation",
+                "content": "Plow and harrow the soil alternately two to three (2-3) times to make it fine. Create furrows with a distance of 80 centimeters apart. The spacing between rows depends on the area, variety, and soil fertility."
+            },
+            "3": {
+                "header": "Two Methods of Making a Seedbed / Nursery",
+                "content": "1 | Seedbed Method\n\n a. Select a flat area exposed to sunlight, with an adequate water source, good drainage, and protection against strong winds or windbreaks.\n\n b. Prepare the soil by plowing and harrowing alternately until the soil becomes fine.\n\n c. For a one-hectare planting area, make seedbeds measuring 1 x 10 meters and 15 centimeters high.\n\n d. Fine-tune and level the seedbed using hand tools. Remove weeds and debris.\n\n e. Before planting the seeds, sterilize the seedbed to kill existing weeds and soil-borne diseases.\n\n     • Water the prepared seedbed to allow heat to penetrate the soil.\n     • Spread three (3) to five (5) centimeters of straw or rice hull on top of the seedbed and burn it gradually.\n     • Once the soil cools down, remove unburned materials and ash.\n\n f. To prevent adverse effects, do not plant the seeds immediately after burning.\n\n g. Irrigate the seedbed before planting.\n\n h. On the night before planting, soak the seeds in clean water. Plant them immediately or air-dry them before planting.\n\n i. Distribute the seeds evenly along the furrows and cover them with fine soil.\n\n2 | Seedling Tray/Potlets Method\n\nThe use of trays or potlets requires fewer seeds, ensures uniform growth, reduces transplanting shock and seedling mortality, and saves on labor costs for thinning, weeding, watering, and pest management.\n\nPrepare the sowing medium by mixing one part compost, one part carbonized rice hull, and one part garden soil. Sterilize the soil by pouring hot or boiling water before mixing it with other medium components.\n\nFill and compact the tray or potlet holes with the prepared medium using your palm. Use seedling trays with 100-104 holes. The medium in each hole must provide enough nutrients for the seedlings until transplanting.\n\nOn the night before planting, soak the required seeds in clean water. Plant them immediately or air-dry them before sowing."
+            },
+            "4": {
+                "header": "Caring for the Seedlings",
+                "content":"• Keep the soil moist until the seedlings are fully established. Water the seedlings in the morning to prevent damping-off.\n\n• Thin the seedlings after the two true leaves have emerged. Remove the excess seedlings and replant them in trays or potlets. Place them in a shaded area until they are fully established.\n\n• Apply a starter solution 10 days after germination. Dissolve two (2) teaspoons of ammonium phosphate (16-0-0) or complete fertilizer (14-14-14) in four (4) liters of water. Water the seedlings after fertilizer application. Distribute the solution evenly among the seedlings to avoid leaf damage.\n\n• One week before transplanting, harden the seedlings by regulating water supply and gradually exposing them to sunlight to prepare them for field conditions."
+            },
+            "5": {
+                "header": "Transplanting",
+                "content": "• Transplant the seedlings 30-40 days after sowing.\n\n• Before transplanting, water the seedbed or seedling tray to make it easier to uproot the seedlings and prevent root damage.\n\n• Carefully uproot the seedlings using a trowel or a pointed stick.\n\n• During the dry season, pepper is usually planted on ridges with a 30-centimeter spacing between hills.\n\n• Transplant during cloudy weather or in the afternoon to avoid wilting and to help the seedlings recover quickly."
+            },
+            "6":{
+                "header":"Watering",
+                "content":"Water the soil during the dry season to harvest good quality fruits. Depending on soil moisture, irrigate four (4) to five (5) times from transplanting until the first harvest as follows:\n\n• First - on the day of transplanting\n• Second - 14 days after transplanting\n• Third - 30 days after transplanting\n• Fourth - 50 days after transplanting\n\nThe final watering should be done before the last week of harvesting."
+            },
+            "7": {
+                "header": "Fertilization",
+                "content": "To achieve high yields, apply the right type and amount of fertilizer at the proper time. To determine this, the soil should be tested at the Soil Laboratory. If the soil has not yet been tested, there are steps you can take to ensure good crop growth.\n\nApply four (4) bags of complete (14-14-14) fertilizer and four (4) bags of ammonium phosphate (16-20-0) per hectare.\n\nOn the 10th day after transplanting, side-dress with two (2) bags of ammonium sulfate (21-0-0) per hectare. Then, apply two (2) bags of urea (46-0-0) and two (2) bags of muriate of potash (0-0-60) per two (2) hectares after 30 days from transplanting. On the 50th day after transplanting, apply four (4) bags of muriate of potash (0-0-60) per hectare.\n\nAs chili plants grow, they require more phosphorus and potassium. Excess nitrogen may cause the plant to grow too much, resulting in lush green leaves but fewer fruits."
+            }
+        }
+    }
+}

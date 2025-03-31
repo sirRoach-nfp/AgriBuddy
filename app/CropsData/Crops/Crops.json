@@ -48,5 +48,143 @@
                 "content": "Pruning is done to promote healthy plant growth, ensure uniform fruit size, and speed up the harvesting process. It is performed 10–20 days after transplanting or when the branches have grown large. Remove excess branches in the morning to allow the plant wounds to heal faster."
             }
         }
+    },
+    "Eggplant": {
+        "thumbnail":"https://upload.wikimedia.org/wikipedia/commons/7/76/Solanum_melongena_24_08_2012_%281%29.JPG",
+        "scientificName": "Solanum melongena",
+        "family":"Solanaceae",
+        "commonName":"Eggplant",
+        "growthTime": "45",
+        "bestSeason": "",
+        "soilType": "Loamy",
+        "soilPh": "5.5-8.5",
+        "commonPests": ["thrips", "leafhoppers", "aphids","fruitborer","cutworm"],
+        "commonDiseases": ["Phomopsis", "bacterialWilt"],
+        "guide": {
+            "1": {
+                "header": "Soil Preparation",
+                "content": ">Prepare the planting area early to allow weeds and straw to decompose.\n >Plow and harrow the field two to three times alternately, with a one-week interval. \n >Plow the soil to a depth of 15-20 cm. \n >Harrow the field twice to break large clumps of soil and level the planting area. \n >Finely tilled soil improves aeration and promotes better root growth."
+            },
+            "2": {
+                "header": "Seedling Care",
+                "content": "A one-hectare farm requires 100 grams of seeds. One gram contains approximately 250 seeds.\n\nThere are two methods of raising eggplant seedlings: Seedbed Method and Seedling Tray Method.\n\nProtect the seedlings from excessive sunlight and rain using temporary shading materials such as plastic, cogon grass, talahib, or coconut leaves.\n\nCreate a shading structure that is 120 cm high on the east side and 60 cm high on the west side.\n\nWater the seedlings in the morning to prevent damping-off disease. The amount of water should be enough to keep the soil moist but not too wet.\n\nOverwatering weakens the seedlings and increases the risk of damping-off.\n\nOn the 10th day after germination, fertilize the seedlings with 1 teaspoon of urea (45-0-0) or ammonium sulfate (21-0-0) dissolved in 4 liters of water.\n\nAfter fertilization, water the seedbed to prevent leaf damage.\n\nOne week before transplanting, harden the seedlings by gradually exposing them to sunlight and reducing watering.\n\nOn the first day, expose the seedlings to sunlight until 10:00 AM, then gradually increase exposure time daily until they can withstand full-day sunlight.\n"
+            },
+            "3": {
+                "header": "Preparing the Planting Bed",
+                "content": "1. Using Plastic Mulch: Create a planting bed that is 1 meter wide and 20 centimeters high. Leave a 0.5-meter spacing between beds for proper irrigation.\n\n2. Conventional Method: During the dry season, make furrows.\n\nDuring the rainy season, form ridges that are 1 meter high."
+            },
+            "4": {
+                "header": "Transplanting",
+                "content": "Seedlings are ready for transplanting within 4 to 6 weeks after sowing.\n\nGently uproot the seedlings without removing the soil attached to the roots to ensure survival.\n\nFor the conventional method:\n- Create furrows with 100 cm spacing per row.\n- Most farmers prefer double-row planting to protect fruits from sun scalding.\n- Double rows should have 50 cm spacing at the ends and 150 cm spacing between double rows.\n\nFor plastic mulch planting:\n- Remove soil and transplant seedlings directly into the holes of the plastic sheets.\n\nTransplant 30 to 35-day-old seedlings with 3 to 4 leaves, planting one seedling per hole.\n\nTransplant in cloudy weather or late afternoon to avoid transplanting shock.\n\nReplant within 3 to 5 days if some seedlings do not survive.\n\nImmediately water the newly transplanted seedlings.\n"
+            },
+            "5": {
+                "header": "Watering",
+                "content": "To prevent stem damage, hold the seedling by the roots using your thumb and forefinger. Plant it 3 to 5 cm deep, depending on the stem length.\n\nIf using seedling trays, transplant the seedling along with the soil from the tray hole.\n\nTransplant in the afternoon or on cloudy days to reduce stress on the seedlings.\n\nCover newly transplanted seedlings with banana leaves or any available shading materials to protect them."
+            },
+            "6": {
+                "header": "Trellising",
+                "content": "Install a trellis for the plants 15 days after transplanting using available materials. This provides support, promotes better air circulation, and prevents fruit rot."
+            },
+            "7": {
+                "header": "Cultivation and Weeding",
+                "content": "Loosen the soil between the plant rows through off-barring 14-21 days after transplanting.\n\nHill-up the soil 28-35 days after transplanting to provide better root support and promote healthy plant growth."
+            },
+            "8": {
+                "header": "Watering",
+                "content": "Using Plastic Mulch\n\nIrrigate the planting area two days before transplanting to cool the soil under the plastic mulch and dissolve the applied fertilizers.\n\nConventional Method\n\nWater the furrows to dissolve the applied fertilizer and reduce direct root contact with the fertilizer.\n\nDuring the dry season:\n- Irrigate at 7, 21, and 30 days after transplanting.\n- Afterward, water every 10 days.\n\nEggplants grown with mulch require less water.\n\nDuring the rainy season, irrigate only when necessary.\n\nAlways water after fertilization.\n"
+            }
+        }
+    },
+    "Squash": {
+        "thumbnail":"https://gardenerspath.com/wp-content/uploads/2018/08/Grow-Kabocha-Squash.jpg",
+        "scientificName": "Cucurbita maxima",
+        "family":"Cucurbitaceae",
+        "commonName":"Squash",
+        "growthTime": "45",
+        "bestSeason": "",
+        "soilType": "Loamy",
+        "soilPh": "5.5-8.5",
+        "commonPests": ["spottedladybeetle","aphids"],
+        "commonDiseases": ["powderyMildew", "mosaicVirus"],
+        "guide": {
+            "1": {
+                "header": "Soil Preparation",
+                "content": "Plow and harrow the field two to three times at one-week intervals to prevent weed growth.\n\nAfter the final leveling, create furrows depending on the season. During the rainy season, the furrow spacing should be three meters. In the dry season, the spacing should be two and a half meters.\n\nCreate drainage canals to prevent the plants from falling over during the rainy season.\n\nZero tillage or no-tillage farming can be applied when planting squash. Before planting, clean the area by manually cutting weeds or applying herbicide.\n"
+            },
+            "2": {
+                "header": "Transplanting",
+                "content": "Prepare the following growing media:\n\nOne part compost or organic fertilizer\nOne part clay soil\nOne part burned rice hull\n\nFill plastic bags, potlets, or seedbeds with the prepared media.\n\nWater the potting media before planting.\n\nPlant one newly sprouted seed per pot or planting hole.\n\nPlace the seedlings in a shaded area.\n\nWater the seedlings regularly as needed.\n\nHarden the seedlings by gradually reducing water and exposing them to direct sunlight.\n\nTransplant the seedlings with a spacing of one meter per hill, 15 days after sprouting or when the true leaves are fully developed.\n\nTransplant in the afternoon or during cloudy weather.\n\nReplant immediately in spots where plants did not survive.\n"
+            },
+            "3": {
+                "header": "Cultivation and Weeding",
+                "content": "Remove weeds around the plants 7-14 days after germination. Repeat weeding as needed."
+            },
+            "4": {
+                "header": "Fertilizer Guide",
+                "content":"The type and amount of fertilizer needed by a plant depend on the results of a soil analysis. If soil testing is not done, follow these recommendations:\n• In lowland areas, apply decomposed animal manure or compost fertilizer during plowing, before planting. In highland areas, apply 100 grams of organic fertilizer mixed with one tablespoon of complete fertilizer in each hole before planting.\n\nWATERING\nWater plays a crucial role in plant growth, especially for squash during the fruiting stage.\n• Side Dressing - Apply one teaspoon of urea to each hill one month after planting or when the plant has one-meter-long vines.\n• Two weeks after side-dressing, apply 10 grams of potash (0-0-60) and 60 grams of solophos (0-18-0) to each plant.\n• Additional urea or potash may be applied 15 days later depending on the plant's condition."
+            },
+            "5": {
+                "header": "Watering",
+                "content": "Water plays a crucial role in plant growth, especially for squash during the fruiting stage.\n\nFurrow irrigation is used for large-scale planting. For backyard squash growers, using a sprinkler or any modified irrigation system is recommended.\n\nIrrigate once a week or water each hill with one liter of water per day. Perform irrigation after fertilization.\n\nStop watering when the fruit reaches the mature green stage, as continued irrigation at this stage may result in lower-quality fruits.\n"
+            },
+            "6":{
+                "header":"Polination",
+                "content":"To increase fruit production when insect pollinators are scarce, perform hand pollination by covering or inserting the male flower, which is the same age as the female flower, between 6:00 and 8:00 in the morning."
+            },
+            "7": {
+                "header": "Harvesting",
+                "content": "Harvest young fruits 30-40 days after pollination. Cut a piece of the stem or peduncle using a knife if the fruit is not yet ready for sale to prevent damage.\n\nIf seeds are needed, the fruit should show signs of powdery mildew or a white coating on its surface. A hard rind indicates that the squash fruit is fully matured. At this stage, the seeds are fully developed.\n\nHarvest fully matured squash when the fruit has a brownish-orange color if you only need the seeds. Select fruits without symptoms of viral infection (mosaic, yellowing of leaves). This is necessary to avoid transmitting viruses through seeds for the next planting season.\n"
+            }
+        }
+    },
+    "ChilliPepper":{
+        "thumbnail":"https://www.tastingtable.com/img/gallery/20-types-of-peppers-that-will-set-your-mouth-on-fire/intro-1645288845.jpg",
+        "scientificName": "Capsicum annuum",
+        "commonName":"ChilliPepper"
+    },
+    "Potato":{
+        "thumbnail":"https://hgtvhome.sndimg.com/content/dam/images/hgtv/fullset/2023/3/24/01/shutterstock_potato-field-vegetable-tubers-soil-dirt-310661561.jpg.rend.hgtvcom.1280.960.85.suffix/1679683308258.webp",
+        "scientificName": "Solanum tuberosum L.",
+        "commonName":"Potato"
+    },
+    "Sitaw":{
+        "thumbnail":"https://www.recipesbynora.com/wp-content/uploads/2023/07/Yardlong-Beans-plant.jpg",
+        "scientificName": "Vigna unguiculata subsp. sesquipedalis",
+        "commonName":"Sitaw"
+    },
+    "Bittergourd":{
+        "thumbnail":"https://www.greensofkerala.com/wp-content/uploads/2021/06/bitter-gourd.jpg",
+        "scientificName": "Momordica charantia",
+        "commonName":"Bittergourd"
+    },
+    "Bottlegourd":{
+                        "thumbnail":"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh50_FlvDt8FDK7n9McgbAuV22UVXGFyDayXy_zgIPUNfKlPv54XnQ_fo0ilMqP-zWGxelRTR9rmxND5rKmNUMM7lLMUEeR5ZwiEiRAsSkZOvjusQka1tf9lnITfaZp4rAHPhGhnfKD0MQ2/s690/upo+tambuli.jpg",
+        "scientificName": "Lagenaria siceraria",
+        "commonName":"Bottlegourd"
+    },
+    "Cucumber":{
+        "thumbnail":"https://www.thedailymeal.com/img/gallery/13-cucumber-varieties-you-probably-didnt-know-about/intro-1680710314.jpg",
+"scientificName": "Cucumis sativus",
+"commonName":"Cucumber"
+
+    },
+    "Peanut":{
+        "thumbnail":"https://t4.ftcdn.net/jpg/04/18/04/11/360_F_418041157_tJ1Kf7z90deMsoUMc19qeyaRgiZ1XBmG.jpg",
+"scientificName": "Arachis hypogaea",
+"commonName":"Peanut"
+
+    },
+    "MungBean":{
+        "thumbnail":"https://alseed.com/wp-content/uploads/2022/01/Mung-Bean-Stock-Image-scaled-e1641503823506.jpeg",
+"scientificName": "Vigna radiata",
+"commonName":"Mungbean"
+
+    },
+    "Spongegourd":{
+        "thumbnail":"https://rukminim3.flixcart.com/image/850/1000/xif0q/plant-seed/b/t/m/50-vlr-220-luffa-acutangula-seeds-angled-ridge-gourd-turai-50-original-imaggry97gwyc63h.jpeg?q=20&crop=false",
+"scientificName": "Luffa acutangula",
+"commonName":"Spongegourd"
+
     }
+
 }

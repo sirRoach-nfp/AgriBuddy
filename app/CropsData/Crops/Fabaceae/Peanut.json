@@ -1,0 +1,37 @@
+{
+    "Peanut": {
+        "cropId":"PeanutDef0003_fab",
+        "thumbnail":"https://t4.ftcdn.net/jpg/04/18/04/11/360_F_418041157_tJ1Kf7z90deMsoUMc19qeyaRgiZ1XBmG.jpg",
+        "scientificName": "Arachis hypogaea",
+        "family":"Fabaceae",
+        "commonName":"Peanut",
+        "growthTime": "45",
+        "bestSeason": "",
+        "soilType": "Loamy",
+        "soilPh": "5.5-8.5",
+        "commonPests": ["leafhoppers","aphids"],
+        "commonDiseases": ["peanutMottleVirus"],
+        "guide": {
+            "1": {
+                "header": "Soil Preparation",
+                "content": "The soil must be healthy, free from diseases and insect pests. It is usually plowed twice or more to loosen it. Peanuts grow well in sandy loam soil with a pH of 6.0–6.5."
+            },
+            "2": {
+                "header": "Fertilization",
+                "content": "Sandy soils are usually deficient in Boron. Peanuts require only a small amount of Boron, but it is important to add it to prevent the occurrence of hollow heart. Boron is usually applied when the peanuts begin to flower or 30–45 days after planting. Applying fertilizer with calcium is important, placing it in the rows about 5–6 cm deep where the peanuts will be planted. Calcium application is more effective when directly incorporated into the soil using the general peanut method, targeting the planting holes."
+            },
+            "3": {
+                "header": "Weeding",
+                "content": "Weeding is highly recommended to remove weeds and give peanuts proper aeration."
+            },
+            "4": {
+                "header": "Irrigation",
+                "content": "Water the field through furrow irrigation. Repeat one week after planting. As the peanuts begin to flower, water deeply every 2 to 3 weeks to prevent pod rot and to avoid shriveling of the kernels inside the shells. Improper watering can result in low yields and poor-quality peanuts. It can also increase the risk of infection by Aspergillus flavus which produces aflatoxin."
+            },
+            "5": {
+                "header": "Harvesting",
+                "content": "Peanuts usually mature between 100 to 110 days after planting. Physiological maturity can be observed through the following signs according to ASD:\n\n- The leaves turn yellow to brown.\n- The outer shell becomes dark.\n- The inside of the shell shows well-formed veins."
+            }
+        }
+    }
+}

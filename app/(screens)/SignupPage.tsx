@@ -171,6 +171,7 @@ const SignupPage = () => {
             const CurrentCropsRefId = "CurrentCropsRef" +`${userName}` + Date.now().toString()
             const PlotsRefId = "PlotsRefId" +`${userName}` + Date.now().toString()
             const RecordsRefId = "RecordsRefId" +`${userName}` + Date.now().toString()
+            const DiscussionRecordRefId = "DiscussionRecordRefId" +`${userName}` + Date.now().toString()
 
 
             const newUserObject = {
@@ -179,7 +180,8 @@ const SignupPage = () => {
                 CropRotationPlanRefId : cropRotationPlanRefId,
                 CurrentCropsRefId : CurrentCropsRefId,
                 PlotsRefId : PlotsRefId,
-                RecordsRefId:RecordsRefId
+                RecordsRefId:RecordsRefId,
+                DiscussionRecordRefId: DiscussionRecordRefId
             }
 
             await setDoc(doc(db,"Users",userId),newUserObject)
@@ -189,6 +191,7 @@ const SignupPage = () => {
             await setDoc(doc(db,"Records",RecordsRefId),{PestLogs:[],DiseaseLogs:[],FertilizerLogs:[],PesticideLogs:[]})
             await setDoc(doc(db,"CurrentCrops",CurrentCropsRefId),{CurrentCrops:[]})
             await setDoc(doc(db,"CropRotationPlan",cropRotationPlanRefId),{Plans:[]})
+            await setDoc(doc(db,"DiscussionRecords",DiscussionRecordRefId),{Discussions:[]})
 
 
 

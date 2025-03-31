@@ -7,8 +7,11 @@ interface UserData {
   PlotsRefId: string;
   RecordsRefId: string;
   CurrentCropsRefId: string;
+  DiscussionRecordRefId:string,
   Username: string;
 }
+
+
 
 interface UserContextType {
   user: UserData | null;

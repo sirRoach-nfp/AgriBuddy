@@ -1,0 +1,45 @@
+{
+    "Mungbean": {
+        "cropId":"MungBeansDef0001_fab",
+        "thumbnail":"https://alseed.com/wp-content/uploads/2022/01/Mung-Bean-Stock-Image-scaled-e1641503823506.jpeg",
+        "scientificName": "Vigna radiata",
+        "family":"Fabaceae",
+        "commonName":"Mungbean",
+        "growthTime": "45",
+        "bestSeason": "",
+        "soilType": "Loamy",
+        "soilPh": "5.8-6.5",
+        "commonPests": ["beanfly","aphids","podborer"],
+        "commonDiseases": ["powderyMildew","cersoporaLeafSpot"],
+        "guide": {
+            "1": {
+                "header": "Soil and Climatic Requirements",
+                "content": "Mungbean is a dry season crop and can be grown best in rotation with rice or corn in an optimum temperature ranging from 20°C to 30°C. It needs plenty of sunlight and a daylength of 11.5 to 13.0 hours.\n\nIn the Philippines, mungbean can be grown during the wet season (May-June); dry season (September-October); and late dry season (February-March). High humidity brought about by continuous rains could severely reduce the quality of harvested seeds.\n\nIt can be profitably grown in different types of soil with pH ranging from 5.8 to 6.5. It is fairly well adapted to sandy loam soils and a dry condition, which gives it a competitive advantage and permits it to fit in various cropping systems as an intercrop, rotation, and relay crop.\n\nIf grown during the wet season, the soil should be well-drained. Heavy soils are suitable only for dry season planting because mungbean is sensitive to extended periods of water-logging.\n\nJust like other crops, mungbean production can be affected by several constraints such as erratic weather, insect pests and diseases, poor management practices, and the use of inferior or low-yielding varieties or cultivars."
+            },
+            "2": {
+                "header": "Land Preparation",
+                "content": "Prepare the land thoroughly so that mungbean seeds can germinate uniformly, establish rapidly, and compete well with weeds.\n\nFor the uplands, prepare the soil thoroughly by plowing alternated with harrowing at weekly intervals. For post-rice culture, zero or minimum tillage can be practiced."
+            },
+            "3": {
+                "header": "Planting",
+                "content": "Drill the seeds along shallow furrows spaced 60 centimeters apart. Twenty (20) kilograms of seeds is enough to plant a hectare.\n\nIf seed inoculant is available, moisten the seeds with water, then mix the inoculant until all seeds are coated. Keep the newly inoculated seeds under shade until they are planted.\n\nAt planting, sufficient soil moisture is necessary so that the seeds can germinate uniformly. For post-rice culture, flood the paddy 1-2 days before planting. Then, drain the water before broadcasting the seeds."
+            },
+            "4": {
+                "header": "Water Management",
+                "content": "Mungbean is relatively tolerant to drought. However, it needs a sufficient amount of water during its critical stages of growth and development (germination, vegetative, flowering, and pod-filling stages).\n\nThe daily water requirement of mungbean differs depending on the intensity of solar radiation and the rate of evaporation. In general, the crop requires 3.5 millimeters of water per day or about 410 millimeters per cropping season.\n\nIf there is residual rain and sufficient soil moisture during the early dry season planting (September-October), supplemental irrigation is not needed. On the other hand, late dry season planting (January-March) requires irrigation at its various critical stages of development. Overhead sprinkler or furrow irrigation may be used to irrigate the field."
+            },
+            "5": {
+                "header": "Nutrient Management",
+                "content": "Fertilization rate and type of application depends on the results of soil analysis. However, in the absence of such analysis and during dry season cropping, basal application of three bags (150 kg) of complete fertilizer (14-14-14) per hectare is recommended for heavy soils (loam to clay loam), and four bags (200 kg) for light soils (sandy to sandy loam).\n\nYou can also apply organic fertilizer if you want to produce mungbean organically as well as to improve the soil conditions."
+            },
+            "6": {
+                "header": "Weed Control",
+                "content": "Weed control is critical when mungbean grows slowly 2-3 weeks after emergence. To minimize weed growth, prepare the land thoroughly before planting.\n\nFifteen days after planting, off-barring should be done to loosen the soil and eradicate weeds. This will be followed by hand weeding to totally eradicate remaining weeds.\n\nRight after weeding, immediately do the hilling-up by passing a carabao-drawn plow in between the rows of mungbean crop not only to eradicate remaining weeds but also to improve plant anchorage.\n\nMoreover, spot weeding should also be done when weed population is high during the growth and development of the crop."
+            },
+            "7": {
+                "header": "Harvesting",
+                "content": "Mungbean is harvested by priming. Harvesting is done 60-70 days after planting. Mature pods turn brown and then black. Begin harvesting as soon as 75% of the pods have dried up.\n\nPick the harvestable pods by hand. Repeat harvesting every 3 to 5 days. The number of primings (number of harvestings) depends on the available soil moisture and fertility, and on the condition of the crop.\n\nRight after harvesting, sun-dry mungbean pods. When pods are sufficiently dry enough, thresh by placing the dried pods in a sack and beating it until all seeds are severed from the pods. A mechanical rice thresher may be used for large-scale production.\n\nTake precaution not to damage the mungbean seeds. Clean the seeds and sun-dry until 12% moisture content is reached."
+            }
+        }
+    }
+}

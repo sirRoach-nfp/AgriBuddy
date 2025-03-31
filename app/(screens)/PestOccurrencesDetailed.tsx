@@ -13,7 +13,7 @@ import { useSearchParams } from 'expo-router/build/hooks';
 
 
 import DatePicker from 'react-native-date-picker';
-import { LineChart } from 'react-native-chart-kit';
+import { LineChart,PieChart } from 'react-native-chart-kit';
 import { useNavigation } from 'expo-router';
 import { useUserContext } from '../Context/UserContext';
 
@@ -23,7 +23,14 @@ interface PestLog {
     Pestname:string,
     Temp:number
 }
+
+
+
 const PestOccurrencesDetailed = () => {
+
+
+
+      
 
     const {user} = useUserContext();
 
@@ -67,7 +74,7 @@ const PestOccurrencesDetailed = () => {
 
   const [selectedPests, setSelectedPests] = useState<string[]>([]);
   const [selectedPestTempVOccurrences, setSelectedPestTempVOccurrences] = useState<string[]>([]);
-
+  const [selectedCropForChart,setSelectedCropForChart] = useState<string[]>([]);
 
 
     const togglePestSelection = (pest: string) => {
@@ -89,10 +96,25 @@ const PestOccurrencesDetailed = () => {
 
     }
 
+    const toggleCropSelectionChartOccurence = (crop:string)=>{
+
+        setSelectedCropForChart(prev=>
+            prev.includes(crop)
+                ? prev.filter(c => c !== crop) // Remove if already selected
+                : [...prev, crop] // Add if not selected
+        )
+    }
+
   const [chartData,setChartData] = useState<any>(null);
+  const [pieChartData,setPieChartData] = useState<any>(null);
+
+
+
   const [chartDataTempVOccurrences,setChartDataTempVOccurrences] = useState<any>(null);
 
+
   const [pestListData,setPestListData] = useState<string[]>([])
+  const [cropNameListData,setCropNameListData] = useState<string[]>([])
 
 
   //tabular settings <end>
@@ -250,6 +272,45 @@ const PestOccurrencesDetailed = () => {
 
  }
 
+
+
+
+ const displayPieChartData = (pestLogs:PestLog[],selectedCrop:string[])=>{
+
+    if(selectedCrop.length === 0) return [];
+
+    console.log("At display pie chart function .......")
+    console.log("Passed Pest Logs Data : ", pestLogs)
+    console.log("Selected Crops Data : ", selectedCrop)
+
+
+    console.log("Filtering logs by selected crops...")
+
+    const filteredLogs = pestLogs.filter((log:any)=> selectedCrop.includes(log.Cropname));
+    console.log("Filter logs by cropname : ", filteredLogs)
+
+    const pestCounts = pestLogs.reduce((acc, log) => {
+        acc[log.Pestname] = (acc[log.Pestname] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+    
+
+    const generateColor = () =>
+    `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`;
+
+    return Object.keys(pestCounts).map((pest, index) => ({
+        name: pest,
+        population: pestCounts[pest],
+        color: generateColor(),
+        legendFontColor: "#7F7F7F",
+        legendFontSize: 15,
+    }));
+
+ }
+
+
+
+
   useEffect(()=> {
     
 
@@ -288,9 +349,11 @@ const PestOccurrencesDetailed = () => {
                     console.log( "Filtered Plot Pest log entry", existingLogs[logIndex].PlotPestLog)
 
                     const pestNames = [...new Set(plotPestLog.map((log: any) => log.Pestname))];
+                    const cropNames = [...new Set(plotPestLog.map((log: any) => log.CropName))]
                     console.log("Pest List Data: ", pestNames);
 
                     setPestListData(pestNames as string[])
+                    setCropNameListData(cropNames as string[])
                     setPestLogs(existingLogs[logIndex].PlotPestLog)
 
 
@@ -379,6 +442,11 @@ const PestOccurrencesDetailed = () => {
     console.log("ChartData for TempVOccu : ", chartDataTempVOccurrences)
   }
 
+  const displayPieChartOccurent = (pestLogPass:PestLog[],selectedCropPass:string[])=>{
+    setPieChartData(displayPieChartData(pestLogPass ,selectedCropPass))
+    console.log("Pie chart data for pie chart : ", pieChartData)
+  }
+
 
   const navigation = useNavigation()
 
@@ -458,6 +526,81 @@ const PestOccurrencesDetailed = () => {
 
                     </View>
 
+
+
+                </View>
+
+
+
+
+
+
+
+                <View style={stylePie.wrapper}>
+
+
+                    <View style={styleComparisonChart.headerWrapper}>
+                        <Text style={styleComparisonChart.headerText}>
+                            Pest Distribution
+                        </Text>
+                    </View >
+
+
+
+                    <View style={styleComparisonChart.chartWrapper}>
+
+
+                        {pieChartData && pieChartData.length > 0 && (
+
+
+
+                            <PieChart
+                            data={pieChartData}
+                            width={Dimensions.get("window").width - 20}
+                            height={220}
+                            chartConfig={{
+                            backgroundColor: "#ffffff",
+                            backgroundGradientFrom: "#ffffff",
+                            backgroundGradientTo: "#ffffff",
+                            decimalPlaces: 0,
+                            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                            }}
+                            accessor="population"
+                            backgroundColor="transparent"
+                            paddingLeft="15"
+                            absolute
+                            />
+                            
+                        )}
+
+
+
+
+
+                    </View>
+
+
+                    <View style={styleComparisonChart.controlWrapper}>
+                            {cropNameListData?.map((item, index) => (
+                                <View key={index} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Checkbox
+                                        status={selectedCropForChart.includes(item) ? 'checked' : 'unchecked'}
+                                        onPress={() => toggleCropSelectionChartOccurence(item)}
+                                    />
+                                    <Text>{item}</Text>
+                                </View>
+                            ))}
+                    </View>
+
+
+                    <TouchableOpacity style={styleComparisonChart.button} onPress={()=> displayPieChartOccurent(pestLogs,selectedCropForChart)}>
+
+                        <Text style={styleComparisonChart.buttonText} >
+                            Display Data
+                        </Text>
+
+
+                    </TouchableOpacity>
 
 
                 </View>
@@ -663,7 +806,7 @@ const PestOccurrencesDetailed = () => {
 
 
 
-
+                <TouchableOpacity onPress={()=>console.log(cropNameListData)}>See crops</TouchableOpacity>
 
             </ScrollView>
 
@@ -699,6 +842,21 @@ const styles = StyleSheet.create({
         flex:1
     }
 })
+
+
+
+
+const stylePie = StyleSheet.create({
+    wrapper:{
+        width:'95%',
+        //borderWidth:1,
+        marginBottom:20,
+        backgroundColor:'#FAF3E0',
+        
+    },
+
+})
+
 
 const styleComparisonChart = StyleSheet.create({
 

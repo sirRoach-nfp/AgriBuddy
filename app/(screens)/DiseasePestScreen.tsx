@@ -6,6 +6,7 @@ import { db } from '../firebaseconfig';
 
 import { Image } from 'react-native';
 import { useUserContext } from '../Context/UserContext';
+import { useSearchParams } from 'expo-router/build/hooks';
 
 
 interface Symptoms{
@@ -19,14 +20,15 @@ interface PestData{
     Ecology:string,
     DamageSymptoms : Symptoms,
     PestSnapshot:string,
+    ControlMeasures:string,
 }
 
 
 
 const DiseasePestScreen = () => {
 
-
- 
+    const searchParams = useSearchParams();
+    const pestName = searchParams.get('pestName');
 
 
 
@@ -43,7 +45,8 @@ const DiseasePestScreen = () => {
     const fetchPestData = async()=>{
 
         try{
-            const docRef = doc(db,'Pest','fruitworm');
+            console.log("Passed pest name ", pestName)
+            const docRef = doc(db,'Pest',pestName as string);
 
 
             const docSnap = await getDoc(docRef)
@@ -164,14 +167,11 @@ const DiseasePestScreen = () => {
         {selectedOption === 'Characteristics' && 
         
             <ScrollView style={stylesContent.mainContainer}>
-                <Text style={stylesContent.contentText}>Chewing mouthparts. The young, small
-                caterpillars have prominent rows of dark
-                bumps (tubercles) on their backs. The
-                older, larger ones vary in color from dark gray to
-                light brown and have lengthwise stripes on their
-                bodies. The adult form is a moth.
-
-                </Text>
+                {pestData?.Characterstics.replace(/\\n/g, '\n').split('\n').map((line, index) => (
+                    <Text key={index} style={stylesContent.contentText}>
+                        {line}
+                    </Text>
+                ))}
 
                 <TouchableOpacity onPress={()=>{console.log(pestData?.DamageSymptoms)}}>
                     Test
@@ -185,18 +185,11 @@ const DiseasePestScreen = () => {
         {selectedOption === 'Ecology' && 
         
             <ScrollView style={stylesContent.mainContainer}>
-                <Text style={stylesContent.contentText}>In warm areas several generations occur.
-                    Caterpillars sometimes move from one fruit
-                    to the next destroying only small portions
-                    of each fruit. Pupation occurs in the soil near
-                    the base of the plant. Adults are extremely
-                    fecund; they are active during the day but
-                    more commonly at dusk. Eggs are laid on the
-                    tomato foliage. Young caterpillars feed on the
-                    leaves. Other hosts of this pest include chili
-                    pepper, maize,cabbage, tobacco and cotton.
-
-                </Text>
+                {pestData?.Ecology.replace(/\\n/g, '\n').split('\n').map((line, index) => (
+                    <Text key={index} style={stylesContent.contentText}>
+                        {line}
+                    </Text>
+                ))}
 
             </ScrollView>
         }
@@ -207,7 +200,11 @@ const DiseasePestScreen = () => {
             <ScrollView style={stylesContent.mainContainer}>
 
 
-                <Text style={stylesContent.contentText}>{pestData?.DamageSymptoms.Symptoms}</Text>
+                {pestData?.DamageSymptoms.Symptoms.replace(/\\n/g, '\n').split('\n').map((line, index) => (
+                    <Text key={index} style={stylesContent.contentText}>
+                        {line}
+                    </Text>
+                ))}
 
 
                 {pestData?.DamageSymptoms.SymptomsSnapshot.map((snapshot,index)=>(

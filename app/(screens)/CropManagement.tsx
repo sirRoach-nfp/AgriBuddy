@@ -66,6 +66,18 @@ interface Plots{
 
 
 import TomatoData from '../CropsData/Crops/Solanaceae/Tomato.json'
+import EggplantData from '../CropsData/Crops/Solanaceae/Eggplant.json'
+import Squash from '../CropsData/Crops/Cucurbitaceae/Squash.json'
+import ChilliPepper from '../CropsData/Crops/Solanaceae/ChilliPepper.json'
+import Potato from '../CropsData/Crops/Solanaceae/Potato.json'
+import Sitaw from '../CropsData/Crops/Fabaceae/Sitaw.json'
+import Bittergourd from "../CropsData/Crops/Cucurbitaceae/Bittergourd.json"
+import Bottlegourd from '../CropsData/Crops/Cucurbitaceae/Bottlegourd.json'
+import Cucumber from '../CropsData/Crops/Cucurbitaceae/Cucumber.json'
+import MungBean from '../CropsData/Crops/Fabaceae/Mungbean.json'
+import Peanut from '../CropsData/Crops/Fabaceae/Peanut.json'
+import Spongegourd from '../CropsData/Crops/Cucurbitaceae/Spongegourd.json'
+
 import { diseaseImages, pestImages } from '../Pestdat'
 import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore'
 import { db } from '../firebaseconfig'
@@ -145,8 +157,9 @@ const CropManagement = () => {
   const [selectedPest, setSelectedPest] = useState<string | null>('');
   const [selectedDisease, setSelectedDisease] = useState<string | null>('');
 
-
-
+  const [localPestData,setLocalPestData] = useState<Array<{id:string,name:string}>>([])
+  const [localDiseaseData,setLocalDiseaseData] = useState<Array<{id:string,name:string}>>([])
+  const [currentTemp,setCurrentTemp] = useState<number>(0)
   const [openDropdown, setOpenDropdown] = useState('');
   //pest data
   const pestData = [
@@ -174,9 +187,9 @@ const CropManagement = () => {
 
 
   const onSelectedItemsChange = (items:string[]) => {
+    console.log("Selected Items : ", items)
 
-
-    const selectedNames = pestData
+    const selectedNames = localPestData
     .filter(pest => items.includes(pest.id))
     .map(pest => pest.name);
 
@@ -187,6 +200,7 @@ const CropManagement = () => {
 
 
   const onSelectedDiseaseChange = (items:string[])=>{
+    console.log("Selected disease : ", items)
     setSelectedDiseases(items);
   }
 
@@ -207,6 +221,55 @@ const CropManagement = () => {
         console.log("First Initialize", localCropData)
         console.log('Data has been set')
         break
+
+      case 'Eggplant':
+          setLocalCropData(EggplantData)
+          break;
+
+      case 'Squash':
+          setLocalCropData(Squash)
+          break;
+
+      case 'ChilliPepper':
+
+          console.log("Ticked")
+          setLocalCropData(ChilliPepper)
+          console.log("Set crop data successful with this data :",ChilliPepper)
+          break;
+          
+      case 'Potato':
+          setLocalCropData(Potato)
+          break;
+
+      case 'Sitaw':
+          setLocalCropData(Sitaw)
+          break;
+
+      case 'Bittergourd':
+          setLocalCropData(Bittergourd)
+          break;
+
+      case 'Bottlegourd':
+          setLocalCropData(Bottlegourd)
+          break;
+
+      case 'Cucumber':
+          setLocalCropData(Cucumber)
+          break;
+
+      case 'Mungbean':
+          setLocalCropData(MungBean)
+          break;
+
+      case 'Peanut':
+          setLocalCropData(Peanut)
+          break;
+
+      case 'Spongegourd':
+          setLocalCropData(Spongegourd)
+          break;
+
+
       default:
         console.log('entered default')
         setLocalCropData(TomatoData)
@@ -252,8 +315,41 @@ const CropManagement = () => {
     }
 
 
-    fetchPlots()
 
+
+
+    const FetchTemp = async () => {
+      try {
+        
+          const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=15.3066&longitude=120.8564&hourly=temperature_2m&timezone=Asia/Manila');
+          const data = await response.json();
+          console.log(data);
+  
+          // get current hour
+          const currentHour = new Date().getHours();
+  
+          // find index of the current hour in the API
+          const currentHourIndex = data.hourly.time.findIndex((time: string) => {
+              return new Date(time).getHours() === currentHour;
+          });
+  
+          // get the temperature of the current hour
+          const currentTemp: number = data.hourly.temperature_2m[currentHourIndex];
+  
+          setCurrentTemp(currentTemp); // This is now only the current temperature
+  
+          console.log("Current Temperature (°C):", currentTemp);
+          
+      } catch (err) {
+          console.log(err);
+      } finally {
+          
+      }
+  }
+
+
+    fetchPlots()
+    FetchTemp()
 
 
     console.log(localCropData)
@@ -269,6 +365,21 @@ const CropManagement = () => {
 
   useEffect(() => {
     console.log("Updated localCropData", localCropData);
+    if(Object.values(localCropData)[0]?.commonPests){
+      const pests = Object.values(localCropData)[0]?.commonPests.map((pest, index) => ({
+        id: (index + 1).toString(),
+        name: pest
+      }));
+      setLocalPestData(pests);
+    }
+
+    if(Object.values(localCropData)[0]?.commonPests){
+      const disease = Object.values(localCropData)[0]?.commonDiseases.map((disease, index) => ({
+        id: (index + 1).toString(),
+        name: disease
+      }))
+      setLocalDiseaseData(disease)
+    }
     setLoading(false)
  
 
@@ -420,7 +531,7 @@ const CropManagement = () => {
 
   const logData = async(cropNameParam:any,plotAssocParam:any)=> {
 
-    
+    console.log("Selected pest name : ", selectedPestnames)
 
     console.log("Logging Data....")
     hideEntryPosteDialog()
@@ -440,7 +551,9 @@ const CropManagement = () => {
         Pestname:pest,
         Date:date,
         CropName:cropName,
+        Temp:currentTemp
       }))
+      console.log("New Pest log entry check : ", pestLogEntries)
 
 
 
@@ -677,6 +790,11 @@ const CropManagement = () => {
   const displayCropData = ()=> {
     console.log("plots : ", plots)
   }
+
+
+  const displayPestData = ()=>{
+    console.log("Pest List :",localPestData)
+  }
   return (
 
     <PaperProvider>
@@ -779,8 +897,8 @@ const CropManagement = () => {
               <FontAwesomeIcon icon={faClockRotateLeft} size={18} color='#2E6F40'/>
               <Text style={styles.plantedText}>20 Days Since Started Growing</Text>
 
-              <TouchableOpacity onPress={displayCropData} >
-                test button 
+              <TouchableOpacity onPress={()=>console.log("assocPlot =", assocPlot, typeof assocPlot)} >
+                test button  ss
               </TouchableOpacity>
             </View>
 
@@ -862,6 +980,11 @@ const CropManagement = () => {
 
 
        {selectedOption === 'Management' && 
+
+
+
+
+          
       
         <ScrollView style={styles.contentWrapper} contentContainerStyle={{alignItems:'center'}}>
 
@@ -885,7 +1008,7 @@ const CropManagement = () => {
                   <MultiSelect
                    
                     hideTags
-                    items={pestData}
+                    items={localPestData}
                     uniqueKey="id"
                     ref={(component: any) => { multiSelectRef.current = component }}
                     onSelectedItemsChange={onSelectedItemsChange}
@@ -910,12 +1033,12 @@ const CropManagement = () => {
 
                  <View style={stylesRecords.selectedItemsWrapper}>
                     {selectedItems.length > 0 ? (
-                      selectedItems.map((item) => (
+                     selectedItems.map((item) => (
 
                         <View key={item} style={{ paddingTop:5,paddingBottom:5, paddingLeft:10,paddingRight:10, borderWidth:0,borderRadius:5,alignSelf: 'flex-start',marginRight:10,backgroundColor:'#FAD4D4'}}>
                           
                           <Text style={stylesRecords.selectedItemText} >
-                            {pestData.find((p) => p.id === item)?.name}
+                            {localPestData.find((p) => p.id === item)?.name}
                           </Text>
                           
                         </View>
@@ -945,7 +1068,7 @@ const CropManagement = () => {
                   <MultiSelect
                    
                     hideTags
-                    items={diseaseData}
+                    items={localDiseaseData}
                     uniqueKey="id"
                     ref={(component: any) => { multiSelectRef.current = component }}
                     onSelectedItemsChange={onSelectedDiseaseChange}
@@ -975,7 +1098,7 @@ const CropManagement = () => {
                         <View key={item} style={{ paddingTop:5,paddingBottom:5, paddingLeft:10,paddingRight:10, borderWidth:0,borderRadius:5,alignSelf: 'flex-start',marginRight:10,backgroundColor:'#FAD4D4'}}>
                           
                           <Text style={stylesRecords.selectedItemText} >
-                            {diseaseData.find((p) => p.id === item)?.name}
+                            {localDiseaseData.find((p) => p.id === item)?.name}
                           </Text>
                           
                         </View>
@@ -1096,6 +1219,8 @@ const CropManagement = () => {
 
 
           <Button style={{marginTop:20,marginBottom:20}} icon={() => <FontAwesomeIcon icon={faFileArrowDown} size={20} color="#FFFFFF" />} mode="contained-tonal" onPress={showEntryDialog} buttonColor="#2e6f40" textColor="#FFFFFF"
+          
+          disabled={assocPlot === null || assocPlot === "null"}
           >
               Log Crop Data
           </Button>
@@ -1127,12 +1252,12 @@ const CropManagement = () => {
                 Object.values(Object.values(localCropData)[0].commonPests.map((pest,index)=>(
 
                       
-                  <View style={stylesAiles.badgeWrapper}>
+                  <TouchableOpacity style={stylesAiles.badgeWrapper} onPress={()=>{router.push(`/(screens)/DiseasePestScreen?pestName=${encodeURIComponent(pest)}`)}}>
                       
                     <Image source={pestImages[pest.toLowerCase() as string]} style={{width:60,height:60,marginBottom:5, borderRadius:'50%'}}/>
                     <Text  style={stylesAiles.badgesText}>{pest}</Text>
 
-                  </View>
+                  </TouchableOpacity>
 
                 )))}
 
@@ -1163,7 +1288,7 @@ const CropManagement = () => {
                   Object.values(Object.values(localCropData)[0].commonDiseases.map((disease,index)=>(
 
                         
-                    <TouchableOpacity style={stylesAiles.badgeWrapper} onPress={()=>{router.push('/(screens)/DiseasePestScreen')}}>
+                    <TouchableOpacity style={stylesAiles.badgeWrapper} >
                         
                       <Image source={diseaseImages[disease.toLowerCase() as string]} style={{width:60,height:60,marginBottom:5, borderRadius:'50%'}}/>
                       <Text  style={stylesAiles.badgesText}>{disease}</Text>
@@ -1202,6 +1327,8 @@ const CropManagement = () => {
         
         
         </>)}
+
+        <TouchableOpacity onPress={()=>console.log("Selected pest names : ", selectedPestnames, " Pestdata static : ",pestData)}>Test pest names</TouchableOpacity>
 
         
 
@@ -1252,13 +1379,14 @@ const stylesCollapsible = StyleSheet.create({
 
   header:{
     color:'#253D2C',
-    fontSize:16,
+    fontSize:17,
     fontWeight:700
   },
   contentText:{
     marginBottom:20,
     marginTop:30,
-    fontWeight:300
+    fontWeight:400,
+    fontSize:16
   }
 })
 
@@ -1289,13 +1417,16 @@ badgeContainer:{
   
   display:'flex',
   flexDirection:'row',
-  justifyContent:'space-between',
-  marginBottom:10
+  gap:30,
+  alignItems:'center',
+  justifyContent:'center',
+  marginBottom:10,
+  flexWrap:'wrap'
 },
 badgeWrapper:{
   height:90,
   width:90,
-  //borderWidth:1,
+ // borderWidth:1,
   display:'flex',
   flexDirection:'column',
   alignItems:'center',
@@ -1415,7 +1546,7 @@ const styles = StyleSheet.create({
   BadgeWrapper:{
     padding:3,
     backgroundColor:'#2E6F40',
-
+    
     alignSelf:'flex-start',
     display:'flex',
     paddingTop:5,

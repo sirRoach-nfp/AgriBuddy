@@ -1,0 +1,45 @@
+{
+    "Sitaw": {
+        "cropId":"SitawDef0002_fab",
+        "thumbnail":"https://www.recipesbynora.com/wp-content/uploads/2023/07/Yardlong-Beans-plant.jpg",
+        "scientificName": "Vigna unguiculata subsp. sesquipedalis",
+        "family":"Fabaceae",
+        "commonName":"Sitaw",
+        "growthTime": "45",
+        "bestSeason": "",
+        "soilType": "Loamy",
+        "soilPh": "5.5-8.5",
+        "commonPests": ["cutworms","beanfly","aphids","podborer"],
+        "commonDiseases": ["fusiariumWilt","beanRust","bean mosaic","powderyMildew"],
+        "guide": {
+            "1": {
+                "header": "Required Soil Type and Climate",
+                "content": "String beans (Sitaw) grow year-round and can thrive in different types of soil. However, they grow best in fertile soil with high organic matter. The ideal temperature for growing string beans is between 20-35°C."
+            },
+            "2": {
+                "header": "Land Preparation",
+                "content":"Prepare the land 3-4 weeks before planting. Plow the soil to a depth of about 20 cm."
+            },
+            "3": {
+                "header": "Planting",
+                "content": "Legume crops vary in their growth, so they are planted using different methods and spacing. Drill Method: Plant 18-20 seeds along a one-meter row. Evenly distribute the seeds along the furrow. Cover the seeds with fine soil about 3-4 centimeters thick. Hill Method: Plant 2-3 seeds per hill using proper spacing between plants. Cover with 3-4 centimeters of soil. During the rainy season or in areas with poor drainage, plant string beans and cowpeas on raised beds or ridges 10-30 cm high."
+            },
+            "4": {
+                "header": "Water Management",
+                "content":"Regularly water the furrows when plants show signs of stress. Wilting in the morning and evening indicates a lack of water."
+            },
+            "5": {
+                "header": "Care and Maintenance",
+                "content": "Thin out the plants 5-7 days after germination. Leave 15-18 plants per row (drill method) and 2 plants per hill (hill method). Remove weeds that may compete with the plants for nutrients. Perform cultivation between rows 10-15 days after germination to prevent weeds from growing. Raise the ridges 25-30 days after germination. String beans are commonly attacked by cutworms, bugs, beanfly, aphids, and pod borers. Inspect the field 3-10 days after germination for the presence of beanfly. Apply control measures if the infestation is severe. Common diseases of string beans include fusarium wilt, stem and root rot, bean rust, bean mosaic, and powdery mildew."
+            },
+            "6":{
+                "header":"Fertilizer Application",
+                "content":"To achieve high yields, apply the right type and amount of fertilizer at the proper time. Even though legumes can fix nitrogen from the air, they still need additional nitrogen to thrive. To determine the specific fertilizer needs and amounts, it is recommended to have the soil tested at the nearest soil laboratory in your area."
+            },
+            "7": {
+                "header": "Harvesting",
+                "content": "Proper timing of harvest is important to obtain high yields and good quality string beans. Harvest the pods while still green and young. Do not allow the seeds inside the pods to mature and harden before harvesting. Harvest green pods twice a week, preferably in the morning or afternoon when the temperature is cooler to keep them fresh. Keep harvested string beans under shade to prevent wilting. Sort and clean the string beans according to size, color, and maturity. Remove those damaged by insects and diseases."
+            }
+        }
+    }
+}

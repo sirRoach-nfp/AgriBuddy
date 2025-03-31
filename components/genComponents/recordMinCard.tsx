@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
         fontWeight:400,
     },
     badgeWrapperPlot:{
-        width:80,
+        alignSelf:'flex-start',
         //borderWidth:1,
         display:'flex',
         flexDirection:'column',
@@ -109,7 +109,9 @@ const styles = StyleSheet.create({
         marginTop:5,
         borderRadius:5,
         backgroundColor:'#2E6F40',
-        padding:3
+        padding:3,
+        marginLeft:'auto',
+        marginRight:'auto'
     },
     badgeText:{
         fontSize:14,
@@ -145,7 +147,7 @@ const styles = StyleSheet.create({
 
     statusWrapper:{
         width:'100%',
-        //borderWidth:1,
+        borderWidth:1,
         display:'flex',
         flexDirection:'row',
         alignItems:'center'

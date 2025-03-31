@@ -1,0 +1,45 @@
+{
+    "Potato": {
+        "cropId":"PotatoDef0004_sol",
+        "thumbnail":"https://hgtvhome.sndimg.com/content/dam/images/hgtv/fullset/2023/3/24/01/shutterstock_potato-field-vegetable-tubers-soil-dirt-310661561.jpg.rend.hgtvcom.1280.960.85.suffix/1679683308258.webp",
+        "scientificName": "Solanum tuberosum L.",
+        "family":"Solanaceae",
+        "commonName":"Potato",
+        "growthTime": "45",
+        "bestSeason": "",
+        "soilType": "Loamy",
+        "soilPh": "5.2-6.4",
+        "commonPests": ["spidermites","aphids","leafhoppers"],
+        "commonDiseases": ["lateBlight", "bacterialWilt"],
+        "guide": {
+            "1": {
+                "header": "Soil And Climactic Requirements",
+                "content": "White potato can be grown in almost any type of soil except saline and alkaline soils. The most preferred are loose soils, which offer least resistance to the enlargement of the tubers. Loamy and sandy loam soils high in organic matter with good drainage and aeration are most suitable for cultivation. The soil pH ranges from 5.2-6.4 is ideal. Although a temperate crop, potato can also be grown in a wide range of climatic conditions depending on the variety. It grows best in moderately cool temperatures during the growing season. The vegetative growth of the plant is best at temperatures of 20°C-24°C while tuber development is favored at 20°C.\n\nIn areas such as Benguet and Bukidnon, March-April and October-November are the best planting times. In the lowlands, the best time to plant is from November to mid-December."
+            },
+            "2": {
+                "header": "Preparation of the Planting Area / Soil Preparation",
+                "content": "Prepare the land thoroughly by plowing and harrowing twice to obtain a friable soil suitable for tuber development. In acidic soils, apply lime 30 days before planting."
+            },
+            "3": {
+                "header": "Planting",
+                "content": "Planting can be done using the single-row and the double-row method. Single-row is suitable for flat areas. It is practiced in Davao del Sur and Bukidnon. Using a carabao-drawn plow, set furrows 75 cm apart and holes 30 cm apart along the furrow. The double-row method is appropriate for sloping areas. It is practiced in Benguet. Prepare manually 1-m wide raised beds 50 cm apart. Establish 2 rows within the bed spaced 30 cm apart. The distance between holes and along the furrow is 30 cm. For both planting methods, the total plant population per hectare is 44,444. Apply fertilizer in holes, add chicken manure, and cover with a thin layer of soil. Place the tuber over the thin layer of soil and cover with 5 cm thick soil."
+            },
+            "4": {
+                "header": "Fertilization",
+                "content":"The general fertilizer recommendation for potato production is 120 kg/ha N, 240 kg/ha P2O5 (Phosphorus Pentoxide), and 240 kg/ha K2O (Potassium Oxide). However, proper fertilization should be based on soil analysis. Apply chicken manure during the land preparation at a rate of 5 t/ha to contribute 60-100 kg NPK and micronutrients. Also apply 14-14-14 at 3-5 bags/ha as basal fertilizer. Apply the remaining N and K requirements during hilling up. Excess nitrogen delays maturity, promotes skinning, and blackspot bruising. In areas where bacterial wilt is a problem, early hilling up is necessary to prevent root injury."
+            },
+            "5": {
+                "header": "Irrigation",
+                "content": "Irrigation is very important as potatoes have a shallow and sparse root system. Initial light irrigation is appropriate at 5-7 days after planting. Subsequent irrigation is given at 7-15 days interval depending upon the climatic condition and soil type." 
+            },
+            "6":{
+                "header":"Weeding and Hilling Up",
+                "content":"The potato crop develops a canopy in about 4 weeks after planting. Weeds must be controlled by this time to gain competitive advantage for the crop. Perform weeding, hilling up, and sidedressing simultaneously 1 month after planting. Subsequent weeding can be done sparingly depending on weed population."
+            },
+            "7": {
+                "header": "Harvesting",
+                "content":"Harvest at full maturity for longer storability. Most potatoes mature at 75-90 days after planting or when 80% of the leaves of the total plant population become yellow. Dehaulm or vine-kill to reduce skinning and bruising during harvest, and shrinkage during storage. Cut the foliage (dehaulm) at 5-10 cm from the ground level 5-7 days before harvest to harden the skin of tubers. Harvesting is done by manual digging of the tubers using a spading fork or any pointed instruments. Do not expose tubers in sunlight to prevent greening."
+            }
+        }
+    }
+}

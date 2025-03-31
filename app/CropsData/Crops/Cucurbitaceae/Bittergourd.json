@@ -1,0 +1,49 @@
+{
+    "Bittergourd": {
+        "cropId":"BitterGourdDef0005_cuc",
+        "thumbnail":"https://www.greensofkerala.com/wp-content/uploads/2021/06/bitter-gourd.jpg",
+        "scientificName": "Momordica charantia",
+        "family":"Curcurbitaceae",
+        "commonName":"Bittergourd",
+        "growthTime": "45",
+        "bestSeason": "",
+        "soilType": "Loamy",
+        "soilPh": "6-8",
+        "commonPests": ["fruitfly"],
+        "commonDiseases": ["downlyMildew"],
+        "guide": {
+            "1": {
+                "header": "Required Soil Type and Climate",
+                "content": "Bitter gourd (Ampalaya) grows best in loose and fertile soil. The planting area should have a sufficient water source and should not be prone to flooding."
+            },
+            "2": {
+                "header": "Seedling Preparation",
+                "content": "Use a seedling tray with 128 holes. Mix topsoil, organic fertilizer, and carbonized rice hull at a 1:1:1 ratio. Fill the tray holes with the mixed soil. Plant one (1) seed per hole. Water the seedlings daily. After 10 to 15 days, the seedlings can be transplanted into the field."
+            },
+            "3": {
+                "header": "Land Preparation",
+                "content": "Prepare the ridges through plowing and harrowing. Apply and spread organic fertilizer on the ridges three (3) days before planting. Use silvery gray plastic mulch and punch holes at the center with 0.70-meter spacing. Secure the plastic mulch by placing bamboo stakes or soil along the edges every one (1) meter."
+            },
+            "4": {
+                "header": "Transplanting",
+                "content": "Seedlings can be transplanted 10-15 days after sowing. Plant spacing should be 0.70 meters between plants and 4 meters between rows."
+            },
+            "5": {
+                "header": "Water Management",
+                "content": "Watering depends on soil type and weather conditions. Irrigate twice a week during the dry season and during fruit harvesting. Use either the drip method or furrow irrigation."
+            },
+            "6": {
+                "header": "Trellising",
+                "content": "Prepare trellising materials such as bamboo poles or bikal (3 meters high), gauge 14 wire, and blue or black twine or rope."
+            },
+            "7": {
+                "header": "Weed Control",
+                "content": "Perform manual weeding or plow if weeds are less than one (1) month old. Use herbicide only if weeds are too dense."
+            },
+            "8": {
+                "header": "Harvesting",
+                "content": "Harvest starts 45 days after planting and can be done every 4-5 days. The ideal time to harvest is between 5:00 AM and 7:00 AM."
+            }
+        }
+    }
+}

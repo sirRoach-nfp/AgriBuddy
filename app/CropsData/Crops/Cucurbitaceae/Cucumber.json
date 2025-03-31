@@ -1,0 +1,65 @@
+{
+    "Cucumber": {
+        "cropId":"CucumberDef0004_cuc",
+        "thumbnail":"https://www.thedailymeal.com/img/gallery/13-cucumber-varieties-you-probably-didnt-know-about/intro-1680710314.jpg",
+        "scientificName": "Cucumis sativus",
+        "family":"Curcurbitaceae",
+        "commonName":"Cucumber",
+        "growthTime": "45",
+        "bestSeason": "",
+        "soilType": "Loamy",
+        "soilPh": "6-8.7",
+        "commonPests": ["squashbeetle","thrips"],
+        "commonDiseases": ["powderyMildew","downlyMildew","mosaicVirus","anthranose"],
+        "guide": {
+            "1": {
+                "header": "Soil and Climatic Requirements",
+                "content": "Cucumber is a warm-season crop grown year-round locally. The optimum temperature for growth is about 30°C, while the optimum night temperature is 18-20°C. The soil should be fertile and rich in organic matter with a pH ranging from 6.5 to 7.5."
+            },
+            "2": {
+                "header": "Land Preparation",
+                "content": "Prepare the field at least one month before planting. Follow each plowing with harrowing and allow weed seeds to germinate between each plowing. Prepare furrows 0.75 m to 1 m apart. For wet season cropping, prepare raised beds instead of furrows. One week before planting, make holes 30 cm apart and apply well-decomposed animal manure at the rate of 200 g/hill. Mix the manure thoroughly with soil."
+            },
+            "3": {
+                "header": "Planting",
+                "content": "Cucumber is usually direct-seeded but can also be transplanted, requiring about 2 kg of seeds per hectare.\n\n- In fields with 0.75 m furrows, plant two rows and leave the third row vacant for field operations.\n- Sow 2-3 seeds 30 cm between hills and cover them with a thin layer of soil."
+            },
+            "4": {
+                "header": "Fertilization",
+                "content": "- The rate depends on soil analysis. If unavailable, apply about 15 g (1.5 tbsp) of complete fertilizer (14-14-14) per hill before planting and cover with soil. Add a handful of well-decomposed manure per hill.\n- At early vegetative stage or one month after sowing, side-dress with about 20 g of a mixture of 2 parts Urea (46-0-0) and 1 part Muriate of Potash (0-0-60)."
+            },
+            "5": {
+                "header": "Thinning",
+                "content": "2-3 weeks after planting, thin out weak seedlings leaving one healthy plant per hill."
+            },
+            "6": {
+                "header": "Irrigation",
+                "content": "- Irrigate immediately after planting to ensure uniform seed germination.\n- During the dry season, furrow irrigate every 10 days.\n- Irrigate only when necessary during the wet season.\n- Construct drainage canals at the end of rows to avoid waterlogging."
+            },
+            "7": {
+                "header": "Weeding",
+                "content": "- Thoroughly hand-weed the planted rows.\n- Underbrush or rotavate the large spaces between rows."
+            },
+            "8": {
+                "header": "Trellising",
+                "content": "- Lay out 2.5 m long and 2-2.5 inch diameter poles, spaced 4-5 m apart along the planted rows.\n- Form a tepee or A-like structure by joining poles together in adjacent furrows.\n- Connect the poles at the top along the rows with wire and secure the structure.\n- Tie vertical strings (abaca or synthetic) from the top to the bottom wires at every hill.\n- Train the vines counter-clockwise around the vertical strings."
+            },
+            "9": {
+                "header": "Index of Maturity",
+                "content": "Cucumbers are short-season crops maturing within 75-100 days. Fruits for seed purposes ripen 50 to 60 days after setting."
+            },
+            "10": {
+                "header": "Age of Harvest",
+                "content": "Fruits are harvested based on size and intended use, not age."
+            },
+            "11": {
+                "header": "Harvesting Procedure",
+                "content": "- For pickling: harvest fruits using a sharp knife or pruning shears when they are 10-15 cm long, 3-5 days earlier.\n- For slicing: harvest at 38-45 days after planting when fruits reach desired size and before seeds harden."
+            },
+            "12": {
+                "header": "Care of Harvest (Curing)",
+                "content": "Place harvested pickling fruits in baskets or any receptacle under shade or storage for classification and grading, preparatory to pickling or slicing."
+            }
+        }
+    }
+}
