@@ -1,6 +1,6 @@
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { Stack } from 'expo-router'
+import React, { useCallback, useEffect, useState } from 'react'
+import { Stack, useFocusEffect } from 'expo-router'
 
 
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
@@ -47,6 +47,49 @@ const home = () => {
   const [currentCrop, setCurrentCrop] = useState<CurrentCrop>({crop:[]})
 
 
+
+  useFocusEffect(
+
+
+    useCallback(()=>{
+      const fetchCurrentCrop = async()=>{
+
+        if (!user?.CurrentCropsRefId) {
+          console.error("CurrentCropsRefId is undefined");
+          return;
+        }
+        console.log("Fetching current crops ......")
+        try{
+          console.log("Fetching current crops  2 ......")
+          const userRef = doc(db,"CurrentCrops",user?.CurrentCropsRefId as string);
+  
+          const docSnap = await getDoc(userRef);
+  
+          if(docSnap.exists()){
+            const rawData = docSnap.data().CurrentCrops as any[];
+            const filteredCrops: cropType[] = rawData.map(crop => ({
+              CropName: crop.CropName,
+              CropId: crop.CropId,
+              SessionId: crop.SessionId,
+              PlotAssoc: crop.PlotAssoc,
+              PlotName: crop.PlotName
+            }));
+            setCurrentCrop({ crop: filteredCrops });
+   
+            console.log(docSnap.data().CurrentCrops)
+          }else{
+            console.log("document does not exist")
+          }
+  
+        }catch(err){
+          console.error(err)
+        }
+      }
+
+      fetchCurrentCrop()
+
+    },[])
+  )
 
   useEffect(()=>{
     const fetchCurrentCrop = async()=>{

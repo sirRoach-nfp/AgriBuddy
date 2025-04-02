@@ -20,7 +20,7 @@ interface props{
 
 const PlotMinCard = ({plotAssocId,plotName,CurrentCrops}:props) => {
 
-
+    
 
 
 
@@ -40,7 +40,7 @@ const PlotMinCard = ({plotAssocId,plotName,CurrentCrops}:props) => {
     <TouchableOpacity style={styles.container} onPress={navigateToPlot}>
 
       <View style={styles.thumbnail}>
-            <Image source={require('../../assets/images/Misc/PlotIcon.svg')} style={styles.img}/>
+            <Image source={require('../../assets/images/Misc/PlotIcon.svg')} style={styles.img} resizeMode="cover"/>
       </View>
 
 
@@ -54,6 +54,7 @@ const PlotMinCard = ({plotAssocId,plotName,CurrentCrops}:props) => {
                 <Text style={styles.badgeText} >
                     Growing
                 </Text>
+               
             </View>
 
         ) : (
@@ -82,7 +83,8 @@ const styles = StyleSheet.create({
         marginBottom:10,
         display:'flex',
         flexDirection:'row',
-        alignItems:'center'
+        alignItems:'center',
+        height:60
     },
 
     thumbnail:{
@@ -107,11 +109,12 @@ const styles = StyleSheet.create({
         width:100,
         height:20,
         //borderWidth:1,
+        alignSelf:'flex-start',
         display:'flex',
         alignItems:'center',
         justifyContent:'center',
-        paddingTop:10,
-        paddingBottom:10,
+        paddingTop:3,
+        paddingBottom:3,
         backgroundColor:'#E9A800',
         borderRadius:5,
         marginTop:'auto'
@@ -120,20 +123,21 @@ const styles = StyleSheet.create({
 
     badgeGrowing:{
         width:100,
-        height:20,
+        alignSelf:'flex-start',
         //borderWidth:1,
         display:'flex',
         alignItems:'center',
         justifyContent:'center',
-        paddingTop:10,
-        paddingBottom:10,
+        paddingTop:3,
+        paddingBottom:3,
         backgroundColor:'#2E6F40',
         borderRadius:5,
         marginTop:'auto'
     },
     img:{
         width:45,
-        height:45
+        height:45,
+        borderWidth:1
     },
     //text 
     plotName:{
@@ -143,5 +147,6 @@ const styles = StyleSheet.create({
     },
     badgeText:{
         color:'#ffffff',
+        fontSize:13,
     }
 })

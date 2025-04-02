@@ -1,15 +1,16 @@
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, TextInput, Touchable } from 'react-native'
 import React, { useState } from 'react'
-import { Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper'
+import { Dialog, MD3Colors, PaperProvider, Portal, ProgressBar, Title } from 'react-native-paper'
 import Feather from '@expo/vector-icons/Feather';
 import { ScrollView } from 'react-native-gesture-handler';
 import * as ImagePicker from "expo-image-picker";
-
+import * as FileSystem from 'expo-file-system';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Image } from 'react-native';
 import { addDoc, arrayUnion, collection, doc, Timestamp, updateDoc } from 'firebase/firestore';
 import { useUserContext } from '../Context/UserContext';
 import { db } from '../firebaseconfig';
+import { router } from 'expo-router';
 const PostScreen = () => {
     const {user} = useUserContext();
 
@@ -150,25 +151,40 @@ const PostScreen = () => {
 
 
     const uploadPost = async()=> {
+
+
+        if(title.length < 0){return}
         setShowConfirmation(false);
         setShowProcess(true);
         setPostLoading(true);
         console.log("Entering UploadPost....")
         console.log("Inside UploadPost")
+        console.log("Selected image : ", imageUri)
         try{
 
             const uploadedImageUrls = [];
 
-
+            
             if(imageUri.length > 0){
 
-                for (const base64 of imageUri) {
-                    const blob = base64ToBlob(base64); // Convert Base64 to Blob
-    
+                for (const uri of imageUri) {
+
+
                     const formData = new FormData();
-                    formData.append("file", blob, "upload.jpg"); // Append Blob instead of object
+
+                    formData.append("file", {
+                        uri: uri,
+                        type: "image/jpeg",
+                        name: "upload.jpg",
+                      } as any);
+
+
+                    //formData.append("file", blob, "upload.jpg"); // Append Blob instead of object
                     formData.append("upload_preset", "dishlyunsignedpreset");
-    
+                    
+
+
+                    console.log("Uploading selected image..")
                     const uploadResponse = await fetch(
                         "https://api.cloudinary.com/v1_1/dvl7mqi2r/image/upload",
                         {
@@ -176,6 +192,7 @@ const PostScreen = () => {
                             body: formData,
                         }
                     );
+                    console.log("image uploaded...")
     
                     const data = await uploadResponse.json();
                     if (data.secure_url) {
@@ -184,7 +201,7 @@ const PostScreen = () => {
                         console.error("Upload failed:", data);
                     }
                 }
-        
+                console.log("Image done uploading to Cloudinary")
                 console.log("Uploaded Images:", uploadedImageUrls);
 
 
@@ -271,9 +288,17 @@ const PostScreen = () => {
         <SafeAreaView style={styles.mainWrapper}>
 
             <View style={styles.headerContainer}>
-                <Feather name="x" size={24} color="black" style={{marginLeft:10}} />
 
-                <TouchableOpacity style={styles.postButton} onPress={()=> setShowConfirmation(true)}>
+
+                <TouchableOpacity onPress={()=> router.back()} style={{marginLeft:10}}>
+                    <Feather name="x" size={24} color="black"  />
+                </TouchableOpacity>
+                
+
+                <TouchableOpacity style={styles.postButton} onPress={()=> {
+                    if(title.length <= 0){return}
+                    
+                    setShowConfirmation(true)}}>
                     <Text>
                         Post
                     </Text>
@@ -387,7 +412,8 @@ const styles = StyleSheet.create({
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
-        paddingVertical:10
+        paddingVertical:10,
+        marginTop:30
     },
 
     postButton:{

@@ -56,7 +56,7 @@ const _mainlayout = () => {
       <Tabs.Screen name = 'crops'
       
                 options={{
-                title: 'Home',
+                title: 'Crops',
                 tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
                 headerShown:false,
                 }}

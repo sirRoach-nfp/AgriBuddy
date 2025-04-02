@@ -875,7 +875,7 @@ const CropManagement = () => {
         <ScrollView style={styles.contentWrapper}>
 
           <View  style={styles.Thumbnail}>
-            <Image source={{ uri: Object.values(localCropData)[0]?.thumbnail }} style={{width:'100%',height:'100%',objectFit:'contain'}} />
+            <Image source={{ uri: Object.values(localCropData)[0]?.thumbnail }} style={{width:'100%',height:'100%',alignSelf: 'stretch'}} resizeMode="cover" />
 
 
           </View>
@@ -1254,7 +1254,7 @@ const CropManagement = () => {
                       
                   <TouchableOpacity style={stylesAiles.badgeWrapper} onPress={()=>{router.push(`/(screens)/DiseasePestScreen?pestName=${encodeURIComponent(pest)}`)}}>
                       
-                    <Image source={pestImages[pest.toLowerCase() as string]} style={{width:60,height:60,marginBottom:5, borderRadius:'50%'}}/>
+                    <Image source={pestImages[pest.toLowerCase() as string]} style={{width:60,height:60,marginBottom:5, borderRadius:20}}/>
                     <Text  style={stylesAiles.badgesText}>{pest}</Text>
 
                   </TouchableOpacity>
@@ -1290,7 +1290,7 @@ const CropManagement = () => {
                         
                     <TouchableOpacity style={stylesAiles.badgeWrapper} >
                         
-                      <Image source={diseaseImages[disease.toLowerCase() as string]} style={{width:60,height:60,marginBottom:5, borderRadius:'50%'}}/>
+                      <Image source={diseaseImages[disease.toLowerCase() as string]} style={{width:60,height:60,marginBottom:5, borderRadius:20}}/>
                       <Text  style={stylesAiles.badgesText}>{disease}</Text>
 
                     </TouchableOpacity>
@@ -1582,8 +1582,9 @@ const styles = StyleSheet.create({
     display:'flex',
     flexDirection:'row',
     alignItems:'center',
-    elevation:4,
+    //elevation:4,
     //borderWidth:1,
+    flexWrap:'wrap'
     //justifyContent:'center'
     
   },
@@ -1622,6 +1623,7 @@ const styles = StyleSheet.create({
     height:230,
     //backgroundColor:'red',
     borderRadius:10,
+    borderWidth:0,
   },
 
 

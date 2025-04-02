@@ -53,9 +53,7 @@ export default function RootLayout() {
                     background: '#FFFFFF',  // Light gray background
                   }
                 }}>
-                <Stack screenOptions={{headerShown:false}}>
-                  <Stack.Screen name="index" options={{ headerShown: false }} />
-                </Stack>
+                <Stack screenOptions={{ headerShown: false }} />
                 <StatusBar style="auto" />
               </ThemeProvider>
             

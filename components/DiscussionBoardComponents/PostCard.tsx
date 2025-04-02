@@ -9,7 +9,9 @@ interface Props {
     Author:string,
     CreatedAt:any,
     Content:any,
-    Title:any
+    Id:any,
+    Title:string,
+    ReplyCount:any
 
 
 }
@@ -41,9 +43,9 @@ const navigateToPost = (RefId:string) =>{
 }
 
 
-const PostCard = ({Author,CreatedAt,Content,Title}:Props) => {
+const PostCard = ({Author,CreatedAt,Content,Id,Title,ReplyCount}:Props) => {
   return (
-    <TouchableOpacity style={styles.wrapperMain} onPress={()=>navigateToPost(Title)}>
+    <TouchableOpacity style={styles.wrapperMain} onPress={()=>navigateToPost(Id)}>
       <View style={styles.infoContainer}>
 
         <View style={styles.titleContainer}>
@@ -55,14 +57,14 @@ const PostCard = ({Author,CreatedAt,Content,Title}:Props) => {
         </View>
 
         <View style={styles.contentContainer}>
-            <Text  style={styles.contentText} numberOfLines={3} ellipsizeMode="tail">{Content}</Text>
+            <Text  style={styles.contentText} numberOfLines={3} ellipsizeMode="tail">{Title}</Text>
         </View>
            
         <View style={styles.commentContainer}>
 
             
             <FontAwesome5 name="comment-alt" size={13} color="black" />
-            <Text style={{marginLeft:5,fontSize:15,fontWeight:600}}>5</Text>
+            <Text style={{marginLeft:5,fontSize:15,fontWeight:600}}>{ReplyCount}</Text>
         </View>
 
       </View>

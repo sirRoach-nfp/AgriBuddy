@@ -127,7 +127,7 @@ const CropMinCard = ({commonName,scientificName,imgUrl}: CropMinCardProps) => {
 
 
         statusIndi:{
-            borderRadius:'50%',
+            borderRadius:5,
             backgroundColor:'#80E900',
             width:10,
             height:10,

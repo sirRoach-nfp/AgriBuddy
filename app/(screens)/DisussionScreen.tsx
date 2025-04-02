@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { ScrollView } from 'react-native-gesture-handler'
 import { Avatar, Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper';
 import { useSearchParams } from 'expo-router/build/hooks';
-import { collection, deleteDoc, doc, getDoc, getDocs } from 'firebase/firestore';
+import { arrayRemove, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
 import { db } from '../firebaseconfig';
 import {router, useFocusEffect} from 'expo-router';
 import { Image } from 'react-native';
@@ -12,6 +12,8 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useUserContext } from '../Context/UserContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import ImageViewing from "react-native-image-viewing";
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 interface DiscussionData {
     Author:string,
     Title:string,
@@ -56,15 +58,27 @@ const DisussionScreen = () => {
   const searchParams = useSearchParams();
   const discussionid = searchParams.get('PostRefId');
   const [comments,setComments] = useState<{id:string,Author:string,Content:string,CreatedAt:any}[]>([])
+
+  
   const {user} = useUserContext();
+
   const [loadingData,setLoadingData] = useState(false)
   const [showDeleteProcess,setShowDeleteProcess] = useState(false)
   const [showDeleteConfirmation,setShowDeleteConfirmation] = useState(false)
   const [loadingDelete,setLoadingDelete] = useState(false)
 
 
+
+  const [showDeletePostConfirmation,setShowDeletePostConfirmation] = useState(false)
+  const [showDeletePostProcess,setShowDeletePostProcess] = useState(false)
+  const [deletePostLoading,setDeletePostLoading] = useState(false)
+
+
   const [selectedCommentIndex,setSelectedCommentIndex] = useState<number>(-1)
   const [selectedCommentId,setSelectedCommentId] = useState<string>("")
+
+  const[visibleImageView,setVisibleImageView] = useState(false)
+  const [selectedImageIndex,setSelectedImageIndex] = useState(0)
   useEffect(()=>{
 
     const fetchDiscussionData = async()=>{
@@ -254,6 +268,132 @@ const DisussionScreen = () => {
             </Dialog>
         </Portal>
     )
+
+
+    const renderProcessDeletePost = () => (
+    
+        <Portal>
+            <Dialog visible={showDeletePostProcess} onDismiss={()=>{}}>
+
+
+                <Dialog.Title>
+                    Deleting Your Post
+                </Dialog.Title>
+
+
+                {deletePostLoading ? (
+                    <Dialog.Content>
+                        <Text>Your Post is being deleted Please wait...</Text>
+                    </Dialog.Content>
+                ) : (
+                    <Dialog.Content>
+                    <Text>Your Post is deleted Successfully!</Text>
+                    </Dialog.Content>
+                )}
+
+
+
+                {deletePostLoading ? (
+                    <ProgressBar indeterminate color={MD3Colors.error50} style={{marginBottom:20,width:'80%',marginLeft:'auto',marginRight:'auto',borderRadius:'50%'}} />
+                ) : (
+                    <Dialog.Actions>
+
+                        <TouchableOpacity onPress={()=>{router.push('/(main)/records')}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+
+                            <Text style={{color:'white'}}>
+                                Continue
+                            </Text>
+
+                        </TouchableOpacity>
+
+                    </Dialog.Actions>
+                )}
+
+
+            </Dialog>
+
+
+
+
+        </Portal>
+    )
+
+
+    const renderDeletePostConfirmation = (discussionid:string,discussionRefId:string) => (
+
+        <Portal>
+
+            <Dialog visible={showDeletePostConfirmation} onDismiss={()=>{setShowDeletePostConfirmation(false)}}>
+
+
+                <Dialog.Title>
+                    Are you sure you want to delete this Post?
+                </Dialog.Title>
+
+
+                <Dialog.Content>
+                    <Text>
+                        This action cannot be undone
+                    </Text>
+                </Dialog.Content>
+
+
+                <Dialog.Actions>
+                    <TouchableOpacity onPress={()=>{setShowDeletePostConfirmation(false); deleteDiscussion(discussionid,discussionRefId)}} style={{backgroundColor:'red',paddingVertical:5,paddingHorizontal:10,borderRadius:5,elevation:1}} >
+        
+                        <Text style={{color:'white'}}>
+                            Continue
+                        </Text>
+
+                    </TouchableOpacity>
+                </Dialog.Actions>
+
+            </Dialog>
+        </Portal>
+    )
+
+
+    const deleteDiscussion = async (discussionId: string, discussionRecordRefId: string) => {
+        
+        setDeletePostLoading(true)
+        setShowDeletePostProcess(true)
+
+        try {
+            console.log("Passed data: discussionId > ",discussionId, "<> discussionRecordRefId > ", discussionRecordRefId)
+
+
+
+            const discussionRef = doc(db, "Discussions", discussionId);
+    
+            // Step 1: Delete all replies from the subcollection
+            const repliesRef = collection(discussionRef, "Comments");
+            const repliesSnapshot = await getDocs(repliesRef);
+    
+            const deleteRepliesPromises = repliesSnapshot.docs.map((reply) =>
+                deleteDoc(doc(repliesRef, reply.id))
+            );
+    
+            await Promise.all(deleteRepliesPromises);
+            console.log("All replies deleted successfully");
+    
+            // Step 2: Delete the discussion document
+            await deleteDoc(discussionRef);
+            console.log("Discussion deleted successfully");
+    
+            // Step 3: Remove discussion reference from user's DiscussionRecords
+            const userDiscussionRef = doc(db, "DiscussionRecords", discussionRecordRefId);
+            await updateDoc(userDiscussionRef, {
+                Discussions: arrayRemove(discussionId),
+            });
+            console.log("Removed discussion reference from DiscussionRecords");
+
+            setDeletePostLoading(false)
+            
+    
+        } catch (error) {
+            console.error("Error deleting discussion:", error);
+        }
+    };
   
   return (
 
@@ -263,13 +403,38 @@ const DisussionScreen = () => {
 
         {renderProcess()}
         {renderDeleteConfirmation(discussionid as string,selectedCommentId,selectedCommentIndex)}
+        {renderDeletePostConfirmation(discussionid as string,user?.DiscussionRecordRefId as string)}
+        {renderProcessDeletePost()}
+
+        <ImageViewing
+                images={discussionData?.ImageSnapshots.map((img) => ({ uri: img })) as any}
+                imageIndex={selectedImageIndex}
+                visible={visibleImageView}
+                onRequestClose={() => setVisibleImageView(false)}
+            />
+
         <SafeAreaView style={styles.mainWrapper}>
 
 
             <View style={styles.headerContainer}>
 
-                <Ionicons name="arrow-back" size={30} color="black" style={{marginLeft:10}} />
-                <Ionicons name="menu-outline" size={30} color="black" />
+                <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10}} onPress={()=> router.back()}>
+
+                    <Ionicons name="arrow-back" size={30} color="black" />
+
+                </TouchableOpacity>
+                
+
+                {user?.Username === discussionData?.Author && (
+
+                    <TouchableOpacity onPress={()=> setShowDeletePostConfirmation(true)} style={{alignSelf:'flex-start',marginRight:10, marginLeft:'auto'}}>
+                        <MaterialCommunityIcons name="delete-empty" size={30} color="red" />
+                    </TouchableOpacity>
+
+                )}
+
+
+                
 
             </View>
 
@@ -306,9 +471,18 @@ const DisussionScreen = () => {
                         
                         {discussionData?.ImageSnapshots.map((image,index)=>(
 
-                                <View style={stylesDiscussionContent.imageWrapper}>
+                                <TouchableOpacity style={stylesDiscussionContent.imageWrapper} 
+                                
+                                
+                                    key={index} 
+                                    onPress={() => {
+                                        setSelectedImageIndex(index);
+                                        setVisibleImageView(true);
+                                        console.log(discussionData?.ImageSnapshots)
+                                    }}
+                                >
                                     <Image source={{uri:image}} style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:5}}/>
-                                </View>
+                                </TouchableOpacity>
 
 
                         ))}
@@ -323,7 +497,7 @@ const DisussionScreen = () => {
 
 
                     <View style={stylesDiscussionContent.bodyWrapper}>
-                        <Text>{discussionData?.Content}</Text>
+                        <Text style={{fontSize:15}}>{discussionData?.Content}</Text>
                     </View>
 
 
@@ -339,8 +513,8 @@ const DisussionScreen = () => {
 
                 <View style={stylesReply.replyHeader}>
 
-                    <FontAwesome5 name="comment-alt" size={24} color="black" />
-                    <Text>Comments</Text>
+                    <FontAwesome5 name="comment-alt" size={20} color="black" />
+                    <Text style={{fontWeight:500,marginLeft:10}}>Comments</Text>
 
                 </View>
                 {comments && comments.length > 0 && (
@@ -397,9 +571,13 @@ const DisussionScreen = () => {
 export default DisussionScreen
 const stylesReply = StyleSheet.create({
     replyHeader:{
-        borderWidth:1,
+        //borderWidth:1,
         width:'100%',
-        marginBottom:10
+        marginBottom:10,
+        display:'flex',
+        flexDirection:'row',
+        padding:5,
+        backgroundColor:'white',
     },
     replyWrapper:{
         width:'100%',
@@ -409,7 +587,8 @@ const stylesReply = StyleSheet.create({
         flexDirection:'column',
         alignItems:'center',
         paddingVertical:5,
-        marginTop:10
+        marginBottom:10,
+        backgroundColor:'white'
     },
 
 
@@ -451,14 +630,20 @@ const styles = StyleSheet.create({
         color:'red',
         display:'flex',
         flexDirection:'column',
-        alignItems:'center'
+        alignItems:'center',
+        backgroundColor:'#F2F3F5'
     },
 
 
     contentScrollContainer:{
-        width:'97%',
+        width:'100%',
         //borderWidth:1,
-        paddingTop:20,
+        paddingBottom:5
+        //paddingTop:20,
+        //paddingHorizontal:5,
+        
+        
+        
       
     },
     headerContainer:{
@@ -471,7 +656,8 @@ const styles = StyleSheet.create({
         paddingVertical:10,
         height:50,
         //backgroundColor:'#2E6F40',
-        marginBottom:20
+        //marginBottom:20,
+        backgroundColor:'white'
     },
 })
 
@@ -489,10 +675,13 @@ const stylesDiscussionContent = StyleSheet.create({
     mainContainer:{
         width:'100%',
         //borderWidth:1,
-        borderColor:'red',
+        //borderColor:'red',
         display:'flex',
         flexDirection:'column',
-        marginBottom:20
+        marginBottom:20,
+        backgroundColor:'white',
+        paddingHorizontal:5,
+        paddingTop:20
         
     },
     header:{
@@ -522,7 +711,7 @@ const stylesDiscussionContent = StyleSheet.create({
         //height:50
     },
     bodyWrapper:{
-        borderWidth:1,
+        //borderWidth:1,
         width:'100%',
         //backgroundColor:'green',
         paddingVertical:10
@@ -570,7 +759,8 @@ const stylesDiscussionContent = StyleSheet.create({
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
-        justifyContent:'center'
+        justifyContent:'center',
+        backgroundColor:'white'
     },
 
     commentActionWrapper:{
@@ -579,7 +769,8 @@ const stylesDiscussionContent = StyleSheet.create({
         width:'95%',
         borderRadius:10,
         backgroundColor:'#F2F3F5',
-        paddingHorizontal:20
+        paddingHorizontal:20,
+       
     },
     CommentActionText:{
         color:"#D7D8Da"

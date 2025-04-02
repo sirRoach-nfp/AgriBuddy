@@ -37,7 +37,7 @@ const RecordMinCard = ({cropName,cropId,status,datePlanted,SessionId,PlotAssoc,P
         <TouchableOpacity style={styles.container} onPress={navigateToManagement}  >
     
             <View style={styles.thumbnail}>
-                <Image source={cropsImages[cropId]} style={{width:'100%',height:'100%',objectFit:'contain',borderRadius:'50%'}}  />
+                <Image source={cropsImages[cropId]} style={{width:'100%',height:'100%',borderRadius:10,alignSelf: 'stretch',aspectRatio: 1}}resizeMode="cover"  />
             </View>
     
     
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
         display:'flex',
         flexDirection:'column',
         //marginBottom:15,
-        elevation:7,
+        elevation:1,
         backgroundColor:'#D8D8C0',
         borderRadius:10,
         alignItems:'center',
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
         height:70,
         //borderWidth:1,
         backgroundColor:'#4C9142',
-        borderRadius:'50%',
+        borderRadius:10,
         display:'flex',
         alignItems:'center',
         justifyContent:'center',
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
 
 
     statusIndi:{
-        borderRadius:'50%',
+        borderRadius:5,
         backgroundColor:'#80E900',
         width:10,
         height:10,

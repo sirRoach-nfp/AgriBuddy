@@ -20,6 +20,7 @@ import {
     StackedBarChart
   } from "react-native-chart-kit";
 import { useUserContext } from '../Context/UserContext';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 interface PlotData{
     PlotId : string,
@@ -276,6 +277,12 @@ const PlotManagementScreen = () => {
     console.log(chartData)
   }
 
+
+  const navigateToPlotSetting = (plotAssocId:string,plotName:string,currentCrop:any)=>{
+    const queryString = `?plotAssocId=${encodeURIComponent(plotAssocId)}&currentPlotName=${encodeURIComponent(plotName)}&currentCrop=${currentCrop}`
+    router.push(`/(screens)/PlotScreenSettings${queryString}` as any)
+  }
+
  
   return (
     <SafeAreaView style={styles.mainContainer}>
@@ -287,7 +294,7 @@ const PlotManagementScreen = () => {
             <View style={styles.infoWrapper}>
                 <View style={styles.infoHeaderwrapper}>
                     <Text  style={styles.plotName}>{plotData.PlotName}</Text>
-                    <Feather name="edit" size={20} color="black" style={{marginLeft:5}}/>
+               
 
                 </View>
                 
@@ -319,6 +326,15 @@ const PlotManagementScreen = () => {
 
                 </View>
             </View>
+
+            <View style={{borderWidth:1,width:30,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+                <TouchableOpacity onPress={()=>navigateToPlotSetting(plotId as string,plotData?.PlotName,plotData.currentCrops.CropAssocId)}>
+
+                    <Ionicons name="options" size={24} color="black" />
+
+                </TouchableOpacity>
+                
+            </View>
         </View>
 
 
@@ -332,7 +348,7 @@ const PlotManagementScreen = () => {
 
             <View style={stylesCrop.wrapper}>
                 <View style= {stylesCrop.cropThumbnailWrapper}>
-                    <Image style={{width:'100%',height:'100%',objectFit:'contain',borderRadius:'50%'}} source={cropsImages[plotData.currentCrops.CropId]}/>
+                    <Image style={{width:'100%',height:'100%',objectFit:'contain',borderRadius:10}} source={cropsImages[plotData.currentCrops.CropId as string]}/>
                 </View>
                 <View style={stylesCrop.textContainer}>
                     <Text style={stylesCrop.cropNameText}>
@@ -365,7 +381,7 @@ const PlotManagementScreen = () => {
 
 
 
-    <View style={{borderWidth:0,marginTop:30,width:'90%'}}>
+    <View style={{borderWidth:1,marginTop:30,width:'98%',marginLeft:'auto',marginRight:'auto'}}>
 
         <View style={styles.chartsHeaderWrapper}>
 
@@ -394,7 +410,7 @@ const PlotManagementScreen = () => {
                     labels: chartData?.labels, // Weeks
                     datasets: chartData?.datasets, // Pest occurrence per week
                 }}
-                width={Dimensions.get("window").width * .95} // from react-native
+                width={Dimensions.get("window").width * .98} // from react-native
                 height={220}
                 //yAxisLabel="$"
                 //yAxisSuffix="k"
@@ -488,7 +504,7 @@ const styles = StyleSheet.create({
     chartsHeaderWrapperIcon:{
         width:30,
         height:30,
-        //borderWidth:1,
+        borderWidth:1,
         marginRight:5,
         backgroundColor:'#E9A800',
         borderRadius:5,
@@ -516,7 +532,7 @@ const styles = StyleSheet.create({
         flex:1,
         display:"flex",
         flexDirection:'column',
-        //borderWidth:1,
+        borderWidth:1,
         alignItems:'center',
         paddingTop:10
     },
@@ -531,7 +547,8 @@ const styles = StyleSheet.create({
         paddingTop:10,
         paddingBottom:10,
         paddingLeft:10,
-        paddingRight:10
+        paddingRight:10,
+        height:110
     },
     thumbnail:{
         width:140,
@@ -555,14 +572,14 @@ const styles = StyleSheet.create({
     },
     badge:{
         width:100,
-        height:20,
+        alignSelf:'flex-start',
         //borderWidth:1,
         marginTop:'auto',
         display:'flex',
         alignItems:'center',
         justifyContent:'center',
         borderRadius:5,
-        padding:10
+        padding:0
     },
 
     infoHeaderwrapper:{
@@ -658,8 +675,8 @@ const stylesCrop = StyleSheet.create({
     cropThumbnailWrapper:{
         width:50,
         height:50,
-        borderWidth:1,
-        borderRadius:'50%'
+        //borderWidth:1,
+        //borderRadius:'50%'
     },
 
     textContainer:{

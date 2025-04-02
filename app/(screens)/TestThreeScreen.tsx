@@ -1,12 +1,12 @@
 import { Alert, Button, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { auth, db } from '../firebaseconfig'
 import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore'
 import { Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper'
 import { router } from 'expo-router'
 
-export default function SignupPage() {
+export default function TestThreeScreen() {
 
 
     const [email,setEmail] = useState("")
@@ -140,7 +140,6 @@ export default function SignupPage() {
 
 
         try{
-            
 
             const usersRef = collection(db, "Users");
             const q = query(usersRef, where("Username", "==", userName));
@@ -193,7 +192,7 @@ export default function SignupPage() {
             await setDoc(doc(db,"CurrentCrops",CurrentCropsRefId),{CurrentCrops:[]})
             await setDoc(doc(db,"CropRotationPlan",cropRotationPlanRefId),{Plans:[]})
             await setDoc(doc(db,"DiscussionRecords",DiscussionRecordRefId),{Discussions:[]})
-            
+
 
 
             Alert.alert("Account Created Successfully")
@@ -209,12 +208,6 @@ export default function SignupPage() {
 
     }
 
-
-
-    useEffect(() => {
-        console.log("Component mounted.");
-    }, []);
-
   return (
 
 
@@ -228,57 +221,7 @@ export default function SignupPage() {
 
 
 
-                {renderSignUpProcess()}
-                {renderPasswordWarning(passwordWarning)}
-  
-
-
-
-                <View style={styles.headerWrapper}>
-                    <Text style={styles.headerTextMain}>Create An Account</Text>
-                    <Text style={styles.headerTextSub}>Digitalize Your Farming Journey</Text>
-                </View>
-
-
-
-
-                <View style={styles.fieldsWrapper}>
-
-                    
-                    <View style={styles.inputWrapper}>
-                        <Text style={styles.inputWrapperHeader}>Email : </Text>
-                        <TextInput placeholder="YourAccount@gmail.com" style={styles.textInput} onChange={(e)=>setEmail(e.nativeEvent.text)} value={email}></TextInput>
-                    </View>
-
-
-                    <View style={styles.inputWrapper}>
-                        <Text style={styles.inputWrapperHeader}>Username : </Text>
-                        <TextInput placeholder="Enter Your Username" style={styles.textInput} onChange={(e)=>setUsername(e.nativeEvent.text)} value={userName}></TextInput>
-                    </View>
-
-                    <View style={styles.inputWrapper}>
-                        <Text style={styles.inputWrapperHeader}>Password : </Text>
-                        <TextInput placeholder="Enter Your Password" style={styles.textInput} onChange={(e)=>setPassword(e.nativeEvent.text)} value={password}></TextInput>
-                    </View>
-
-                    
-                    <TouchableOpacity style={styles.logButtonWrapper} onPress={()=>registerAccount(email,userName,password)}>
-
-
-                        <Text style={styles.logButtonText}>Signup</Text>
-
-
-                    </TouchableOpacity>
-
-                </View>
-
-
-                <Text style={styles.signUpText}>
-
-                    Already Have An Account ? <TouchableOpacity onPress={()=> router.push('/(screens)/LoginPage')}> <Text style={styles.signUpTextClick}> Login </Text>  </TouchableOpacity>
-                </Text>
-
-
+                
 
 
 

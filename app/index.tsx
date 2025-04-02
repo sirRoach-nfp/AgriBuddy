@@ -1,11 +1,12 @@
 
 import { Button, SafeAreaView, Text,TextInput,Touchable,TouchableOpacity,View } from "react-native"
 import { StyleSheet } from "react-native"
-import { Link } from "expo-router"
+import { Link, useRouter } from "expo-router"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { router } from "expo-router";
 export default function App(){
+    const router = useRouter();
 
 
     return(
@@ -15,7 +16,13 @@ export default function App(){
 
 
 
-                <Link href='/(main)/home'>Continue</Link>
+                <Link href='/(main)/home'>
+                    <Text>
+                            Continue
+                    </Text>
+                
+                
+                </Link>
 
 
 
@@ -24,8 +31,11 @@ export default function App(){
 
                 <Text style={styles.signUpText}>
 
-                    Don't Have An Account ? <TouchableOpacity onPress={()=> router.push('/(screens)/SignupPage')}> <Text style={styles.signUpTextClick}> Sign Up </Text>  </TouchableOpacity>
+                    Don't Have An Account ? <TouchableOpacity onPress={()=> {router.push('/(screens)/SignupPage')}}> <Text style={styles.signUpTextClick}> Sign Up </Text>  </TouchableOpacity>
                 </Text>
+
+
+                
 
 
 

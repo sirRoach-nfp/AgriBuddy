@@ -19,6 +19,9 @@ export default function LoginPage(){
     const [email,setEmail] = useState("")
 
     const [loginErrorVisible,setlogInErrorVisible] = useState(false);
+    const [logProcess,SetLogProcess] = useState(false)
+        
+
 
     const login = async(email:string,password:string) => {
 
@@ -28,7 +31,7 @@ export default function LoginPage(){
 
 
 
-
+        
 
         try{
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -48,7 +51,7 @@ export default function LoginPage(){
             }
 
 
-            await new Promise(resolve => setTimeout(resolve, 15000));
+       
 
 
             router.replace('/(main)/home');

@@ -228,7 +228,7 @@ const CropProfile = () => {
             
                 <View style={styles.thumbnail}>
                 
-                    <Image source={{ uri: selectedCrop?.thumbnail}} style={{width:'100%',height:'100%',objectFit:'contain'}} />
+                    <Image source={{ uri: selectedCrop?.thumbnail}} style={{width:'100%',height:'100%'}} resizeMode="cover" />
             
                 </View>
 
@@ -255,18 +255,18 @@ const CropProfile = () => {
 
                                 <View style={subContainer.badgeWrapper}>
                                     
-                                    <Image source={soilImages['loamy']} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
+                                    <Image source={soilImages['loamy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
                                     <Text  style={styles.badgesText}>Loamy</Text>
 
                                 </View>
 
                                 <View style={subContainer.badgeWrapper}>
-                                    <Image source={soilImages['sandy']} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
+                                    <Image source={soilImages['sandy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
                                     <Text style={styles.badgesText}>Sandy</Text>
                                 </View>
 
                                 <View style={subContainer.badgeWrapper}>
-                                    <Image source={soilImages['clay']} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
+                                    <Image source={soilImages['clay']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
                                     <Text style={styles.badgesText}>Clayey</Text>
                                 </View>
                                 </View>
@@ -299,7 +299,7 @@ const CropProfile = () => {
                                     {selectedCrop?.commonPests.map((pest,index)=>(
                                         <View style={subContainer.badgeWrapper} key={index}>
                 
-                                            <Image source={pestImages[pest.toLowerCase() as string]} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
+                                            <Image source={pestImages[pest.toLowerCase() as string]} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
                                             <Text  style={styles.badgesText}>{pest}</Text>
                 
                                         </View>
@@ -336,7 +336,7 @@ const CropProfile = () => {
                                 {selectedCrop?.commonDiseases.map((disease,index)=>(
                                     <View style={subContainer.badgeWrapper} key={index}>
             
-                                        <Image source={diseaseImages[disease.toLowerCase() as string]} style={{width:65,height:65,marginBottom:5, borderRadius:'50%'}}/>
+                                        <Image source={diseaseImages[disease.toLowerCase() as string]} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
                                         <Text  style={styles.badgesText}>{disease}</Text>
             
                                     </View>
@@ -482,7 +482,7 @@ const styles = StyleSheet.create({
     seasonIndi:{
         width:13,
         height:13,
-        borderRadius:'50%',
+        borderRadius:50,
         backgroundColor:'#80E900',
         marginLeft:15,
         marginBottom:10

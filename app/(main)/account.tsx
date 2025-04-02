@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ScrollView } from 'react-native-gesture-handler'
 
@@ -12,7 +12,7 @@ import { Button, Dialog, PaperProvider, Portal } from 'react-native-paper';
 import { ProgressBar, MD3Colors } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { signOut } from 'firebase/auth';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useUserContext } from '../Context/UserContext';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -84,6 +84,16 @@ const account = () => {
       console.error("Error during logout:", error);
     }
   };
+
+
+  useFocusEffect(
+  
+  
+      useCallback(()=>{
+        fetchPlots(user?.PlotsRefId as string)
+  
+      },[])
+    )
 
 
   
@@ -271,7 +281,7 @@ const account = () => {
             <View style={styles.plotContainerWrapper}>
 
               <View style={styles.plotHeaderWrapper}>
-                <View style={{width:30,height:30,borderWidth:1,borderRadius:'50%',backgroundColor:'green'}}></View>
+                <View style={{width:30,height:30,borderWidth:0,borderRadius:50,backgroundColor:'green'}}></View>
                 <Text style={styles.plotHeaderText}>Your Farm Plots</Text> 
 
                 <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:'auto'}} onPress={showAddPlotConfirmation}><Ionicons name="add-outline" size={30} color="black" /></TouchableOpacity>
@@ -373,7 +383,7 @@ const styles = StyleSheet.create({
 
   profileIconWrapper:{
     //borderWidth:1,
-    borderRadius:'50%',
+    borderRadius:5,
     width:70,
     height:70,
     marginLeft:10,
