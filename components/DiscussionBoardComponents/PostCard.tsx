@@ -1,10 +1,10 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, Touchable, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 import { Avatar } from 'react-native-paper';
-
+import { router } from 'expo-router';
 interface Props {
     Author:string,
     CreatedAt:any,
@@ -14,18 +14,44 @@ interface Props {
 
 }
 
+const getAuthorInitials = (name:string) => {
+    if (!name) return "";
+    const words = name.trim().split(" ");
+    return words.length > 1
+      ? words[0][0] + words[1][0] // First letter of first and last name
+      : words[0][0]; // If only one word, return the first letter
+  };
+
+
+
+const formatDate = (createdAt:any) => {
+if (!createdAt || !createdAt.seconds) return "N/A"; // Handle missing data
+
+const date = new Date(createdAt.seconds * 1000); // Convert Firestore timestamp to JS Date
+return date.toLocaleDateString("en-US", { month: "long", day: "numeric" }); // Format as "Month Day"
+};
+
+
+const navigateToPost = (RefId:string) =>{
+
+    const queryString= `?PostRefId=${encodeURIComponent(RefId)}`
+    //router.push(`/(sc)${queryString}` as any)
+
+    router.push(`/(screens)/DisussionScreen${queryString}` as any)
+}
+
 
 const PostCard = ({Author,CreatedAt,Content,Title}:Props) => {
   return (
-    <View style={styles.wrapperMain}>
+    <TouchableOpacity style={styles.wrapperMain} onPress={()=>navigateToPost(Title)}>
       <View style={styles.infoContainer}>
 
         <View style={styles.titleContainer}>
 
 
-            <Avatar.Text size={24} label={Author}  style={styles.badgeContainer}/>
+            <Avatar.Text size={24} label={getAuthorInitials(Author)}  style={styles.badgeContainer}/>
             <Text style={styles.titleTextUsername}>{Author}</Text>
-            <Text style={styles.titleTextDate}>Feb 20</Text>
+            <Text style={styles.titleTextDate}>{formatDate(CreatedAt)}</Text>
         </View>
 
         <View style={styles.contentContainer}>
@@ -41,7 +67,7 @@ const PostCard = ({Author,CreatedAt,Content,Title}:Props) => {
 
       </View>
 
-    </View>
+    </TouchableOpacity>
   )
 }
 
@@ -53,7 +79,7 @@ const styles = StyleSheet.create({
         width:30,
         height:30,
         borderRadius:'50%',
-        borderWidth:1,
+        //borderWidth:1,
         marginRight:10
     },
 

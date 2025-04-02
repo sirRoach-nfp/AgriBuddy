@@ -10,7 +10,6 @@ import { Image } from 'react-native';
 import { addDoc, arrayUnion, collection, doc, Timestamp, updateDoc } from 'firebase/firestore';
 import { useUserContext } from '../Context/UserContext';
 import { db } from '../firebaseconfig';
-
 const PostScreen = () => {
     const {user} = useUserContext();
 

@@ -83,7 +83,7 @@ const records = () => {
           />
 
 
-        <TouchableOpacity onPress={()=>{router.push('/(screens)/PostScreen')}} style={{alignSelf:'flex-start',marginRight:20,marginLeft:10,borderWidth:1}}>
+        <TouchableOpacity onPress={()=>{router.push('/(screens)/PostScreen')}} style={{alignSelf:'flex-start',marginRight:20,marginLeft:10,borderWidth:0,marginTop:'auto',marginBottom:'auto'}}>
 
             <Octicons name="diff-added" size={30} color="#828282"  />
 
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   tabHeader:{
     width:'100%',
     maxHeight:100,
-    borderWidth:1,
+    //borderWidth:1,
     display:'flex',
     flexDirection:'row',
     alignItems:'center',
