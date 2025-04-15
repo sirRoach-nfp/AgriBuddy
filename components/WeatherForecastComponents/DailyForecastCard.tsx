@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -8,11 +8,15 @@ type dailyData = {
     day:string,
     temp: number,
     rain: number,
-    code:number
+    code:number,
+    currentDate:string
 }
 
 
-const DailyForecastCard = ({day,temp,rain,code}:dailyData) => {
+const DailyForecastCard = ({day,temp,rain,code,currentDate}:dailyData) => {
+
+
+  useEffect(()=>{},[])
   return (
     <View style={styles.wrapper}>
 

@@ -92,7 +92,7 @@ const PostScreen = () => {
                 ) : (
                     <Dialog.Actions>
 
-                        <TouchableOpacity onPress={()=>{setShowProcess(false)}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+                        <TouchableOpacity onPress={()=>{router.back()}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
 
                             <Text style={{color:'white'}}>
                                 Continue

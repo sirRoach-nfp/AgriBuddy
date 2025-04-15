@@ -66,7 +66,7 @@ const _mainlayout = () => {
       <Tabs.Screen name = 'records'
       
                 options={{
-                    title: 'Home',
+                    title: 'discussions',
                     tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
                     headerShown:false,
                 }}
@@ -75,7 +75,7 @@ const _mainlayout = () => {
       <Tabs.Screen name = 'expenses'
       
                 options={{
-                    title: 'Home',
+                    title: 'expenses',
                     tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
                     headerShown:false,
                 }}
@@ -85,7 +85,7 @@ const _mainlayout = () => {
       <Tabs.Screen name = 'account' 
       
                 options={{
-                    title: 'Home',
+                    title: 'account',
                     tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
                     headerShown:false,
                 }}

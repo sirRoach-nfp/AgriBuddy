@@ -462,9 +462,9 @@ const PestOccurrencesDetailed = () => {
 
 
 
-            <Appbar.Header style={{width:'100%',flex:1}}>
-            <Appbar.BackAction onPress={()=> navigation.goBack()} />
-            <Appbar.Content title="Pest Occurrences Detailed Overview" />
+            <Appbar.Header style={{width:'100%',flex:1,height:50}}>
+                <Appbar.BackAction onPress={()=> navigation.goBack()} />
+                <Appbar.Content title="Pest Occurrences Detailed Overview" />
             </Appbar.Header>
 
 
@@ -637,14 +637,14 @@ const PestOccurrencesDetailed = () => {
                                     color: () => pest.color,
                                 })),
                             }}
-                            width={400}
+                            width={Dimensions.get("window").width * 0.95}
                             height={220}
                             yAxisLabel=""
                             bezier
                             //yAxisSuffix=" occurrences"
                             chartConfig={{
-                                backgroundGradientFrom: "#fff",
-                                backgroundGradientTo: "#fff",
+                                backgroundGradientFrom: "#dfe3ea", // Light grayish-blue to match #F2F3F5
+                                backgroundGradientTo: "#ffffff", // Smooth transition into pure white
                                 decimalPlaces: 0,
                                 color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                             }}
@@ -718,9 +718,8 @@ const PestOccurrencesDetailed = () => {
                         yAxisLabel=""
                         yAxisSuffix=""
                         chartConfig={{
-                            backgroundColor: "#e26a00",
-                            backgroundGradientFrom: "#fb8c00",
-                            backgroundGradientTo: "#ffa726",
+                            backgroundGradientFrom: "#dfe3ea", // Light grayish-blue to match #F2F3F5
+                            backgroundGradientTo: "#ffffff", // Smooth transition into pure white
                             decimalPlaces: 0,
                             color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                             labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
@@ -834,12 +833,15 @@ const styles = StyleSheet.create({
         width:'100%',
         //borderWidth:1,
         paddingTop:20,
-        flex:1
+        flex:1,
+       
         
     },
 
     mainContainer:{
-        flex:1
+        flex:1,
+        backgroundColor:'#F2F3F5',
+    
     }
 })
 
@@ -851,8 +853,10 @@ const stylePie = StyleSheet.create({
         width:'95%',
         //borderWidth:1,
         marginBottom:20,
-        backgroundColor:'#FAF3E0',
-        
+        //backgroundColor:'#FAF3E0',
+        backgroundColor:'white',
+        borderRadius:5,
+        elevation:2
     },
 
 })
@@ -879,12 +883,17 @@ const styleComparisonChart = StyleSheet.create({
     wrapper:{
         width:'95%',
         //borderWidth:1,
+        marginBottom:10,
         display:'flex',
         flexDirection:'column',
         paddingTop:10,
         //paddingBottom:10,
+        //borderRadius:5,
+        //backgroundColor:'#FAF3E0',
+        backgroundColor:'white',
         borderRadius:5,
-        backgroundColor:'#FAF3E0'
+        elevation:2
+        
     },
 
     headerWrapper:{
@@ -956,7 +965,9 @@ const styleSummaryCard = StyleSheet.create({
         flexDirection:'column',
         marginBottom:15,
         borderRadius:5,
-        backgroundColor:'#FAF3E0',
+        //backgroundColor:'#FAF3E0',
+        backgroundColor:'white',
+        elevation:2,
         //padding:10,
         paddingTop:10,
         paddingBottom:10

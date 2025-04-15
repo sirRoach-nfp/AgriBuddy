@@ -9,7 +9,7 @@ type recordMinCardProps = {
     cropId:string,
     status: string,
     datePlanted:string,
-
+    cropCover:string,
     SessionId:string,
     PlotName:string,
     PlotAssoc:string
@@ -18,7 +18,7 @@ type recordMinCardProps = {
 import { Image } from 'react-native';
 import { cropsImages } from '@/app/Pestdat';
 
-const RecordMinCard = ({cropName,cropId,status,datePlanted,SessionId,PlotAssoc,PlotName}: recordMinCardProps) => {
+const RecordMinCard = ({cropName,cropId,status,datePlanted,SessionId,PlotAssoc,PlotName,cropCover}: recordMinCardProps) => {
 
 
     const navigateToManagement = () =>{
@@ -37,7 +37,7 @@ const RecordMinCard = ({cropName,cropId,status,datePlanted,SessionId,PlotAssoc,P
         <TouchableOpacity style={styles.container} onPress={navigateToManagement}  >
     
             <View style={styles.thumbnail}>
-                <Image source={cropsImages[cropId]} style={{width:'100%',height:'100%',borderRadius:10,alignSelf: 'stretch',aspectRatio: 1}}resizeMode="cover"  />
+                <Image source={{ uri: cropCover}} style={{width:'100%',height:'100%',borderRadius:10,alignSelf: 'stretch',aspectRatio: 1}}resizeMode="cover"  />
             </View>
     
     

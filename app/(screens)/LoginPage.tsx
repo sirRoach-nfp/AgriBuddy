@@ -95,7 +95,7 @@ export default function LoginPage(){
                 {renderLogInError()}
 
 
-                <Link href='/(main)/home'>Continue</Link>
+                
 
 
 

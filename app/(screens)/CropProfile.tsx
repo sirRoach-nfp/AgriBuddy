@@ -6,7 +6,7 @@ import { ScrollView } from 'react-native-gesture-handler'
 import {pestImages,diseaseImages,soilImages} from '../Pestdat'
 
 //firestore imports
-import { doc, updateDoc, arrayUnion, DocumentReference } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, DocumentReference, getDoc } from "firebase/firestore";
 import {db} from "../firebaseconfig"
 
 
@@ -30,11 +30,27 @@ import { Button, Dialog, PaperProvider, Portal } from 'react-native-paper'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faFileArrowDown,faLeaf } from '@fortawesome/free-solid-svg-icons'
 import { useUserContext } from '../Context/UserContext'
+import { router } from 'expo-router'
 
 interface guideStep{
     header: string;
     content: string;
   }
+
+
+interface pestType{
+    pestCoverImage:string,
+    pestId:string,
+    pestName:string
+
+}
+
+interface diseaseType{
+    diseaseCoverImage:string,
+    diseaseId:string,
+    diseaseName:string
+
+}
   
   interface CropData{
     cropId:string,
@@ -44,11 +60,10 @@ interface guideStep{
     family: string;
     growthTime: string;
     bestSeason: string;
-    soilType: string;
+    soilType: string[];
     soilPh: string;
-    commonPests: string[];
-    commonDiseases: string[];
-    guide: Record<string, guideStep>;
+    commonPests: pestType[];
+    commonDiseases: diseaseType[];
   }
   
   interface CropsData {
@@ -104,6 +119,7 @@ const CropProfile = () => {
                     PlotAssoc:null,
                     CropName:commonName,
                     CropId:id,
+                    CropCover:cropData?.thumbnail,
                     Date: getCurrentDate(),
 
                 })
@@ -111,6 +127,7 @@ const CropProfile = () => {
 
             console.log("success")
             setShowConfirmationVisible(false)
+            router.replace('/(main)/home')
         }catch(err){
             console.error(err)
         }
@@ -119,81 +136,55 @@ const CropProfile = () => {
     const [loading,setLoading] = useState(true)
 
     const searchParams = useSearchParams();
-
+    const cropId = searchParams.get('cropid')
     const commonName = searchParams.get('commonName'); // should return "bellpepper"
     const scientificName = searchParams.get('scientificName');
     const imgUrl = searchParams.get('imgUrl');
 
 
-    const [cropData,setCropData] = useState<CropsData>({})
+    const [cropData,setCropData] = useState<CropData>()
     
 
     useEffect(()=>{
-        console.log("Common name passed : ",commonName)
-        console.log(ChilliPepper)
-        console.log("Squash Data : ", Squash)
-        setLoading(true)
-        switch(commonName){
-            case 'Tomato' : 
-                setCropData(TomatoData)
-                break;
 
-            case 'Eggplant':
-                setCropData(EggplantData)
-                break;
 
-            case 'Squash':
-                setCropData(Squash)
-                break;
+        const fetchCropDataFromFirebase = async()=>{
+            
+            try{
+                console.log("Passed Document ID : ",cropId)
+                const cropDataDocRef = doc(db,'Crops',cropId as string)
+                const cropDataDocSnapshot = await getDoc(cropDataDocRef)
 
-            case 'ChilliPepper':
 
-                console.log("Ticked")
-                setCropData(ChilliPepper)
-                console.log("Set crop data successful with this data :",ChilliPepper)
-                break;
-                
-            case 'Potato':
-                setCropData(Potato)
-                break;
+                if(cropDataDocSnapshot.exists()){
 
-            case 'Sitaw':
-                setCropData(Sitaw)
-                break;
+                    const rawData = {
+                        cropId:cropDataDocSnapshot.id as string || "",
+                        thumbnail: cropDataDocSnapshot.data().cropCover as string || " ",
+                        scientificName: cropDataDocSnapshot.data().scientificName as string || " ",
+                        commonName: cropDataDocSnapshot.data().cropName as string || " ",
+                        family: cropDataDocSnapshot.data().family as string || " ",
+                        growthTime: cropDataDocSnapshot.data().growthTime as string || " ",
+                        bestSeason: cropDataDocSnapshot.data().bestSeason as string || " ",
+                        soilType: cropDataDocSnapshot.data().cropCover as string[] || [],
+                        soilPh: cropDataDocSnapshot.data().soilPh as string || "",
+                        commonPests: cropDataDocSnapshot.data().pests as pestType[] || [],
+                        commonDiseases: cropDataDocSnapshot.data().diseases as diseaseType[] || "",
+                    }
 
-            case 'Bittergourd':
-                setCropData(Bittergourd)
-                break;
+                    setCropData(rawData)
+                }
+            }catch(err){
+                console.error(err)
+            }
 
-            case 'Bottlegourd':
-                setCropData(Bottlegourd)
-                break;
-
-            case 'Cucumber':
-                setCropData(Cucumber)
-                break;
-
-            case 'Mungbean':
-                setCropData(MungBean)
-                break;
-
-            case 'Peanut':
-                setCropData(Peanut)
-                break;
-
-            case 'Spongegourd':
-                setCropData(Spongegourd)
-                break;
-
-            default:
-                 setCropData(TomatoData)
-                 break;
         }
+        fetchCropDataFromFirebase()
         setLoading(false)
         console.log(cropData)
 
         
-    },[commonName])
+    },[cropId])
 
 
 
@@ -204,14 +195,14 @@ const CropProfile = () => {
     },[cropData])
 
 
-    const selectedCrop = cropData[commonName as string]
+    //const selectedCrop = cropData[commonName as string]
   
   return (
 
 
     <PaperProvider>
 
-        {selectedCrop  && renderAddCropConfirmationDialog(selectedCrop.cropId,selectedCrop.commonName)}
+        {cropData  && renderAddCropConfirmationDialog(cropData.cropId,cropData.commonName)}
 
 
 
@@ -228,7 +219,7 @@ const CropProfile = () => {
             
                 <View style={styles.thumbnail}>
                 
-                    <Image source={{ uri: selectedCrop?.thumbnail}} style={{width:'100%',height:'100%'}} resizeMode="cover" />
+                    <Image source={{ uri: cropData?.thumbnail}} style={{width:'100%',height:'100%'}} resizeMode="cover" />
             
                 </View>
 
@@ -237,10 +228,10 @@ const CropProfile = () => {
                     <View style={styles.headerWrapper}>
                         <View style={styles.seasonIndi}></View>
 
-                        <Text style={styles.cropName}>{selectedCrop?.commonName}</Text>
-                        <Text style={styles.scientificName}>({selectedCrop?.scientificName})</Text>
-                        <Text style={styles.familyName}>From The Family {selectedCrop?.family}</Text>
-                        <Text style={styles.bestGrown}>Best Grown From month - to month</Text>
+                        <Text style={styles.cropName}>{cropData?.commonName}</Text>
+                        <Text style={styles.scientificName}>({cropData?.scientificName})</Text>
+                        <Text style={styles.familyName}>From The Family {cropData?.family}</Text>
+                        
                     </View>
 
                     <ScrollView style={styles.bodyWrapper} contentContainerStyle={{alignItems:'center'}}>
@@ -274,7 +265,7 @@ const CropProfile = () => {
 
                                 <View style={subContainer.phIndi}>
                                 <Text style={styles.phText}>
-                                    Optimal Soil PH is {selectedCrop?.soilPh}
+                                    Optimal Soil PH is {cropData?.soilPh}
                                 </Text>
                             </View>
 
@@ -296,11 +287,11 @@ const CropProfile = () => {
 
 
                             <View style={subContainer.badgeContainer}>
-                                    {selectedCrop?.commonPests.map((pest,index)=>(
+                                    {cropData?.commonPests.map((pest,index)=>(
                                         <View style={subContainer.badgeWrapper} key={index}>
                 
-                                            <Image source={pestImages[pest.toLowerCase() as string]} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
-                                            <Text  style={styles.badgesText}>{pest}</Text>
+                                            <Image source={{ uri: pest.pestCoverImage}} style={{width:65,height:65,marginBottom:5, borderRadius:10}}/>
+                                            <Text  style={styles.badgesText}>{pest.pestName}</Text>
                 
                                         </View>
 
@@ -333,11 +324,11 @@ const CropProfile = () => {
                             <View style={subContainer.badgeContainer}>
                                 
 
-                                {selectedCrop?.commonDiseases.map((disease,index)=>(
+                                {cropData?.commonDiseases.map((disease,index)=>(
                                     <View style={subContainer.badgeWrapper} key={index}>
             
-                                        <Image source={diseaseImages[disease.toLowerCase() as string]} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
-                                        <Text  style={styles.badgesText}>{disease}</Text>
+                                        <Image source={{ uri: disease.diseaseCoverImage}} style={{width:65,height:65,marginBottom:5, borderRadius:10}}/>
+                                        <Text  style={styles.badgesText}>{disease.diseaseName}</Text>
             
                                     </View>
 
@@ -438,7 +429,7 @@ const styles = StyleSheet.create({
     badgesText:{
         color:'#253D2C',
         fontWeight:400,
-        fontSize:15,
+        fontSize:14,
         fontStyle:'italic'
     },
     mainContainer:{
@@ -557,7 +548,7 @@ const subContainer = StyleSheet.create({
     },
     badgeContainer:{
         width:'100%',
-        //borderWidth:1,
+        borderWidth:1,
         position:'relative',
         
         display:'flex',
@@ -565,14 +556,14 @@ const subContainer = StyleSheet.create({
         //justifyContent:'space-between',
         alignItems:'center',
         justifyContent:'center',
-        gap:30,
+        gap:20,
         flexWrap:'wrap',
         marginBottom:10
     },
     badgeWrapper:{
-        height:90,
+        height:100,
         width:90,
-        //borderWidth:1,
+        borderWidth:1,
         display:'flex',
         flexDirection:'column',
         alignItems:'center',

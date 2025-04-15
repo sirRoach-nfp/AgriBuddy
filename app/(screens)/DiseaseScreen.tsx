@@ -1,90 +1,97 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { Image } from 'react-native';
+import { useSearchParams } from 'expo-router/build/hooks';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseconfig';
 
-import { Image } from 'react-native';
-import { useUserContext } from '../Context/UserContext';
-import { useSearchParams } from 'expo-router/build/hooks';
+
+
 
 
 interface Symptoms{
     Symptoms:string,
     SymptomsSnapshot:string[]
 }
-interface PestData{
+interface DiseaseData{
     CommonName:string,
-    ScientificName:string,
-    Characterstics:string,
-    Ecology:string,
+    MethodsOfDispersal:string,
     DamageSymptoms : Symptoms,
-    PestSnapshot:string,
+    DiseaseSnapshot:string,
+    DiseaseDevelopment:string,
     ControlMeasures:string,
 }
 
 
+const DiseaseScreen = () => {
 
-const DiseasePestScreen = () => {
+
+
+
+
 
     const searchParams = useSearchParams();
-    const pestName = searchParams.get('pestName');
+    const diseaseId = searchParams.get('diseaseId')
 
 
+    const [diseaseData,setDiseaseData] = useState<DiseaseData>()
 
-  const [pestData, setPestData] = useState<PestData | null>(null);
-  const [selectedOption,setSelectedOption] = useState<String>('Characteristics');
-  const handleSegmentChange = (value:String) => {
+    const [selectedOption,setSelectedOption] = useState<String>('Characteristics');
+    const handleSegmentChange = (value:String) => {
     setSelectedOption(value);
-  };
-
-
-  useEffect(()=>{
-    
-
-    const fetchPestData = async()=>{
-
-        try{
-            console.log("Passed pest name ", pestName)
-            const docRef = doc(db,'Pest',pestName as string);
-
-
-            const docSnap = await getDoc(docRef)
+    };
 
 
 
-            if(docSnap.exists()){
-                console.log(docSnap.data())
-                setPestData(docSnap.data() as PestData)
-            }
-        }catch(err){
-            console.error(err)
+
+    useEffect(()=>{
+
+
+
+        const fetchDiseaseData = async()=>{
+
+
+            try{
+                console.log("Passed Disease Id : ",diseaseId)
+
+                const docRef = doc(db,'Disease', diseaseId as string)
+
+                const docSnap = await getDoc(docRef)
+                
+                if(docSnap.exists()){
+                    console.log(docSnap.data())
+                    setDiseaseData(docSnap.data() as DiseaseData)
+                }
+
+            }catch(err){console.error(err)}
+
+
+
         }
-    }
+
+        fetchDiseaseData()
+    },[diseaseId])
 
 
 
-    fetchPestData()
-  },[])
   return (
     <SafeAreaView style={styles.mainContainer}>
 
 
         <View style={styles.headerContainer}>
-            <Image source={{ uri: pestData?.PestSnapshot }}
+            <Image source={{ uri: diseaseData?.DiseaseSnapshot }}
                 style={{width:'100%',height:'100%',objectFit:'contain',        borderBottomLeftRadius:20,
                     borderBottomRightRadius:20,}}
-                   
             />
         </View>
 
         <View style={styles.infoHeaderContainer}>
             <Text style={styles.cropName}>
-                {pestData?.CommonName} 
+                {diseaseData?.CommonName} 
             </Text>
 
             <Text style={styles.scientificName}>
-                ({pestData?.ScientificName})
+                ("NONE")
             </Text>
 
 
@@ -93,49 +100,49 @@ const DiseasePestScreen = () => {
                         <View style={styles.segmentContainer}>
                         <TouchableOpacity
                             style={styles.segmentButton}
-                            onPress={() => handleSegmentChange('Characteristics')}
+                            onPress={() => handleSegmentChange('Symptoms')}
                         >
                             <Text
                             style={[
                                 styles.segmentText,
-                                selectedOption === 'Characteristics' && styles.activeText,
+                                selectedOption === 'Symptoms' && styles.activeText,
                             ]}
                             >
-                            Characteristics
+                            Symptoms
                             </Text>
-                            {selectedOption === 'Characteristics' && (
+                            {selectedOption === 'Symptoms' && (
                             <View style={styles.activeLine} />
                             )}
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.segmentButton}
-                            onPress={() => handleSegmentChange('Ecology')}
+                            onPress={() => handleSegmentChange('DiseaseDevelopment')}
                         >
                             <Text
                             style={[
                                 styles.segmentText,
-                                selectedOption === 'Ecology' && styles.activeText,
+                                selectedOption === 'DiseaseDevelopment' && styles.activeText,
                             ]}
                             >
-                                Ecology
+                                Disease Development
                             </Text>
-                            {selectedOption === 'Ecology' && (
+                            {selectedOption === 'DiseaseDevelopment' && (
                             <View style={styles.activeLine} />
                             )}
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.segmentButton}
-                            onPress={() => handleSegmentChange('DamageSymptoms')}
+                            onPress={() => handleSegmentChange('MethodsOfDispersal')}
                         >
                             <Text
                             style={[
                                 styles.segmentText,
-                                selectedOption === 'DamageSymptoms' && styles.activeText,
+                                selectedOption === 'MethodsOfDispersal' && styles.activeText,
                             ]}
                             >
-                            DamageSymptoms
+                            Methods Of Dispersal
                             </Text>
-                            {selectedOption === 'DamageSymptoms' && (
+                            {selectedOption === 'MethodsOfDispersal' && (
                             <View style={styles.activeLine} />
                             )}
                         </TouchableOpacity>
@@ -165,28 +172,26 @@ const DiseasePestScreen = () => {
 
 
 
-        {selectedOption === 'Characteristics' && 
+        {selectedOption === 'MethodsOfDispersal' && 
         
             <ScrollView style={stylesContent.mainContainer}>
-                {pestData?.Characterstics.replace(/\\n/g, '\n').split('\n').map((line, index) => (
+                {diseaseData?.MethodsOfDispersal.replace(/\\n/g, '\n').split('\n').map((line, index) => (
                     <Text key={index} style={stylesContent.contentText}>
                         {line}
                     </Text>
                 ))}
 
-                <TouchableOpacity onPress={()=>{console.log(pestData?.DamageSymptoms)}}>
-                    Test
-                </TouchableOpacity>
+
 
             </ScrollView>
         }
 
 
 
-        {selectedOption === 'Ecology' && 
+        {selectedOption === 'DiseaseDevelopment' && 
         
             <ScrollView style={stylesContent.mainContainer}>
-                {pestData?.Ecology.replace(/\\n/g, '\n').split('\n').map((line, index) => (
+                {diseaseData?.DiseaseDevelopment.replace(/\\n/g, '\n').split('\n').map((line, index) => (
                     <Text key={index} style={stylesContent.contentText}>
                         {line}
                     </Text>
@@ -196,19 +201,19 @@ const DiseasePestScreen = () => {
         }
 
 
-        {selectedOption === 'DamageSymptoms' && 
+        {selectedOption === 'Symptoms' && 
         
             <ScrollView style={stylesContent.mainContainer}>
 
 
-                {pestData?.DamageSymptoms.Symptoms.replace(/\\n/g, '\n').split('\n').map((line, index) => (
+                {diseaseData?.DamageSymptoms.Symptoms.replace(/\\n/g, '\n').split('\n').map((line, index) => (
                     <Text key={index} style={stylesContent.contentText}>
                         {line}
                     </Text>
                 ))}
 
 
-                {pestData?.DamageSymptoms.SymptomsSnapshot.map((snapshot,index)=>(
+                {diseaseData?.DamageSymptoms.SymptomsSnapshot.map((snapshot,index)=>(
                     <View key={index} style={stylesContent.snapShots}>
                         <Image source={{ uri: snapshot }} style={{ width: '100%', height: '100%',borderRadius:5 }} />
                     </View>
@@ -227,7 +232,7 @@ const DiseasePestScreen = () => {
             <ScrollView style={stylesContent.mainContainer}>
                 <Text style={stylesContent.contentText}>
                     
-                {pestData?.ControlMeasures.replace(/\\n/g, '\n').split('\n').map((line, index) => (
+                {diseaseData?.ControlMeasures.replace(/\\n/g, '\n').split('\n').map((line, index) => (
                     <Text key={index} style={stylesContent.contentText}>
                         {line}
                     </Text>
@@ -244,9 +249,7 @@ const DiseasePestScreen = () => {
     </SafeAreaView>
   )
 }
-
-export default DiseasePestScreen
-
+export default DiseaseScreen
 
 const stylesContent = StyleSheet.create({
     mainContainer:{

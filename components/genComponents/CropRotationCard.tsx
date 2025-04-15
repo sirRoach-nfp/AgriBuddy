@@ -7,10 +7,11 @@ import { cropsImages } from '../../app/Pestdat';
 interface cropType{
     CropName: string,
     CropId:string,
+    CropIndex:number
 }
 
 
-const CropRotationCard = ({CropName,CropId}:cropType) => {
+const CropRotationCard = ({CropName,CropId,CropIndex}:cropType) => {
 
 
   const navigateToSelection = () => {
@@ -32,7 +33,7 @@ const CropRotationCard = ({CropName,CropId}:cropType) => {
                 </Text>
 
                 <View style={CardsStyle.BadgeSelected}>
-                    <Text>Cycle One</Text>
+                    <Text>Cycle {CropIndex+1}</Text>
                 </View>
 
             </View>

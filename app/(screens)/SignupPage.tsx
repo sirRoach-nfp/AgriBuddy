@@ -62,12 +62,12 @@ export default function SignupPage() {
 
             {processDone ? (
 
-                <Dialog.Title style={{color:'#253D2C'}}>Account Created</Dialog.Title>
+                <Dialog.Title style={{color:'#253D2C'}}><Text>Account Created</Text></Dialog.Title>
 
             ):(
 
 
-                <Dialog.Title style={{color:'#253D2C'}}>Creating Your Account</Dialog.Title>
+                <Dialog.Title style={{color:'#253D2C'}}><Text>Creating Your Account</Text></Dialog.Title>
 
             )}
           

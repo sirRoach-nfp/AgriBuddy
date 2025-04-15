@@ -8,15 +8,16 @@ type CropMinCardProps = {
     commonName: string;
     scientificName: string;
     imgUrl:string;
+    cropId:string
   };
   
 
-const CropMinCard = ({commonName,scientificName,imgUrl}: CropMinCardProps) => {
+const CropMinCard = ({commonName,scientificName,imgUrl,cropId}: CropMinCardProps) => {
 
 
 
   const navigateToView = () => {
-    const queryString = `?commonName=${encodeURIComponent(commonName)}&scientificName=${encodeURIComponent(scientificName)}&imgUrl=${encodeURIComponent(imgUrl)}`;
+    const queryString = `?commonName=${encodeURIComponent(commonName)}&scientificName=${encodeURIComponent(scientificName)}&imgUrl=${encodeURIComponent(imgUrl)}&cropid=${encodeURIComponent(cropId)}`;
     router.push(`/CropProfile${queryString}` as any);
   }
   return (

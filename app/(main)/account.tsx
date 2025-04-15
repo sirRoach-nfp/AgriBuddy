@@ -3,12 +3,12 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ScrollView } from 'react-native-gesture-handler'
 
-
+import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import PlotMinCard from '@/components/PlotComponents/PlotMinCard';
 import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../firebaseconfig';
-import { Button, Dialog, PaperProvider, Portal } from 'react-native-paper';
+import { Avatar, Button, Dialog, PaperProvider, Portal } from 'react-native-paper';
 import { ProgressBar, MD3Colors } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { signOut } from 'firebase/auth';
@@ -32,7 +32,13 @@ interface Plots{
   plot:PlotData[],
 }
 
-
+const getAuthorInitials = (name:string) => {
+  if (!name) return "";
+  const words = name.trim().split(" ");
+  return words.length > 1
+    ? words[0][0] + words[1][0] // First letter of first and last name
+    : words[0][0]; // If only one word, return the first letter
+};
 
 
 
@@ -255,15 +261,13 @@ const account = () => {
     
       <SafeAreaView style={styles.mainContainer}  >
       
-        <LinearGradient style={styles.profileHeader}  
-              colors={['#d2e8d4', '#fdfcfb']}
-              start={{ x: 0, y: 1 }}
-              end={{ x: 1, y: 0 }}
+        <View style={styles.profileHeader}  
+
             >
 
           
             <View style={styles.profileIconWrapper}>
-              <FontAwesome name="user-circle" size={65} color="#253D2C" />
+              <Avatar.Text size={65} label={getAuthorInitials(user?.Username as string)}  />
             </View>
 
             <View style={styles.profileInfoWrapper}>
@@ -271,10 +275,14 @@ const account = () => {
             </View>
 
             <View style={styles.profileSettingWrapper}>
-              <FontAwesome name="gears" size={24} color="#253D2C" />
+
+              <TouchableOpacity onPress={logoutAccount} style={{alignSelf:'flex-start'}}>
+                <AntDesign name="logout" size={24} color="black" />
+              </TouchableOpacity>
+              
             </View>
 
-        </LinearGradient> 
+        </View> 
 
         <ScrollView style={styles.scrollWrapperContainer} contentContainerStyle={{alignItems:'center'}}>
 
@@ -292,11 +300,21 @@ const account = () => {
 
               <View style={styles.plotContentWrapper}>
                 
+                {
+                  plots && plots.plot.length > 0 ? (
 
-                {plots.plot.map((plot,index)=>(
+                  plots.plot.map((plot,index)=>(
 
-                  <PlotMinCard key={index} plotAssocId={plot.PlotId} plotName={plot.PlotName} CurrentCrops={plot.CurrentCrops}/>
-                ))}
+                        <PlotMinCard key={index} plotAssocId={plot.PlotId} plotName={plot.PlotName} CurrentCrops={plot.CurrentCrops}/>
+                      ))
+
+                  ) : (
+                    <Text style={{textAlign:'center'}}>You currently have no plot to display, Press the add button to create a new plot</Text>
+                  )
+
+
+                }
+              
 
               </View>
 
@@ -310,12 +328,8 @@ const account = () => {
             </View>
 
 
-            <TouchableOpacity onPress={()=>{console.log(plots)}}>Test Plot Data</TouchableOpacity>
+   
             <TouchableOpacity onPress={logoutAccount}>Logout</TouchableOpacity>
-            <Text>{user?.Email}</Text>
-            <Text>{user?.Username}</Text>
-            <Text>{user?.PlotsRefId}</Text>
-            <Text>{user?.RecordsRefId}</Text>
 
         </ScrollView>
 
@@ -344,7 +358,8 @@ const styles = StyleSheet.create({
     borderColor:'red',
     flexDirection:'column',
     display:"flex",
-    paddingTop:10
+    paddingTop:10,
+    backgroundColor:'#F2F3F5'
     
   },
   profileHeader:{

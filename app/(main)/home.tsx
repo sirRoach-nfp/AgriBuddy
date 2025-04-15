@@ -1,6 +1,6 @@
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
-import { Stack, useFocusEffect } from 'expo-router'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { router, Stack, useFocusEffect } from 'expo-router'
 
 
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
@@ -18,7 +18,15 @@ import RecordMinCard from '@/components/genComponents/recordMinCard'
 import { db } from '../firebaseconfig'
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
 import { useUserContext } from '../Context/UserContext'
+import { Image } from 'react-native';
 
+
+
+import { useSharedValue } from "react-native-reanimated";
+import Carousel, {
+  ICarouselInstance,
+  Pagination,
+} from "react-native-reanimated-carousel";
 
 
 const { width } = Dimensions.get('window');
@@ -32,7 +40,8 @@ interface cropType{
   SessionId:string,
   CropId:string,
   PlotName:string,
-  PlotAssoc:string
+  PlotAssoc:string,
+  CropThumbnail:string,
 
 }
 
@@ -41,11 +50,33 @@ interface CurrentCrop{
   crop:cropType[]
 }
 
+
+interface ArticleData {
+  cover:string,
+  title:string,
+  articleId:string
+}
+
 const home = () => {
   const {user} = useUserContext();
 
   const [currentCrop, setCurrentCrop] = useState<CurrentCrop>({crop:[]})
 
+
+  //carousel 
+  const ref = useRef<ICarouselInstance>(null);
+  const progress = useSharedValue<number>(0);
+  const [articleData,setArticleData] = useState<ArticleData[]>([])
+
+  const data = [...new Array(6).keys()];
+  const width = Dimensions.get("window").width * 0.95;
+
+  const onPressPagination = (index: number) => {
+    ref.current?.scrollTo({
+      count: index - progress.value,
+      animated: true,
+    });
+  };
 
 
   useFocusEffect(
@@ -72,7 +103,8 @@ const home = () => {
               CropId: crop.CropId,
               SessionId: crop.SessionId,
               PlotAssoc: crop.PlotAssoc,
-              PlotName: crop.PlotName
+              PlotName: crop.PlotName,
+              CropThumbnail:crop.CropCover,
             }));
             setCurrentCrop({ crop: filteredCrops });
    
@@ -112,7 +144,8 @@ const home = () => {
             CropId: crop.CropId,
             SessionId: crop.SessionId,
             PlotAssoc: crop.PlotAssoc,
-            PlotName: crop.PlotName
+            PlotName: crop.PlotName,
+            CropThumbnail:crop.CropCover,
           }));
           setCurrentCrop({ crop: filteredCrops });
  
@@ -127,6 +160,7 @@ const home = () => {
     }
 
     fetchCurrentCrop()
+    fetchArticlesFromFirebase()
   },[user])
 
 
@@ -134,6 +168,38 @@ const home = () => {
     console.log(currentCrop)
   }
 
+
+
+  const fetchArticlesFromFirebase = async()=>{
+
+    try{
+
+      
+
+      const articleDocRef = collection(db,'Articles')
+      const articleSnapshot = await getDocs(articleDocRef)
+
+
+      if(articleSnapshot){
+        const rawData = articleSnapshot.docs.map((doc)=>{
+
+          return{
+            cover:doc.data().cover,
+            title:doc.data().title,
+            articleId:doc.id
+          }
+        })
+
+        setArticleData(rawData)
+      }
+        
+
+
+
+      
+
+    }catch(err){console.error(err)}
+  }
 
   
   return (
@@ -174,6 +240,7 @@ const home = () => {
                   SessionId={crop.SessionId}
                   PlotAssoc={crop.PlotAssoc}
                   PlotName={crop.PlotName} 
+                  cropCover={crop.CropThumbnail}
                   datePlanted="01/01/2023"/>
                 ))
 
@@ -203,27 +270,43 @@ const home = () => {
 
             <View style={styles.AgriInsightContentContainer} >
 
-              <View style={styles.fullWidthContainer}>
-                <ArticleCard/>
-              </View>
+                <View style={stylesCarousel.carouselWrapperMain}>
 
 
+                <Carousel
+                  ref={ref}
+                  width={width}
+                  height={width * 0.65}
+                  data={articleData!}
+                  onProgressChange={progress}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity style={{width:'100%',borderWidth:0,height:'100%',display:'flex',flexDirection:'column'}}
+                    
+                      onPress={()=>{router.push(`/(screens)/ArticleMainScreen?articleId=${encodeURIComponent(item.articleId)}`)}}
+                    >
 
-              <View style={styles.gridContainer}>
+                      <Image resizeMode="cover" source={{ uri:item.cover}} style={{width:'100%',height:'75%',alignSelf: 'stretch',borderTopLeftRadius:10,borderTopRightRadius:10}}/>
 
-                <View style={styles.gridItem}>
-                  <ArticleCard />
+
+                      <View style={{backgroundColor:'#f5f5f5',paddingHorizontal:5,width:'100%',borderWidth:0,height:'25%', display:'flex',flexDirection:'column',justifyContent:'center',borderBottomEndRadius:10,borderBottomStartRadius:10}}> 
+
+                        <Text numberOfLines={2} ellipsizeMode="tail" style={{fontSize:15,fontWeight:500}}>{item.title}</Text> // If content is long, this will be cut off!
+
+                      </View>
+                      
+                    </TouchableOpacity>
+                  )}
+                />
+
+                <Pagination.Basic
+                progress={progress}
+                data={articleData}
+                dotStyle={{ backgroundColor: "#4d69ce", borderRadius: 50 }}
+                containerStyle={{ gap: 5, marginTop: 10 }}
+                onPress={onPressPagination}
+                />
+
                 </View>
-
-                <View style={styles.gridItem}>
-                  <ArticleCard />
-                </View>
-
-            </View>
-
-
-
-
 
             </View>
 
@@ -231,6 +314,10 @@ const home = () => {
 
 
           </View>
+
+
+
+
 
         </ScrollView>
 
@@ -251,6 +338,13 @@ const home = () => {
 
 export default home
 
+const stylesCarousel = StyleSheet.create({
+  carouselWrapperMain:{
+    //borderWidth:1,
+    borderColor:'red',
+
+  }
+})
 const styles = StyleSheet.create({
 
   currentCropHeader:{

@@ -8,6 +8,7 @@ import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import { Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper';
 import { db } from '../firebaseconfig';
 import { useUserContext } from '../Context/UserContext';
+import { router } from 'expo-router';
 const CommentScreen = () => {
 
   const searchParams = useSearchParams();
@@ -38,6 +39,7 @@ const CommentScreen = () => {
 
 
         setLoading(false)
+        //router.back()
         console.log("Success")
         
 
@@ -76,7 +78,7 @@ const CommentScreen = () => {
                   ) : (
                       <Dialog.Actions>
   
-                          <TouchableOpacity onPress={()=>{setShowProcess(false)}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+                          <TouchableOpacity onPress={()=>{router.back()}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
   
                               <Text style={{color:'white'}}>
                                   Continue

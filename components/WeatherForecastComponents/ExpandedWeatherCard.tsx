@@ -15,10 +15,11 @@ type currentWeather = {
   windSpeed:string,
   chanceOfRain:string,
   pressure:string,
+  currentDate:string
 }
 
 
-const ExpandedWeatherCard = ({temperature,status,humidity,windSpeed,chanceOfRain,pressure}:currentWeather) => {
+const ExpandedWeatherCard = ({temperature,status,humidity,windSpeed,chanceOfRain,pressure,currentDate}:currentWeather) => {
 
 
   const getWeatherIcon = (status:string) => {
@@ -42,8 +43,12 @@ const ExpandedWeatherCard = ({temperature,status,humidity,windSpeed,chanceOfRain
         break
 
       case 'Thunderstorm' : 
-        <Ionicons name="thunderstorm-outline" size={100} color="#253D2C" />
+        return <Ionicons name="thunderstorm-outline" size={100} color="#253D2C" />
         break
+
+      case 'Mainly clear' : 
+        return <Feather name="sun" size={100} color="#253D2C" />
+        break;
  
      
     }
@@ -52,7 +57,7 @@ const ExpandedWeatherCard = ({temperature,status,humidity,windSpeed,chanceOfRain
   return (
     <View style={styles.mainWrapper}>
       
-      <Text style={styles.locationText}>Location</Text>
+      <Text style={styles.locationText}>San Antonio</Text>
 
 
       <View style={styles.mainInfoWrapper}>
@@ -67,7 +72,7 @@ const ExpandedWeatherCard = ({temperature,status,humidity,windSpeed,chanceOfRain
 
 
         <View style={styles.mainWeatherDetailWrapper}>
-            <Text style={styles.dateMainText}>Date</Text>
+            <Text style={styles.dateMainText}>{currentDate}</Text>
             <Text style={styles.tempMainText}>{temperature}°C</Text>
             <Text style={styles.statusMainText}>{status}</Text>
         </View>

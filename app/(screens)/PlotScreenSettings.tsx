@@ -327,10 +327,13 @@ const PlotScreenSettings = () => {
     
     
                 <Dialog.Content>
-                    Do you really want to delete this plot? it will also remove all the logs saved to this plot.
-                    This action is irreversible, proceed?
-    
+                    <Text>
+                         Do you really want to delete this plot? it will also remove all the logs saved to this plot.
+                    </Text>
+                   
                 </Dialog.Content>
+
+           
     
     
                 <Dialog.Actions>
@@ -422,7 +425,7 @@ const PlotScreenSettings = () => {
                 ) : (
                     <Dialog.Actions>
 
-                        <TouchableOpacity onPress={()=>setShowRecordDataProcess(true)} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+                        <TouchableOpacity onPress={()=>setShowRecordDataProcess(false)} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
 
                             <Text style={{color:'white'}}>
                                 Continue

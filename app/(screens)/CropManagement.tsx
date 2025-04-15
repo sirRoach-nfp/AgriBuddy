@@ -60,6 +60,34 @@ interface Plots{
 
 
 
+interface pestType{
+  pestCoverImage:string,
+  pestId:string,
+  pestName:string
+
+}
+
+interface diseaseType{
+  diseaseCoverImage:string,
+  diseaseId:string,
+  diseaseName:string
+
+}
+
+interface CropData{
+  cropId:string,
+  thumbnail: string;
+  scientificName: string;
+  commonName:string,
+  family: string;
+  growthTime: string;
+  bestSeason: string;
+  soilType: string[];
+  soilPh: string;
+  commonPests: pestType[];
+  commonDiseases: diseaseType[];
+  content:guideStep[]
+}
 
 
 
@@ -150,6 +178,9 @@ const CropManagement = () => {
 
   //> data 
 
+
+  const [cropData,setCropData] = useState<CropData>()
+
   const [pesticide,setPesticide] = useState<string> ('')
   const [fertilizer,setFertilizer] = useState<string> ('')
   const [notes,setNotes] = useState<string> ('')
@@ -214,69 +245,41 @@ const CropManagement = () => {
   useEffect(()=>{
     setLoading(true)
 
-    switch(cropName){
-      case 'Tomato' :
-        console.log('entered')
-        setLocalCropData(TomatoData)
-        console.log("First Initialize", localCropData)
-        console.log('Data has been set')
-        break
-
-      case 'Eggplant':
-          setLocalCropData(EggplantData)
-          break;
-
-      case 'Squash':
-          setLocalCropData(Squash)
-          break;
-
-      case 'ChilliPepper':
-
-          console.log("Ticked")
-          setLocalCropData(ChilliPepper)
-          console.log("Set crop data successful with this data :",ChilliPepper)
-          break;
-          
-      case 'Potato':
-          setLocalCropData(Potato)
-          break;
-
-      case 'Sitaw':
-          setLocalCropData(Sitaw)
-          break;
-
-      case 'Bittergourd':
-          setLocalCropData(Bittergourd)
-          break;
-
-      case 'Bottlegourd':
-          setLocalCropData(Bottlegourd)
-          break;
-
-      case 'Cucumber':
-          setLocalCropData(Cucumber)
-          break;
-
-      case 'Mungbean':
-          setLocalCropData(MungBean)
-          break;
-
-      case 'Peanut':
-          setLocalCropData(Peanut)
-          break;
-
-      case 'Spongegourd':
-          setLocalCropData(Spongegourd)
-          break;
+    const fetchCropDataFromFirebase = async()=>{
+                
+          try{
+              console.log("Passed Document ID : ",cropId)
+              const cropDataDocRef = doc(db,'Crops',cropId as string)
+              const cropDataDocSnapshot = await getDoc(cropDataDocRef)
 
 
-      default:
-        console.log('entered default')
-        setLocalCropData(TomatoData)
-        console.log("First Initialize", localCropData)
-        console.log('data has been set default')
-        break
+              if(cropDataDocSnapshot.exists()){
+
+                  const rawData = {
+                      cropId:cropDataDocSnapshot.id as string || "",
+                      thumbnail: cropDataDocSnapshot.data().cropCover as string || " ",
+                      scientificName: cropDataDocSnapshot.data().scientificName as string || " ",
+                      commonName: cropDataDocSnapshot.data().cropName as string || " ",
+                      family: cropDataDocSnapshot.data().family as string || " ",
+                      growthTime: cropDataDocSnapshot.data().growthTime as string || " ",
+                      bestSeason: cropDataDocSnapshot.data().bestSeason as string || " ",
+                      soilType: cropDataDocSnapshot.data().cropCover as string[] || [],
+                      soilPh: cropDataDocSnapshot.data().soilPh as string || "",
+                      commonPests: cropDataDocSnapshot.data().pests as pestType[] || [],
+                      commonDiseases: cropDataDocSnapshot.data().diseases as diseaseType[] || "",
+                      content:cropDataDocSnapshot.data().contents as guideStep[] || "",
+                  }
+                  console.log("Done Fetching Data : ",rawData)
+
+                  setCropData(rawData)
+              }
+          }catch(err){
+              console.error(err)
+          }
+    
     }
+
+    fetchCropDataFromFirebase()
 
     setAssocPlot(PlotAssoc)
 
@@ -365,6 +368,26 @@ const CropManagement = () => {
 
   useEffect(() => {
     console.log("Updated localCropData", localCropData);
+
+
+    if(cropData?.commonPests){
+      const pests = cropData.commonPests.map((pest,index)=>({
+        id:(index + 1).toString(),
+        name:pest.pestName
+      }));
+      setLocalPestData(pests)
+    }
+
+
+    if(cropData?.commonDiseases){
+      const disease = cropData.commonDiseases.map((disease,index)=>({
+        id:(index+1).toString(),
+        name:disease.diseaseName
+      }))
+      setLocalDiseaseData(disease)
+    }
+
+    /*
     if(Object.values(localCropData)[0]?.commonPests){
       const pests = Object.values(localCropData)[0]?.commonPests.map((pest, index) => ({
         id: (index + 1).toString(),
@@ -380,10 +403,11 @@ const CropManagement = () => {
       }))
       setLocalDiseaseData(disease)
     }
+      */
     setLoading(false)
  
 
-  }, [localCropData]);
+  }, [cropData]);
 
 
 
@@ -443,7 +467,7 @@ const CropManagement = () => {
   //read / write to firebase
 
   const setPlotToCurrentCrop = async(plotAssoc:string,plotName:string)=>{
-
+    console.log("Plot name param passed : ", plotName)
     try{
 
       const cropRef = doc(db,"CurrentCrops",user?.CurrentCropsRefId as string);
@@ -875,7 +899,7 @@ const CropManagement = () => {
         <ScrollView style={styles.contentWrapper}>
 
           <View  style={styles.Thumbnail}>
-            <Image source={{ uri: Object.values(localCropData)[0]?.thumbnail }} style={{width:'100%',height:'100%',alignSelf: 'stretch'}} resizeMode="cover" />
+            <Image source={{ uri:cropData?.thumbnail }} style={{width:'100%',height:'100%',alignSelf: 'stretch'}} resizeMode="cover" />
 
 
           </View>
@@ -887,15 +911,15 @@ const CropManagement = () => {
           <View style={styles.headerWrapper} >
 
             <View style={styles.nameWrapper}>
-              <Text style={styles.cropName}>{Object.values(localCropData)[0]?.commonName || 'Loading...'}</Text>
-              <Text style={styles.scientificName}>({Object.values(localCropData)[0]?.scientificName})</Text>
+              <Text style={styles.cropName}>{cropData?.commonName || 'Loading...'}</Text>
+              <Text style={styles.scientificName}>({cropData?.scientificName})</Text>
               <TouchableOpacity onPress={() => setDialogDeleteVisible(true)} style={{marginLeft:'auto'}}><AntDesign name="delete" size={24} color="red" style={{marginLeft:'auto',marginRight:20}} /></TouchableOpacity>
               
             </View>
 
             <View style={styles.counterWrapper}>
-              <FontAwesomeIcon icon={faClockRotateLeft} size={18} color='#2E6F40'/>
-              <Text style={styles.plantedText}>20 Days Since Started Growing</Text>
+              
+              
 
               <TouchableOpacity onPress={()=>console.log("assocPlot =", assocPlot, typeof assocPlot)} >
                 test button  ss
@@ -953,21 +977,22 @@ const CropManagement = () => {
 
 
 
-          {Object.values(localCropData)[0]?.guide &&
-            Object.values(Object.values(localCropData)[0].guide).map((item, index) => (
-              <View key={index} style={stylesCollapsible.collapseWrapper}>
-                <TouchableOpacity onPress={() => setIsCollapsed(index)}>
-                  <Text style={stylesCollapsible.header}>{item.header}</Text>
-                </TouchableOpacity>
 
-                <Collapsible collapsed={isCollapsed !== index}>
-                  <View>
-                    <Text style={stylesCollapsible.contentText}>{item.content}</Text>
-                  </View>
-                </Collapsible>
-              </View>
-            ))
-          }
+          {cropData?.content && cropData.content.length > 0 && cropData.content.map((content,index)=>(
+
+              <View key={index} style={stylesCollapsible.collapseWrapper}>
+              <TouchableOpacity onPress={() => setIsCollapsed(index)}>
+                <Text style={stylesCollapsible.header}>{content.header}</Text>
+              </TouchableOpacity>
+
+              <Collapsible collapsed={isCollapsed !== index}>
+                <View>
+                  <Text style={stylesCollapsible.contentText}>{content.content}</Text>
+                </View>
+              </Collapsible>
+            </View>
+
+          ))}
 
 
 
@@ -1246,20 +1271,18 @@ const CropManagement = () => {
               <View style={stylesAiles.badgeContainer}>
 
 
+                {cropData?.commonPests && cropData.commonPests.length > 0  && cropData.commonPests.map((pest,index)=>(
 
 
-                {Object.values(localCropData)[0]?.guide &&
-                Object.values(Object.values(localCropData)[0].commonPests.map((pest,index)=>(
+                <TouchableOpacity style={stylesAiles.badgeWrapper} onPress={()=>{router.push(`/(screens)/DiseasePestScreen?pestName=${encodeURIComponent(pest.pestId)}`)}}>
+                                      
+                  <Image source={{ uri:pest.pestCoverImage }} style={{width:60,height:60,marginBottom:5, borderRadius:20}}/>
+                  <Text  style={stylesAiles.badgesText}>{pest.pestName}</Text>
 
-                      
-                  <TouchableOpacity style={stylesAiles.badgeWrapper} onPress={()=>{router.push(`/(screens)/DiseasePestScreen?pestName=${encodeURIComponent(pest)}`)}}>
-                      
-                    <Image source={pestImages[pest.toLowerCase() as string]} style={{width:60,height:60,marginBottom:5, borderRadius:20}}/>
-                    <Text  style={stylesAiles.badgesText}>{pest}</Text>
+                </TouchableOpacity>
 
-                  </TouchableOpacity>
 
-                )))}
+                ))}
 
 
               </View>
@@ -1280,26 +1303,22 @@ const CropManagement = () => {
               <Text style={stylesAiles.subContainerHeaderPest}>Common Diseases</Text>
 
 
-
               <View style={stylesAiles.badgeContainer}>
 
 
-                {Object.values(localCropData)[0]?.guide &&
-                  Object.values(Object.values(localCropData)[0].commonDiseases.map((disease,index)=>(
 
+
+                  {cropData?.commonDiseases && cropData.commonDiseases.length > 0 && cropData.commonDiseases.map((disease,index)=>(
+
+                    <TouchableOpacity style={stylesAiles.badgeWrapper} onPress={()=>{router.push(`/(screens)/DiseaseScreen?diseaseId=${encodeURIComponent(disease.diseaseId)}`)}} >
                         
-                    <TouchableOpacity style={stylesAiles.badgeWrapper} >
-                        
-                      <Image source={diseaseImages[disease.toLowerCase() as string]} style={{width:60,height:60,marginBottom:5, borderRadius:20}}/>
-                      <Text  style={stylesAiles.badgesText}>{disease}</Text>
+                      <Image source={{ uri:disease.diseaseCoverImage }} style={{width:60,height:60,marginBottom:5, borderRadius:20}}/>
+                      <Text  style={stylesAiles.badgesText}>{disease.diseaseName}</Text>
 
                     </TouchableOpacity>
 
-                  )))}
 
-
-
-
+                  ))}
 
 
          

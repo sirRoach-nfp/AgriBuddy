@@ -14,7 +14,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 
 const WeatherForecast = () => {
-
+  const [currentDate, setCurrentDate] = useState('');
   const [weatherData,setWeatherData] = useState<any>(null)
   const [loading,setLoading]= useState(true)
   const [weatherStatus,setWeatherStatus] = useState<number>(0)
@@ -57,7 +57,9 @@ const WeatherForecast = () => {
   useEffect(()=>{
     
     const FetchWeather = async()=> {
-
+      const today = new Date();
+      const formattedDate = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+      setCurrentDate(formattedDate);
       try{
         setLoading(true);
         const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=15.3066&longitude=120.8564&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,windspeed_10m,surface_pressure,weathercode&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max,weathercode&timezone=Asia/Manila')
@@ -105,10 +107,11 @@ const WeatherForecast = () => {
                 chanceOfRain={weatherData?.hourly?.precipitation_probability?.[0]}
                 windSpeed={weatherData?.hourly?.windspeed_10m?.[0]}
                 pressure={weatherData?.hourly?.surface_pressure?.[0]}
+                currentDate={currentDate}
               />
 
               <View style={styles.hourlyWrapper}>
-                <Text style={styles.hourlyForecastHeader}>Day | Date</Text>
+                <Text style={styles.hourlyForecastHeader}>{currentDate}</Text>
                 <View style={styles.hourlyCardWrapper}>
 
                   {HourlyForecast.map((forecast:any,index:number)=> (
@@ -134,6 +137,7 @@ const WeatherForecast = () => {
                       temp={weatherData.daily.temperature_2m_max[index]}
                       rain={weatherData.daily.precipitation_probability_max[index]}
                       code={weatherData.daily.weathercode[index]}
+                      currentDate={currentDate}
                       
                       
                       />

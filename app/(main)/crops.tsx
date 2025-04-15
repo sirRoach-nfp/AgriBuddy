@@ -16,8 +16,9 @@ import cropsData from '../CropsData/Crops/Crops.json'
 import CropMinCard from '@/components/genComponents/cropMinCard';
 import PlanMinCard from '@/components/genComponents/PlanMinCard';
 import { router } from 'expo-router';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import { db } from '../firebaseconfig';
+import { useUserContext } from '../Context/UserContext';
 
 
 
@@ -65,18 +66,56 @@ interface CropsData {
   [key: string]: CropData;
 }
 
+
+interface CropsDataFire {
+
+  cropId:string,
+  cropName:string,
+  cropCover:string,
+  cropScientificName:string
+}
+
 const crops = () => {
 
-
-  const [cropDataMain,SetCropDataMain] = useState({})
-  const [cropData,SetCropData] = useState<any>({})
+  const {user,logout} = useUserContext();
+  //const [cropDataMain,SetCropDataMain] = useState({})
+  const [cropData,SetCropData] = useState<CropsDataFire[]>([])
   const [rotationPlan,SetRotationPlan] = useState<RotationPlan[]>([])
 
 
 
   useEffect(()=> {
 
-    SetCropData(cropsData)
+    const fetchCropsFromFirebase = async()=>{
+
+      try{
+        console.log("Fetching Crops......")
+        const cropDocRef = collection(db,'Crops')
+        const cropSnapshot = await getDocs(cropDocRef)
+
+
+        if(cropSnapshot){
+          console.log("Displaying Crops......")
+          const rawData = cropSnapshot.docs.map((doc)=>{
+            return {
+              cropId:doc.id,
+              cropName:doc.data().cropName,
+              cropScientificName: doc.data().scientificName,
+              cropCover:doc.data().cropCover
+
+            }
+
+
+          }) 
+          SetCropData(rawData)
+        }
+      }catch(err){
+        console.error(err)
+      }
+    }
+
+
+    fetchCropsFromFirebase()
 
 
   },[])
@@ -101,7 +140,7 @@ const crops = () => {
       try{
 
 
-        const docRef = doc(db,'CropRotationPlan','O3fLUlPUpvqLyugpQUGg');
+        const docRef = doc(db,'CropRotationPlan',user?.CropRotationPlanRefId as string);
 
 
         const docSnap = await getDoc(docRef)
@@ -175,8 +214,13 @@ const crops = () => {
       {selectedOption === 'crops' && 
       
       <ScrollView style={styles.scrollContentWrapper} contentContainerStyle={{alignItems:'center'}}>
-        {Object.keys(cropData).map((key)=>(
-          <CropMinCard  key={key} commonName={cropData[key].commonName} scientificName={cropData[key].scientificName} imgUrl={cropData[key].thumbnail}/>
+
+
+
+        {cropData && cropData.length > 0 && cropData.map((crop,index)=>(
+
+            <CropMinCard cropId={crop.cropId} key={index} commonName={crop.cropName} scientificName={crop.cropScientificName} imgUrl={crop.cropCover}/>
+
         ))}
       </ScrollView> 
 
@@ -187,7 +231,7 @@ const crops = () => {
       
       <ScrollView style={styles.scrollContentWrapper} contentContainerStyle={{alignItems:'center'}}>
         
-        {rotationPlan.map((plan,index)=>(
+        {rotationPlan?.map((plan,index)=>(
 
           <PlanMinCard key={index} Title={plan.PlanTitle} SessionId={plan.SessionId} Plan={plan.Crops} />
         ))}

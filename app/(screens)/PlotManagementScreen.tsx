@@ -327,7 +327,7 @@ const PlotManagementScreen = () => {
                 </View>
             </View>
 
-            <View style={{borderWidth:1,width:30,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+            <View style={{borderWidth:0,width:30,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
                 <TouchableOpacity onPress={()=>navigateToPlotSetting(plotId as string,plotData?.PlotName,plotData.currentCrops.CropAssocId)}>
 
                     <Ionicons name="options" size={24} color="black" />
@@ -381,7 +381,7 @@ const PlotManagementScreen = () => {
 
 
 
-    <View style={{borderWidth:1,marginTop:30,width:'98%',marginLeft:'auto',marginRight:'auto'}}>
+    <View style={{borderWidth:0,marginTop:30,width:'98%',marginLeft:'auto',marginRight:'auto',backgroundColor:'white',paddingVertical:10,elevation:2,borderRadius:5}}>
 
         <View style={styles.chartsHeaderWrapper}>
 
@@ -390,7 +390,7 @@ const PlotManagementScreen = () => {
             </View>
             <Text style={styles.chartsHeader}>Pest Occurrences Per Week</Text>
              
-             <TouchableOpacity style={{flexShrink:1,borderWidth:1,marginLeft:'auto'}} onPress={()=> router.push(`/(screens)/PestOccurrencesDetailed?plotAssocId=${encodeURIComponent(plotId as string)}`)}>
+             <TouchableOpacity style={{flexShrink:1,borderWidth:0,marginLeft:'auto'}} onPress={()=> router.push(`/(screens)/PestOccurrencesDetailed?plotAssocId=${encodeURIComponent(plotId as string)}`)}>
 
                 <Text style={styles.chartsHeaderViewMore}>View In Detail </Text>
 
@@ -474,7 +474,7 @@ const PlotManagementScreen = () => {
     </View>
 
 
-    <Text>{user?.RecordsRefId}</Text>
+  
 
 
 
@@ -502,8 +502,8 @@ const styles = StyleSheet.create({
         flexWrap:'wrap'
     },
     chartsHeaderWrapperIcon:{
-        width:30,
-        height:30,
+        width:20,
+        height:20,
         borderWidth:1,
         marginRight:5,
         backgroundColor:'#E9A800',
@@ -514,7 +514,8 @@ const styles = StyleSheet.create({
         //borderWidth:1,
         display:'flex',
         flexDirection:'row',
-        alignItems:'center'
+        alignItems:'center',
+        paddingHorizontal:2
     },
     chartsHeaderViewMore:{
         marginLeft:'auto',
@@ -534,26 +535,28 @@ const styles = StyleSheet.create({
         flexDirection:'column',
         borderWidth:1,
         alignItems:'center',
-        paddingTop:10
+        paddingTop:10,
+        backgroundColor:'#F2F3F5'
     },
     plotInfoContainer:{
-        width:'95%',
+        width:'100%',
         //borderWidth:1,
         display:'flex',
         flexDirection:'row',
         marginBottom:20,
-        backgroundColor:'#CFFFDC',
-        borderRadius:5,
+        backgroundColor:'white',
+        borderRadius:0,
         paddingTop:10,
         paddingBottom:10,
         paddingLeft:10,
         paddingRight:10,
-        height:110
+        height:110,
+        elevation:2
     },
     thumbnail:{
         width:140,
         height:90,
-        //borderWidth:1,
+        borderWidth:1,
         borderRadius:5,
         display:'flex',
         flexDirection:'row',
@@ -655,19 +658,21 @@ const stylesCrop = StyleSheet.create({
 
  
     wrapper:{
-        width:'95%',
+        width:'100%',
         //borderWidth:1,
         display:'flex',
         flexDirection:'row',
-        marginBottom:20,
+        marginBottom:0,
         paddingTop:5,
         paddingBottom:5,
         paddingLeft:5,
-        borderWidth:2,
-        borderStyle:'dotted',
+        //borderWidth:2,
+        //borderStyle:'dotted',
         borderColor:'#253D2C',
-        borderRadius:10,
-        backgroundColor:'#D8D8C0'
+        borderRadius:5,
+        //backgroundColor:'#D8D8C0',
+        backgroundColor:'white',
+        elevation:2
 
     },
 
@@ -678,6 +683,7 @@ const stylesCrop = StyleSheet.create({
         //borderWidth:1,
         //borderRadius:'50%'
     },
+    
 
     textContainer:{
         flex:1,
@@ -693,6 +699,7 @@ const stylesCrop = StyleSheet.create({
         borderColor:'#9B9B9B',
         marginLeft:10
     },
+
 
     datePlantedText:{
         fontSize:15,

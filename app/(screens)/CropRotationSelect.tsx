@@ -16,6 +16,7 @@ import { router, useNavigation } from 'expo-router';
 import { Button } from 'react-native-paper';
 import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebaseconfig';
+import { useUserContext } from '../Context/UserContext';
 type MenuScreenProps = NativeStackScreenProps<RootStackParamList, "MenuScreen">;
 type RootStackParamList = {
     CropRotationSelect: undefined;
@@ -28,7 +29,7 @@ type RootStackParamList = {
 const CropRotationSelect = () => {
 
 const navigation = useNavigation();
-
+const {user,logout} = useUserContext();
 
 // dialog controller 
 const [visible, setVisible] = React.useState(false);
@@ -71,7 +72,7 @@ const { selectedCrops, addCrop, removeCrop,clearCrops } = useCropContext();
 
 
     try{
-        const userRef = doc(db,"CropRotationPlan","O3fLUlPUpvqLyugpQUGg");
+        const userRef = doc(db,"CropRotationPlan",user?.CropRotationPlanRefId as string);
 
         await updateDoc(userRef, {
             plans: arrayUnion(planData),
@@ -79,7 +80,8 @@ const { selectedCrops, addCrop, removeCrop,clearCrops } = useCropContext();
 
         setVisible(true)
       
-          console.log("Plan saved successfully!");
+        console.log("Plan saved successfully!");
+        navigateBack()
 
     }catch(err){
         console.error(err)
@@ -104,7 +106,7 @@ const { selectedCrops, addCrop, removeCrop,clearCrops } = useCropContext();
     clearCrops();
 
 
-    navigation.goBack();
+    router.replace('/(main)/crops')
   }
   return (
 
@@ -157,7 +159,7 @@ const { selectedCrops, addCrop, removeCrop,clearCrops } = useCropContext();
 
 
         <ScrollView style={{borderTopLeftRadius:20,borderTopRightRadius:20,display:'flex',flexDirection:'column',
-            width:'100%',marginTop:-20,zIndex:1,backgroundColor:'#ffffff',paddingTop:50,elevation:5
+            width:'100%',marginTop:-30,zIndex:1,backgroundColor:'#ffffff',paddingTop:30,elevation:5,borderWidth:0
         }} contentContainerStyle={{alignItems:'center'}}>
 
 
@@ -174,7 +176,7 @@ const { selectedCrops, addCrop, removeCrop,clearCrops } = useCropContext();
                 {selectedCrops.length === 0 ? (
                 <Text></Text>
                 ) : (
-                selectedCrops.map((crop, index) => <CropRotationCard key={index} CropName={crop.CropName} CropId={crop.CropId}/>)
+                selectedCrops.map((crop, index) => <CropRotationCard key={index} CropName={crop.CropName} CropId={crop.CropId} CropIndex={index}/>)
                 )}
 
 
@@ -199,7 +201,7 @@ const { selectedCrops, addCrop, removeCrop,clearCrops } = useCropContext();
 
                 {selectedCrops.length === 4 && (
 
-                    <Button onPress={savePlan} style={{marginTop:20,marginBottom:20,borderRadius:5}} icon={() => <FontAwesomeIcon icon={faLeaf} size={20} color="#FFFFFF" />} mode="contained-tonal" buttonColor="#2E6F40" textColor="#FFFFFF"
+                    <Button onPress={savePlan} style={{marginTop:0,marginBottom:20,borderRadius:5}} icon={() => <FontAwesomeIcon icon={faLeaf} size={20} color="#FFFFFF" />} mode="contained-tonal" buttonColor="#2E6F40" textColor="#FFFFFF"
                     >
                         Start Planting
                     </Button>
