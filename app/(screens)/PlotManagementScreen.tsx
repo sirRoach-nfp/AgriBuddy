@@ -16,11 +16,15 @@ import {
     BarChart,
     PieChart,
     ProgressChart,
+    ContributionGraph,
 
     StackedBarChart
   } from "react-native-chart-kit";
 import { useUserContext } from '../Context/UserContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { ScrollView } from 'react-native-gesture-handler';
+import { ContributionChartValue } from 'react-native-chart-kit/dist/contribution-graph/ContributionGraph';
+import { RectProps } from 'react-native-svg';
 
 interface PlotData{
     PlotId : string,
@@ -46,7 +50,31 @@ interface PestLog {
     PestName: string;
   }
 
+interface FertilizerLog{
+    DateApplied:string,
+    cropName:string,
+    fertilizerAmmount:string,
+    selectedApplication:string,
+}
+
 const PlotManagementScreen = () => {
+    const screenWidth = Dimensions.get("window").width;
+
+    //chart tools 
+
+    const getMonthlyTotals = (logs:any) => {
+        const monthlyTotals = new Array(12).fill(0); // Jan to Dec
+      
+        logs.forEach((log:any) => {
+          const date = new Date(log.DateApplied);
+          const monthIndex = date.getMonth(); // 0 = Jan, 11 = Dec
+          const amount = parseFloat(log.fertilizerAmmount) || 0;
+      
+          monthlyTotals[monthIndex] += amount;
+        });
+      
+        return monthlyTotals;
+      };
 
 
     const {user} = useUserContext();
@@ -63,6 +91,9 @@ const PlotManagementScreen = () => {
     const [pestLogs, setPestLogs] = useState<PestLog[]>([]);
     const [pestListData,setPestListData] = useState<string[]>([]);
     const [chartData,setChartData] = useState<any>(null);
+    const [fertilizerChartMonthlyTotal,setFertilizerChartMonthlyTotal] = useState<any>([])
+
+    const [fertilizerLogs,setFertilizerLogs]= useState<FertilizerLog[]>([])
     /*
     const pestLogs = [
         { date: "2024-02-01", crop: "Tomato", pest: "Whiteflies" },
@@ -183,27 +214,49 @@ const PlotManagementScreen = () => {
                     console.log("Document not found records")
                 }
 
-
-                
-
-
-
-
-
-
             }catch(err){
                 console.error(err)
             }
 
+        }
+        const fetchFertilizerLogRecord = async(plotId:string) =>{
+
+            console.log("Fetching Fertilizer Log Record.....")
+
+            try{
+                const docRef = doc(db,'Records',user?.RecordsRefId as string)
+                const docSnap = await getDoc(docRef)
+
+                if(docSnap.exists()){
+
+                    const data = docSnap.data()
+                    console.log("Returned Data : ", data)
+                    const existingLogs = data?.FertilizerLogs || []
+                    console.log("existing fertilizer logs : ", existingLogs)
+
+                    const logIndex = existingLogs.findIndex(
+                        (log:any)=>log.PlotAssocId === plotId
+                    )
+                    console.log("Log Index : ", logIndex)
+
+                    const fertilizerLog = existingLogs[logIndex].FertilizerApplications;
+
+                    const monthlyTotals = getMonthlyTotals(fertilizerLog);
+                    console.log("Processed Monthly Totals For Fertilizer Logs : ", monthlyTotals)
 
 
+                    setFertilizerChartMonthlyTotal(monthlyTotals)
+                    setFertilizerLogs(fertilizerLog)
+                }
 
+            }catch(err){console.log(err)}
         }
 
       
         if (plotId) {
           fetchPlotData(plotId);
           fetchPestLogRecord(plotId)
+          fetchFertilizerLogRecord(plotId)
         }
       }, [plotId]);
 
@@ -287,194 +340,266 @@ const PlotManagementScreen = () => {
   return (
     <SafeAreaView style={styles.mainContainer}>
 
-        <View style={styles.plotInfoContainer}>
-            <View style={styles.thumbnail}>
-                <Image source={require('../../assets/images/Misc/PlotIcon.svg')} style={{width:'40%',height:'40%',objectFit:'contain'}}  />
-            </View>
-            <View style={styles.infoWrapper}>
-                <View style={styles.infoHeaderwrapper}>
-                    <Text  style={styles.plotName}>{plotData.PlotName}</Text>
-               
-
-                </View>
-                
-                <View style={[styles.badge, plotData.currentCrops.CropAssocId ? {backgroundColor:"#2E6F40"} : {} ]}>
 
 
-                    {plotData.currentCrops.CropAssocId ? (
-                        <View style={{alignSelf:'flex-start',borderWidth:0,paddingHorizontal:20,borderRadius:5,backgroundColor:'#2E6F40'}}>
-                            
-                            
-                            <Text style={[styles.status, {color:'#ffffff'}]} >
-                                Growing
-                            </Text>                            
-                            
+        <ScrollView style={{borderWidth:1,width:'100%',flex:1}}>
+
+                <View style={styles.plotInfoContainer}>
+                    <View style={styles.thumbnail}>
+                        <Image source={require('../../assets/images/Misc/PlotIcon.svg')} style={{width:'40%',height:'40%',objectFit:'contain'}}  />
+                    </View>
+                    <View style={styles.infoWrapper}>
+                        <View style={styles.infoHeaderwrapper}>
+                            <Text  style={styles.plotName}>{plotData.PlotName}</Text>
+                    
+
                         </View>
+                        
+                        <View style={[styles.badge, plotData.currentCrops.CropAssocId ? {backgroundColor:"#2E6F40"} : {} ]}>
 
 
-                    ) : (
+                            {plotData.currentCrops.CropAssocId ? (
+                                <View style={{alignSelf:'flex-start',borderWidth:0,paddingHorizontal:20,borderRadius:5,backgroundColor:'#2E6F40'}}>
+                                    
+                                    
+                                    <Text style={[styles.status, {color:'#ffffff'}]} >
+                                        Growing
+                                    </Text>                            
+                                    
+                                </View>
 
-                        <View style={{alignSelf:'flex-start',borderWidth:0,paddingHorizontal:20,borderRadius:5,backgroundColor:'#E9A800'}}> 
 
-                            <Text style={[styles.status, {color:'#ffffff'}]} >
-                                Resting
+                            ) : (
+
+                                <View style={{alignSelf:'flex-start',borderWidth:0,paddingHorizontal:20,borderRadius:5,backgroundColor:'#E9A800'}}> 
+
+                                    <Text style={[styles.status, {color:'#ffffff'}]} >
+                                        Resting
+                                    </Text>
+
+                                </View>
+
+                            )}
+
+                        </View>
+                    </View>
+
+                    <View style={{borderWidth:0,width:30,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+                        <TouchableOpacity onPress={()=>navigateToPlotSetting(plotId as string,plotData?.PlotName,plotData.currentCrops.CropAssocId)}>
+
+                            <Ionicons name="options" size={24} color="black" />
+
+                        </TouchableOpacity>
+                        
+                    </View>
+                </View>
+
+
+
+
+
+
+
+                {plotData?.currentCrops.CropAssocId !== null ? (
+                    
+
+                    <View style={stylesCrop.wrapper}>
+                        <View style= {stylesCrop.cropThumbnailWrapper}>
+                            <Image style={{width:'100%',height:'100%',objectFit:'contain',borderRadius:10}} source={cropsImages[plotData.currentCrops.CropId as string]}/>
+                        </View>
+                        <View style={stylesCrop.textContainer}>
+                            <Text style={stylesCrop.cropNameText}>
+                                {plotData.currentCrops.CropName}
                             </Text>
 
+                            <Text style={stylesCrop.datePlantedText}>
+                                Current Crop in the plot
+                            </Text>
                         </View>
 
+                    </View>
+
+                ) : (
+
+                    <View style={stylesNoRotation.wrapper}>
+                        
+                        <View style={stylesNoRotation.textContainer}>
+                            <Text style={stylesNoRotation.text}>
+                            Not Growing A Crop
+                            </Text>
+                        </View>
+                        <View style={stylesNoRotation.add}>
+                            <FontAwesomeIcon icon={faPlus} size={40} color='#FFFFFF'/>
+                        </View>
+                    </View>
+
+                )}
+
+
+
+
+            <View style={{borderWidth:0,marginTop:30,width:'100%',marginLeft:'auto',marginRight:'auto',backgroundColor:'white',paddingVertical:10,elevation:2}}>
+
+                <View style={styles.chartsHeaderWrapper}>
+
+                    <View style={styles.chartsHeaderWrapperIcon}>
+
+                    </View>
+                    <Text style={styles.chartsHeader}>Pest Occurrences Per Week</Text>
+                    
+                    <TouchableOpacity style={{flexShrink:1,borderWidth:0,marginLeft:'auto'}} onPress={()=> router.push(`/(screens)/PestOccurrencesDetailed?plotAssocId=${encodeURIComponent(plotId as string)}`)}>
+
+                        <Text style={styles.chartsHeaderViewMore}>View In Detail </Text>
+
+                    </TouchableOpacity>
+                    
+                </View>
+                
+
+            {!pestChartLoading && chartData && pestListData ? (
+
+                <>
+                
+                
+                
+                    <LineChart
+                        data={{
+                            labels: chartData?.labels, // Weeks
+                            datasets: chartData?.datasets, // Pest occurrence per week
+                        }}
+                        width={Dimensions.get("window").width} // from react-native
+                        height={220}
+                        //yAxisLabel="$"
+                        //yAxisSuffix="k"
+                        yAxisInterval={1} // optional, defaults to 1
+                        chartConfig={{
+                        backgroundGradientFrom: "#f1f1f1",
+                        backgroundGradientTo: "#f1f1f1",
+                        decimalPlaces: 2, // optional, defaults to 2dp
+                        color: (opacity = 1) => `rgba(75, 192, 192, ${opacity})`,
+                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        style: {
+                            borderRadius: 16
+                        },
+                        propsForDots: {
+                            r: "6",
+                            strokeWidth: "2",
+                            stroke: "#ffa726"
+                        }
+                        }}
+                        bezier
+                        style={{
+                        marginVertical: 8,
+                        borderRadius: 0
+                        }}
+                    />
+
+                    <View style={styles.legendWrapper}> 
+
+
+                        {Object.entries(chartData?.pestColors).map(([pest, color]) => (
+                            <View key={pest} style={{ flexDirection: "row", alignItems: "center", marginRight: 10 }}>
+                                {/* Color Indicator */}
+                                <View style={{
+                                    width: 15,
+                                    height: 15,
+                                    backgroundColor: color as string,
+                                    marginRight: 5,
+                                    borderRadius: 3,
+                                    borderWidth:1
+                                }} />
+                                
+                                {/* Pest Name */}
+                                <Text style={{ fontSize: 14,fontWeight:500,color:'#253D2C' }}>{pest}</Text>
+                            </View>
+                        ))}
+
+
+                    </View>
+
+
+                </>
+
+
+            ) : (
+                <View style={{width:'100%',borderWidth:0,marginTop:15,backgroundColor:'#D2D2D2',height:220,borderRadius:5,display:'flex',alignItems:'center',justifyContent:'center'}}> 
+                    <Text style={{fontSize:15,fontWeight:600,color:'#909090'}}>No Available Data To Display</Text>
+                </View>
+            )}
+            
+            </View>
+
+
+
+
+            <View style={{width:'100%',borderWidth:0,marginTop:5,backgroundColor:'white',paddingVertical:10,elevation:2}}>
+
+                    <View style={styles.chartsHeaderWrapper}>
+
+                        <View style={styles.chartsHeaderWrapperIcon}>
+
+                        </View>
+                        <Text style={styles.chartsHeader}>Fertilizer Application</Text>
+
+                        <TouchableOpacity style={{flexShrink:1,borderWidth:0,marginLeft:'auto'}} onPress={()=> router.push(`/(screens)/PestOccurrencesDetailed?plotAssocId=${encodeURIComponent(plotId as string)}`)}>
+
+                            <Text style={styles.chartsHeaderViewMore}>View In Detail </Text>
+
+                        </TouchableOpacity>
+
+                    </View>
+
+
+                    {fertilizerChartMonthlyTotal && fertilizerChartMonthlyTotal.length>0 ? (
+                        <>
+                            <BarChart
+                            style={{ marginVertical: 8, borderRadius: 0,borderWidth:0,marginLeft: -25,}}
+                            data={{
+                                labels: [
+                                "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                                ],
+                                datasets: [
+                                {
+                                    data: fertilizerChartMonthlyTotal
+                                }
+                                ]
+                            }}
+                            width={screenWidth+10}
+                            height={220}
+                            yAxisLabel=""
+                            yAxisSuffix="kg"
+                            chartConfig={{
+                                backgroundGradientFrom: "#f1f1f1",
+                                backgroundGradientTo: "#f1f1f1",
+                                decimalPlaces: 0,
+                                color: (opacity = 1) => `rgba(75, 192, 192, ${opacity})`,
+                                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                                barPercentage: 0.6,
+     
+                            }}
+                            verticalLabelRotation={30}
+                            />
+                        </>
+                    ):(                
+                        <View style={{width:'100%',borderWidth:0,marginTop:15,backgroundColor:'#D2D2D2',height:220,borderRadius:5,display:'flex',alignItems:'center',justifyContent:'center'}}> 
+                            <Text style={{fontSize:15,fontWeight:600,color:'#909090'}}>No Available Data To Display</Text>
+                        </View>
                     )}
 
-                </View>
+
+
+
+
+
+
+                    
             </View>
 
-            <View style={{borderWidth:0,width:30,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-                <TouchableOpacity onPress={()=>navigateToPlotSetting(plotId as string,plotData?.PlotName,plotData.currentCrops.CropAssocId)}>
-
-                    <Ionicons name="options" size={24} color="black" />
-
-                </TouchableOpacity>
-                
-            </View>
-        </View>
+            <TouchableOpacity onPress={()=>console.log(fertilizerLogs)}><Text>test</Text></TouchableOpacity>
 
 
-
-
-
-
-
-        {plotData?.currentCrops.CropAssocId !== null ? (
-            
-
-            <View style={stylesCrop.wrapper}>
-                <View style= {stylesCrop.cropThumbnailWrapper}>
-                    <Image style={{width:'100%',height:'100%',objectFit:'contain',borderRadius:10}} source={cropsImages[plotData.currentCrops.CropId as string]}/>
-                </View>
-                <View style={stylesCrop.textContainer}>
-                    <Text style={stylesCrop.cropNameText}>
-                        {plotData.currentCrops.CropName}
-                    </Text>
-
-                    <Text style={stylesCrop.datePlantedText}>
-                        Current Crop in the plot
-                    </Text>
-                </View>
-
-            </View>
-
-        ) : (
-
-            <View style={stylesNoRotation.wrapper}>
-                
-                <View style={stylesNoRotation.textContainer}>
-                    <Text style={stylesNoRotation.text}>
-                    Not Growing A Crop
-                    </Text>
-                </View>
-                <View style={stylesNoRotation.add}>
-                    <FontAwesomeIcon icon={faPlus} size={40} color='#FFFFFF'/>
-                </View>
-            </View>
-
-        )}
-
-
-
-
-    <View style={{borderWidth:0,marginTop:30,width:'98%',marginLeft:'auto',marginRight:'auto',backgroundColor:'white',paddingVertical:10,elevation:2,borderRadius:5}}>
-
-        <View style={styles.chartsHeaderWrapper}>
-
-            <View style={styles.chartsHeaderWrapperIcon}>
-
-            </View>
-            <Text style={styles.chartsHeader}>Pest Occurrences Per Week</Text>
-             
-             <TouchableOpacity style={{flexShrink:1,borderWidth:0,marginLeft:'auto'}} onPress={()=> router.push(`/(screens)/PestOccurrencesDetailed?plotAssocId=${encodeURIComponent(plotId as string)}`)}>
-
-                <Text style={styles.chartsHeaderViewMore}>View In Detail </Text>
-
-             </TouchableOpacity>
-            
-        </View>
-        
-
-    {!pestChartLoading && chartData && pestListData ? (
-
-        <>
-        
-        
-        
-            <LineChart
-                data={{
-                    labels: chartData?.labels, // Weeks
-                    datasets: chartData?.datasets, // Pest occurrence per week
-                }}
-                width={Dimensions.get("window").width * .98} // from react-native
-                height={220}
-                //yAxisLabel="$"
-                //yAxisSuffix="k"
-                yAxisInterval={1} // optional, defaults to 1
-                chartConfig={{
-                backgroundColor: "#e26a00",
-                backgroundGradientFrom: "#fb8c00",
-                backgroundGradientTo: "#ffa726",
-                decimalPlaces: 2, // optional, defaults to 2dp
-                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                style: {
-                    borderRadius: 16
-                },
-                propsForDots: {
-                    r: "6",
-                    strokeWidth: "2",
-                    stroke: "#ffa726"
-                }
-                }}
-                bezier
-                style={{
-                marginVertical: 8,
-                borderRadius: 16
-                }}
-            />
-
-            <View style={styles.legendWrapper}> 
-
-
-                {Object.entries(chartData?.pestColors).map(([pest, color]) => (
-                    <View key={pest} style={{ flexDirection: "row", alignItems: "center", marginRight: 10 }}>
-                        {/* Color Indicator */}
-                        <View style={{
-                            width: 15,
-                            height: 15,
-                            backgroundColor: color as string,
-                            marginRight: 5,
-                            borderRadius: 3,
-                            borderWidth:1
-                        }} />
-                        
-                        {/* Pest Name */}
-                        <Text style={{ fontSize: 14,fontWeight:500,color:'#253D2C' }}>{pest}</Text>
-                    </View>
-                ))}
-
-
-            </View>
-
-
-        </>
-
-
-    ) : (
-        <View style={{width:'100%',borderWidth:0,marginTop:15,backgroundColor:'#D2D2D2',height:220,borderRadius:5,display:'flex',alignItems:'center',justifyContent:'center'}}> 
-            <Text style={{fontSize:15,fontWeight:600,color:'#909090'}}>No Available Data To Display</Text>
-        </View>
-    )}
-    
-    </View>
-
-
-  
+    </ScrollView>
 
 
 
@@ -515,7 +640,8 @@ const styles = StyleSheet.create({
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
-        paddingHorizontal:2
+        paddingHorizontal:2,
+        backgroundColor:'white'
     },
     chartsHeaderViewMore:{
         marginLeft:'auto',

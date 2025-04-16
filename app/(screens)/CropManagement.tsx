@@ -1,9 +1,9 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ScrollView } from 'react-native-gesture-handler'
-
-
+import { RadioButton } from 'react-native-paper';
+import { Picker } from '@react-native-picker/picker';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faClockRotateLeft } from '@fortawesome/free-solid-svg-icons'
 import { faFileArrowDown } from '@fortawesome/free-solid-svg-icons'
@@ -112,6 +112,9 @@ import { db } from '../firebaseconfig'
 import { hide } from 'expo-splash-screen'
 import { useUserContext } from '../Context/UserContext'
 
+
+
+
 const CropManagement = () => {
 
   const {user,logout} = useUserContext();
@@ -207,14 +210,38 @@ const CropManagement = () => {
     { id: '4', name: 'None' },
   ];
 
+  const fertilizerData =[
+    {id:'1',name:'14-14-14'},
+    {id:'2',name:'16-20-0'},
+    {id:'3',name:'21-0-0'},
+    {id:'4',name:'0-0-60'},
+    {id:'5',name:'46-0-0'},
+    {id:'6',name:'Organic Fertilizer'},
+  ]
+  const fertilizerApplicationData =[
+    {id:'1',name:'Broadcasting'},
+    {id:'2',name:'Side-dressing'},
+    {id:'3',name:'Basal Application'},
+    {id:'4',name:'Fertigation'},
+    {id:'5',name:'Foliar Feeding'},
+    {id:'6',name:'Hole Fertilization'},
+    {id:'7',name:'Ring Application'},
+    {id:'8',name:'Top-dressing'},
+  ]
+
 
   //pest selected
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [selectedPestnames,setSelectedPestNames] = useState<string[]>([])
   const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
-
-
+  const [selectedFertilizer, setSelectedFertilizer] = useState('');
+  const [selectedApplication, setSelectedApplication] = useState('');
   const multiSelectRef = React.useRef<MultiSelect | null>(null);
+  const [amountFertilzer, setAmountFertilizer] = useState('');
+
+
+
+  //radio button handler for fertilizer 
 
 
   const onSelectedItemsChange = (items:string[]) => {
@@ -228,7 +255,11 @@ const CropManagement = () => {
     setSelectedPestNames(selectedNames);
 
   };
-
+  const handleAmountChange = (text:string) => {
+    // Optional: allow only numbers (with optional decimal)
+    const numericValue = text.replace(/[^0-9.]/g, '');
+    setAmountFertilizer(numericValue);
+  };
 
   const onSelectedDiseaseChange = (items:string[])=>{
     console.log("Selected disease : ", items)
@@ -552,7 +583,7 @@ const CropManagement = () => {
     console.log(selectedPestnames)
   }
 
-
+/*
   const logData = async(cropNameParam:any,plotAssocParam:any)=> {
 
     console.log("Selected pest name : ", selectedPestnames)
@@ -577,6 +608,7 @@ const CropManagement = () => {
         CropName:cropName,
         Temp:currentTemp
       }))
+
       console.log("New Pest log entry check : ", pestLogEntries)
 
 
@@ -596,8 +628,15 @@ const CropManagement = () => {
       const data = docSnap.data();
       console.log("Returned Data : ", data)
       const existingLogs = data?.PestLogs || [];
+
+      const existingFertsLogs = data?.FertilizerLogs || []
       console.log("existing Logs : ", existingLogs  )
-      
+      console.log("existing Fertilizer Logs : ", existingFertsLogs)
+
+
+
+
+      //for pest
       const logIndex = existingLogs.findIndex(
         (log:any) => log.PlotAssocId === plotAssocParam
       )
@@ -608,6 +647,29 @@ const CropManagement = () => {
           ...pestLogEntries
         ]
       }
+
+      //for Fertilizer
+
+      if(selectedFertilizer && amountFertilzer && selectedApplication){
+        console.log("SelectedFertilizer is not empty commencing log modification......")
+
+
+        const newFertilizerRecord = {
+          DateApplied:date,
+          cropName:cropName,
+          fertilizerType: selectedFertilizer,
+          fertilizerAmmount:amountFertilzer,
+          selectedApplication:selectedApplication,
+        }
+        console.log(newFertilizerRecord)
+
+
+        const fertilizerLogIndex = existingFertsLogs.findIndex(
+          (log:any) => log.PlotAssocId === plotAssocParam
+        )
+
+      }
+
 
       
       await updateDoc(docRef,{
@@ -623,7 +685,125 @@ const CropManagement = () => {
       showEntrySuccessDialog()
     }
   }
+*/
 
+
+
+
+
+  const logData = async(cropNameParam:any,plotAssocParam:any)=>{
+
+    console.log("Logging Data...");
+    hideEntryPosteDialog();
+
+
+
+    const cropName = cropNameParam;
+    const plotAssocId = plotAssocParam;
+    const date = new Date().toISOString().slice(0, 10);
+
+
+    try{
+
+      const docRef = doc(db, "Records", user?.RecordsRefId as string);
+      const docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+        console.log("Document not found");
+        return;
+      }
+
+
+      const data = docSnap.data();
+      const existingPestLogs = data?.PestLogs || [];
+      const existingFertilizerLogs = data?.FertilizerLogs || [];
+
+      let updatePayload: any = {};
+
+
+      // ===== Pest Logging =====
+      if (selectedPestnames && selectedPestnames.length > 0) {
+        console.log("Selected pest names:", selectedPestnames);
+
+        const pestLogEntries = selectedPestnames.map((pest) => ({
+          Pestname: pest,
+          Date: date,
+          CropName: cropName,
+          Temp: currentTemp,
+        }));
+
+        const pestLogIndex = existingPestLogs.findIndex(
+          (log: any) => log.PlotAssocId === plotAssocId
+        );
+
+        if (pestLogIndex !== -1) {
+          existingPestLogs[pestLogIndex].PlotPestLog = [
+            ...(existingPestLogs[pestLogIndex].PlotPestLog || []),
+            ...pestLogEntries,
+          ];
+        } else {
+          existingPestLogs.push({
+            PlotAssocId: plotAssocId,
+            PlotPestLog: pestLogEntries,
+          });
+        }
+
+        updatePayload.PestLogs = existingPestLogs;
+      }
+
+
+      // ===== Fertilizer Logging =====
+      if (selectedFertilizer && amountFertilzer && selectedApplication) {
+        console.log("Fertilizer logging data filled");
+  
+        const newFertilizerEntry = {
+          DateApplied: date,
+          cropName: cropName,
+          fertilizerType: selectedFertilizer,
+          fertilizerAmmount: amountFertilzer,
+          selectedApplication: selectedApplication,
+        };
+  
+        const fertLogIndex = existingFertilizerLogs.findIndex(
+          (log: any) => log.PlotAssocId === plotAssocId
+        );
+  
+        if (fertLogIndex !== -1) {
+          existingFertilizerLogs[fertLogIndex].FertilizerApplications = [
+            ...(existingFertilizerLogs[fertLogIndex].FertilizerApplications || []),
+            newFertilizerEntry,
+          ];
+        } else {
+          existingFertilizerLogs.push({
+            PlotAssocId: plotAssocId,
+            FertilizerApplications: [newFertilizerEntry],
+          });
+        }
+  
+        updatePayload.FertilizerLogs = existingFertilizerLogs;
+      }
+
+
+      console.log("Payload check : ", updatePayload)
+      // ===== Update DB Only If Needed =====
+      if (Object.keys(updatePayload).length > 0) {
+        await updateDoc(docRef, updatePayload);
+        console.log("Data successfully updated:", updatePayload);
+      } else {
+        console.log("No data to log. All fields empty.");
+      }
+
+      
+
+
+
+    }catch(err){console.error(err)}finally {
+      console.log("Logging finished");
+      showEntrySuccessDialog();
+    }
+
+
+  }
 
   const renderDialog = (plotId:any,plotName:any,cropId:any,cropName:any,cropSessionId:any) => (
     <Portal>
@@ -1176,7 +1356,7 @@ const CropManagement = () => {
               </View>
 
 
-              <View style={stylesRecords.inputWrapper}>
+              <View style={stylesRecords.inputWrapperFertilizer}>
 
 
                 <View style={stylesRecords.inputHeaderNormal}>
@@ -1184,16 +1364,71 @@ const CropManagement = () => {
                   <Text style={stylesRecords.inputText}>Applied Fertilizer</Text>
                 </View>
 
-                <View style={{flex:1,borderWidth:0,width:'100%',padding:0}}>
+                <View style={{flex:1,borderWidth:0,width:'100%',paddingVertical:5}}>
 
-                <TextInput
-                  label=""
-                  value={pesticide}
-                  onChangeText={(text: React.SetStateAction<string>) => setPesticide(text)}
-                  mode='flat'
-                  style={{ backgroundColor: 'transparent' }}
-                  theme={{ colors: { primary: '#2E6F40' } }}
-                />
+                  {fertilizerData.map((fertilizer) => (
+                    <View key={fertilizer.id} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <RadioButton
+                        value={fertilizer.name}
+                        status={selectedFertilizer === fertilizer.name ? 'checked' : 'unchecked'}
+                        onPress={() => {
+                          if (selectedFertilizer === fertilizer.name) {
+                            setSelectedFertilizer(''); // Deselect if already selected
+                          } else {
+                            setSelectedFertilizer(fertilizer.name); // Select new
+                          }
+                        }}
+                      />
+                      <Text>{fertilizer.name}</Text>
+                    </View>
+                  ))}
+
+
+
+
+
+
+
+                <View style={{width:'100%',borderColor:'red',paddingVertical:5,display:"flex",flexDirection:'column'}}>
+                    <View style={{width:'100%',paddingVertical:3,borderColor:'red',borderWidth:0,display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+                      <Text style={{fontSize:15,fontWeight:500,letterSpacing:.5}}>Application Method : </Text>
+
+
+                    </View>
+
+
+
+                    <Picker
+                      selectedValue={selectedApplication}
+                      onValueChange={(itemValue) => setSelectedApplication(itemValue)}
+                      style={styles.picker}
+                      enabled={selectedFertilizer !== ''}
+                      
+                    >
+                      {fertilizerApplicationData.map((application) => (
+                        <Picker.Item key={application.id} label={application.name} value={application.name} />
+                      ))}
+                    </Picker>
+
+
+                    <TextInput
+                   
+                    value={amountFertilzer}
+                    onChangeText={handleAmountChange}
+                    keyboardType="numeric"
+                    placeholder="Enter Applied amount (kg)"
+                    style={{ backgroundColor: 'transparent' }}
+                    theme={{ colors: { primary: '#2E6F40' } }}
+                   
+                    disabled={selectedFertilizer === ''}
+                    />
+
+                </View>
+
+
+                
+
+
 
                 </View>
 
@@ -1475,7 +1710,15 @@ badgesText:{
 })
 const stylesRecords = StyleSheet.create({
 
-
+  inputWrapperFertilizer:{
+    paddingVertical:10,
+    width:'100%',
+    //borderWidth:1,
+    display:'flex',
+    flexDirection:'column',
+    alignItems:'center',
+    marginBottom:20
+  },
   logData:{
     paddingTop:10,
     paddingBottom:10,
@@ -1561,7 +1804,11 @@ const stylesRecords = StyleSheet.create({
 
 const styles = StyleSheet.create({
 
-
+  picker: {
+    height: 60,
+    width: '100%',
+   borderWidth:1
+  },
   BadgeWrapper:{
     padding:3,
     backgroundColor:'#2E6F40',
@@ -1702,3 +1949,7 @@ const styles = StyleSheet.create({
 
 
 })
+
+function async(cropNamePara: any) {
+  throw new Error('Function not implemented.');
+}
