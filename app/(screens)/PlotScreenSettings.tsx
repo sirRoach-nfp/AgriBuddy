@@ -20,7 +20,12 @@ interface PestLog {
     Temp:number
 }
 
-
+interface PlotObject {
+    PlotId: string;
+    PlotName: string;
+    PlotThumbnail: string;
+    CurrentCrops: any;
+  }
 const PlotScreenSettings = () => {
 
 
@@ -272,6 +277,76 @@ const PlotScreenSettings = () => {
     }
   };
 
+
+  const handleSaveEdit = async ()=>{
+    console.log("Fetching plot document using id : ",user?.PlotsRefId)
+
+    const docRef = doc(db,"Plots",user?.PlotsRefId as string)
+    const docSnap = await getDoc(docRef)
+
+
+    
+    //upload to cloudinary
+    let finalImageUrl = ""
+
+    if (typeof imageUri === "string" && imageUri.startsWith("http")) {
+        // It's already a Cloudinary or remote image URL
+        finalImageUrl = imageUri;
+      } else if (typeof imageUri === "string") {
+        // Local file URI from picker - upload to Cloudinary
+        const formData = new FormData();
+        formData.append("file", {
+          uri: imageUri,
+          type: "image/jpeg",
+          name: "upload.jpg",
+        } as any);
+        formData.append("upload_preset", "dishlyunsignedpreset");
+      
+        console.log("Uploading image to Cloudinary...");
+        const uploadResponse = await fetch(
+          "https://api.cloudinary.com/v1_1/dvl7mqi2r/image/upload",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+      
+        const data = await uploadResponse.json();
+        if (data.secure_url) {
+          finalImageUrl = data.secure_url;
+          console.log("Image uploaded successfully:", finalImageUrl);
+        } else {
+          console.error("Cloudinary upload failed:", data);
+          throw new Error("Image upload failed");
+        }
+      }
+
+
+
+
+    if(docSnap.exists()){
+        const plots = docSnap.data().Plots as PlotObject[]
+
+        const updatedPlots = plots.map((plot)=>{
+            if(plot.PlotId === plotRefId){
+                return{
+                    ...plot,
+                    PlotThumbnail:finalImageUrl
+                }
+            }
+
+            return plot;
+        })
+
+
+        await updateDoc(docRef,{
+            Plots:updatedPlots,
+        });
+        console.log("Plot updated successfully!")
+    }
+
+
+  }
 
   //dialog handlers
 
