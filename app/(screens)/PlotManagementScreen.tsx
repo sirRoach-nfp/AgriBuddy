@@ -611,7 +611,7 @@ const PlotManagementScreen = () => {
                     
             </View>
 
-            <TouchableOpacity onPress={()=>console.log(fertilizerLogs)}><Text>test</Text></TouchableOpacity>
+            <TouchableOpacity onPress={()=>console.log(plotData)}><Text>test</Text></TouchableOpacity>
 
 
     </ScrollView>

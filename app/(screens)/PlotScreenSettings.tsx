@@ -115,7 +115,7 @@ const PlotScreenSettings = () => {
     }
 
     fetchPestLogRecord(plotRefIdParam as string)
-    
+    setImageUri(PlotCoverParam as string)
 
   },[plotRefIdParam])
 
@@ -294,6 +294,8 @@ const PlotScreenSettings = () => {
         finalImageUrl = imageUri;
       } else if (typeof imageUri === "string") {
         // Local file URI from picker - upload to Cloudinary
+
+        console.log("Selected plot image : ",imageUri)
         const formData = new FormData();
         formData.append("file", {
           uri: imageUri,
@@ -325,10 +327,13 @@ const PlotScreenSettings = () => {
 
 
     if(docSnap.exists()){
+
+        console.log("Document exists : ",docSnap.data())
+        console.log("Plot ref id Is : ", plotRefIdParam)
         const plots = docSnap.data().Plots as PlotObject[]
 
         const updatedPlots = plots.map((plot)=>{
-            if(plot.PlotId === plotRefId){
+            if(plot.PlotId === plotRefIdParam){
                 return{
                     ...plot,
                     PlotThumbnail:finalImageUrl
@@ -337,6 +342,7 @@ const PlotScreenSettings = () => {
 
             return plot;
         })
+        console.log("Updated PLot data (before push) : ", updatedPlots )
 
 
         await updateDoc(docRef,{
@@ -628,7 +634,7 @@ const PlotScreenSettings = () => {
                 <Text>Current Plot Thumbnail : {PlotCoverParam}</Text>
                 <TouchableOpacity onPress={()=>console.log(pestLogs)}><Text>check Pest Logs</Text></TouchableOpacity>
                 <TouchableOpacity onPress={()=>{setShowDeleteRecordDataConfirmation(true)}}><Text>check confirmation</Text></TouchableOpacity>
-                     
+               <Text>Passed plot cover : {imageUri as string}</Text>
             </ScrollView>
             
         </SafeAreaView>
