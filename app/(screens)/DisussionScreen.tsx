@@ -12,7 +12,10 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useUserContext } from '../Context/UserContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import ImageViewing from "react-native-image-viewing";
+
+
+
+//import ImageViewing from "react-native-image-viewing";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 interface DiscussionData {
     Author:string,
@@ -383,9 +386,15 @@ const DisussionScreen = () => {
             // Step 3: Remove discussion reference from user's DiscussionRecords
             const userDiscussionRef = doc(db, "DiscussionRecords", discussionRecordRefId);
             await updateDoc(userDiscussionRef, {
-                Discussions: arrayRemove(discussionId),
+                Discussions: arrayRemove({
+                    discussionId:discussionId
+                }),
             });
             console.log("Removed discussion reference from DiscussionRecords");
+
+
+
+
 
             setDeletePostLoading(false)
             
@@ -406,12 +415,12 @@ const DisussionScreen = () => {
         {renderDeletePostConfirmation(discussionid as string,user?.DiscussionRecordRefId as string)}
         {renderProcessDeletePost()}
 
-        <ImageViewing
+        {/*<ImageViewing
                 images={discussionData?.ImageSnapshots.map((img) => ({ uri: img })) as any}
                 imageIndex={selectedImageIndex}
                 visible={visibleImageView}
                 onRequestClose={() => setVisibleImageView(false)}
-            />
+            />*/}
 
         <SafeAreaView style={styles.mainWrapper}>
 

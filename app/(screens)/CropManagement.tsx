@@ -523,7 +523,7 @@ const CropManagement = () => {
   }
 
 
-  const setCurrentCropToPlot = async (cropId: string, cropName: string, cropAssocId: string, targetPlotId: string) => {
+  const setCurrentCropToPlot = async (cropId: string, cropName: string, cropAssocId: string, targetPlotId: string,cropCover:string) => {
     try {
       const plotRef = doc(db, "Plots", user?.PlotsRefId as string);
       const plotDoc = await getDoc(plotRef);
@@ -542,7 +542,8 @@ const CropManagement = () => {
             CurrentCrops: {
               CropId: cropId,
               CropName: cropName,
-              CropAssocId: cropAssocId
+              CropAssocId: cropAssocId,
+              CropCover:cropCover
             }
           };
   
@@ -564,7 +565,7 @@ const CropManagement = () => {
     try{
       
 
-      await setCurrentCropToPlot(cropId,cropName,cropSessionId,plotId)
+      await setCurrentCropToPlot(cropId,cropName,cropSessionId,plotId,cropData?.thumbnail as string)
 
       await setPlotToCurrentCrop(plotId,plotName)
 
@@ -967,7 +968,8 @@ const CropManagement = () => {
               CurrentCrops: {
                 CropId: null,
                 CropName: null,
-                CropAssocId: null
+                CropAssocId: null,
+                CropCover:null
               }
             };
     

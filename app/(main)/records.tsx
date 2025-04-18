@@ -81,7 +81,7 @@ const records = () => {
     },[])
   )
 
-
+  /*
   useEffect(()=>{
 
 
@@ -113,7 +113,7 @@ const records = () => {
     setRecordData(recordsDat)
   },[])
 
-
+  */
   const [searchQuery,setSearchQuery] = useState("")
 
 

@@ -2,23 +2,25 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect } from 'react'
 import { router } from 'expo-router'
 
-
+import Foundation from '@expo/vector-icons/Foundation';
 
 interface CurrentCrops{
 
     CropAssocId:string | null
     CropId:string | null
     CropName:string | null,
+    
   }
 interface props{
     plotName:string,
     plotAssocId:string,
+    plotThumbnail:string,
     CurrentCrops:CurrentCrops
 }
 
 
 
-const PlotMinCard = ({plotAssocId,plotName,CurrentCrops}:props) => {
+const PlotMinCard = ({plotAssocId,plotName,CurrentCrops,plotThumbnail}:props) => {
 
     
 
@@ -40,7 +42,14 @@ const PlotMinCard = ({plotAssocId,plotName,CurrentCrops}:props) => {
     <TouchableOpacity style={styles.container} onPress={navigateToPlot}>
 
       <View style={styles.thumbnail}>
-            <Image source={require('../../assets/images/Misc/PlotIcon.svg')} style={styles.img} resizeMode="cover"/>
+
+
+            {plotThumbnail.length>0 ?(
+                <Image source={require('../../assets/images/Misc/PlotIcon.svg')} style={styles.img} resizeMode="cover"/>
+            ) : (
+                <Foundation name="photo" size={24} color="black" />
+            )}
+            
       </View>
 
 
@@ -91,7 +100,7 @@ const styles = StyleSheet.create({
         width:100,
         height:60,
         //borderWidth:1,
-        backgroundColor:'#4C9142',
+        backgroundColor:'#D2D2D2',
         display:'flex',
         alignItems:'center',
         justifyContent:'center',

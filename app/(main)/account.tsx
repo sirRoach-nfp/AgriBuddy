@@ -16,6 +16,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { useUserContext } from '../Context/UserContext';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { LinearGradient } from 'expo-linear-gradient';
+import Octicons from '@expo/vector-icons/Octicons';
 interface CurrentCrops{
 
   CropAssocId:string | null
@@ -24,12 +25,18 @@ interface CurrentCrops{
 }
 interface PlotData{
   PlotId : string,
-  PlotName: string
+  PlotName: string,
+  PlotThumbnail:string,
   CurrentCrops:CurrentCrops
 }
 
 interface Plots{
   plot:PlotData[],
+}
+
+interface discussion{
+  discussionId:string,
+  discussionTitle:string
 }
 
 const getAuthorInitials = (name:string) => {
@@ -97,6 +104,7 @@ const account = () => {
   
       useCallback(()=>{
         fetchPlots(user?.PlotsRefId as string)
+        fetchDiscussionsRef(user?.DiscussionRecordRefId as string)
   
       },[])
     )
@@ -153,9 +161,11 @@ const account = () => {
             CropAssocId:null,
             CropId:null,
             CropName:null,
+            CropCover:null,
           },
   
           PlotId:plotId,
+          PlotThumbnail:'',
           PlotName:"New Plot #"+(plotLength+1),
         })
       })
@@ -196,6 +206,7 @@ const account = () => {
 
 
   const [plots,setPlots] = React.useState<Plots>({plot:[]});
+  const [discussions,setDiscussions] = React.useState<discussion[]>([])
   const [plotLength,setPlotLength] = useState(0)
   const [farmPlots, setFarmPlots] = React.useState([
     {
@@ -232,6 +243,7 @@ const account = () => {
         const filteredPlots:PlotData[]=rawData.map(crop=>({
           PlotName: crop.PlotName,
           PlotId: crop.PlotId,
+          PlotThumbnail:crop.PlotThumbnail,
           CurrentCrops:crop.CurrentCrops
         }))
 
@@ -244,6 +256,26 @@ const account = () => {
 
       setLoadingPlotData(false)
       
+    }catch(err){
+
+    }
+  }
+
+
+  const fetchDiscussionsRef = async(userDiscussionRefId:string) =>{
+
+    try{
+
+      const docRef = doc(db,'DiscussionRecords',userDiscussionRefId as string)
+      const docSnap = await getDoc(docRef)
+      console.log("Fetching discussion Ref : ",userDiscussionRefId)
+
+
+      if(docSnap.exists()){
+        const rawData = docSnap.data().Discussions as discussion[]
+        setDiscussions(rawData)
+      }
+
     }catch(err){
 
     }
@@ -305,7 +337,7 @@ const account = () => {
 
                   plots.plot.map((plot,index)=>(
 
-                        <PlotMinCard key={index} plotAssocId={plot.PlotId} plotName={plot.PlotName} CurrentCrops={plot.CurrentCrops}/>
+                        <PlotMinCard plotThumbnail={plot.PlotThumbnail} key={index} plotAssocId={plot.PlotId} plotName={plot.PlotName} CurrentCrops={plot.CurrentCrops}/>
                       ))
 
                   ) : (
@@ -329,7 +361,29 @@ const account = () => {
 
 
    
-            <TouchableOpacity onPress={logoutAccount}>Logout</TouchableOpacity>
+            <View style={styles.discussionContainerWrapper}>
+
+
+                <View style={styles.discussionHeaderWrapper}>
+                  <View style={{width:25,height:25,borderWidth:0,borderRadius:50,backgroundColor:'green'}}></View>
+                  <Text style={styles.discussionHeaderText}>My Discussions</Text>
+                </View>
+                <View style={styles.discussionContentWrapper}>
+
+
+                  {discussions && discussions.length > 0 && discussions.map((discussion,index)=>(
+
+
+                    <TouchableOpacity style={{display:'flex',flexDirection:'row', alignItems:'center'}}><Text style={{marginLeft:5,fontSize:16,fontWeight:400}}>{discussion.discussionTitle}</Text></TouchableOpacity>
+
+
+                  ))}
+
+                </View>
+
+
+
+            </View>
 
         </ScrollView>
 
@@ -350,6 +404,40 @@ const account = () => {
 export default account
 
 const styles = StyleSheet.create({
+
+
+  discussionContentWrapper:{
+    display:'flex',
+    flexDirection:'column',
+    width:'100%',
+    //borderWidth:1,
+  },
+
+  discussionHeaderText:{
+    fontSize:17,
+    fontWeight:500,
+    color:'#253D2C',
+    marginLeft:10
+  },
+
+  discussionContainerWrapper:{
+    width:'95%',
+    borderWidth:1,
+    display:'flex',
+    flexDirection:'column',
+    paddingVertical:5,
+    gap:10
+    
+  },
+
+  discussionHeaderWrapper:{
+    width:'100%',
+    paddingVertical:5,
+    borderWidth:1,
+    display:'flex',
+    flexDirection:'row',
+    alignItems:'center'
+  },
 
 
   mainContainer:{

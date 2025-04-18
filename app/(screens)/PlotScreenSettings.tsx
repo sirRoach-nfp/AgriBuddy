@@ -474,6 +474,10 @@ const PlotScreenSettings = () => {
 
                 <View style={styles.contentContainer}>
 
+                    <View style={styles.plotThumbnailContainer}>
+
+                    </View>
+
                     <TextInput value={plotNameChange} onChange={(e)=>setPlotNameChange(e.nativeEvent.text)} placeholder="Title" style={styles.titleInput}></TextInput>
 
                 </View>
@@ -560,6 +564,14 @@ const stylesDataRemove = StyleSheet.create({
 })
 
 const styles = StyleSheet.create({
+
+    plotThumbnailContainer:{
+        backgroundColor:'#D2D2D2',
+        width:'100%',
+        height:200
+    },
+
+
     headerContainer:{
         width:'100%',
         maxHeight:50,
@@ -586,7 +598,7 @@ const styles = StyleSheet.create({
     contentContainer:{
         marginTop:10,
         width:"100%",
-        //borderWidth:1,
+        borderWidth:1,
         display:'flex',
         flexDirection:'column',
 

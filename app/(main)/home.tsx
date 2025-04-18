@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Dimensions, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { router, Stack, useFocusEffect } from 'expo-router'
 
@@ -27,6 +27,7 @@ import Carousel, {
   ICarouselInstance,
   Pagination,
 } from "react-native-reanimated-carousel";
+import { LinearGradient } from 'expo-linear-gradient'
 
 
 const { width } = Dimensions.get('window');
@@ -212,7 +213,94 @@ const home = () => {
         <ScrollView style={styles.container} contentContainerStyle={{alignItems:'center'}}>
 
           <WeatherCard/>
-          <TaskCard/>
+          <View style={styles.AgriInsightContainer}>
+
+            <View style={styles.AgriInsightHeader} >
+              <FontAwesomeIcon icon={faNewspaper} size={20} color='#2E6F40' style={styles.iconstyle}/>
+              <Text style={styles.AgriInsightH}>Agri Insights</Text>
+              <TouchableOpacity style={{marginLeft:'auto'}} onPress={()=> router.push(`/(screens)/ArticleHomeScreen`)}>
+                 <Text style={styles.AgriInsightSeeMore}>See More</Text>
+              </TouchableOpacity>
+             
+            
+            </View> 
+
+
+
+            <View style={styles.AgriInsightContentContainer} >
+
+                <View style={stylesCarousel.carouselWrapperMain}>
+
+
+                <Carousel
+                  ref={ref}
+                  width={width}
+                  height={width * 0.50}
+                  data={articleData!}
+                  onProgressChange={progress}
+                  renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: 10,
+                      overflow: 'hidden', // Important to clip children like the rounded corners
+                    }}
+                    onPress={() => {
+                      router.push(`/(screens)/ArticleMainScreen?articleId=${encodeURIComponent(item.articleId)}`);
+                    }}
+                  >
+                    <ImageBackground
+                      source={{ uri: item.cover }}
+                      resizeMode="cover"
+                      style={{
+                        flex: 1,
+                        justifyContent: 'flex-end',
+                      }}
+                    >
+                      {/* Overlay Gradient to improve text readability */}
+                      <LinearGradient
+                        colors={['transparent', 'rgba(0,0,0,0.6)']}
+                        style={{
+                          padding: 10,
+                          width: '100%',
+                          position: 'absolute',
+                          bottom: 0,
+                        }}
+                      >
+                        <Text
+                          numberOfLines={2}
+                          ellipsizeMode="tail"
+                          style={{
+                            color: 'white',
+                            fontSize: 20,
+                            fontWeight: '600',
+                          }}
+                        >
+                          {item.title}
+                        </Text>
+                      </LinearGradient>
+                    </ImageBackground>
+                  </TouchableOpacity>
+                  )}
+                />
+
+                <Pagination.Basic
+                progress={progress}
+                data={articleData}
+                dotStyle={{ backgroundColor: "#4d69ce", borderRadius: 50 }}
+                containerStyle={{ gap: 5, marginTop: 10 }}
+                onPress={onPressPagination}
+                />
+
+                </View>
+
+            </View>
+
+
+
+
+          </View>
 
 
 
@@ -257,63 +345,7 @@ const home = () => {
           </View>
 
 
-          <View style={styles.AgriInsightContainer}>
-
-            <View style={styles.AgriInsightHeader} >
-              <FontAwesomeIcon icon={faNewspaper} size={20} color='#2E6F40' style={styles.iconstyle}/>
-              <Text style={styles.AgriInsightH}>Agri Insights</Text>
-              <Text style={styles.AgriInsightSeeMore}>See More</Text>
-            
-            </View> 
-
-
-
-            <View style={styles.AgriInsightContentContainer} >
-
-                <View style={stylesCarousel.carouselWrapperMain}>
-
-
-                <Carousel
-                  ref={ref}
-                  width={width}
-                  height={width * 0.65}
-                  data={articleData!}
-                  onProgressChange={progress}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity style={{width:'100%',borderWidth:0,height:'100%',display:'flex',flexDirection:'column'}}
-                    
-                      onPress={()=>{router.push(`/(screens)/ArticleMainScreen?articleId=${encodeURIComponent(item.articleId)}`)}}
-                    >
-
-                      <Image resizeMode="cover" source={{ uri:item.cover}} style={{width:'100%',height:'75%',alignSelf: 'stretch',borderTopLeftRadius:10,borderTopRightRadius:10}}/>
-
-
-                      <View style={{backgroundColor:'#f5f5f5',paddingHorizontal:5,width:'100%',borderWidth:0,height:'25%', display:'flex',flexDirection:'column',justifyContent:'center',borderBottomEndRadius:10,borderBottomStartRadius:10}}> 
-
-                        <Text numberOfLines={2} ellipsizeMode="tail" style={{fontSize:15,fontWeight:500}}>{item.title}</Text> // If content is long, this will be cut off!
-
-                      </View>
-                      
-                    </TouchableOpacity>
-                  )}
-                />
-
-                <Pagination.Basic
-                progress={progress}
-                data={articleData}
-                dotStyle={{ backgroundColor: "#4d69ce", borderRadius: 50 }}
-                containerStyle={{ gap: 5, marginTop: 10 }}
-                onPress={onPressPagination}
-                />
-
-                </View>
-
-            </View>
-
-
-
-
-          </View>
+          
 
 
 
@@ -448,7 +480,7 @@ const styles = StyleSheet.create({
       color:'#253D2C',
       fontSize:16,
       fontWeight:400,
-      marginLeft:'auto',
+      
       textDecorationLine:'underline'
     
     }

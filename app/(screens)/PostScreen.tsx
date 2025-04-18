@@ -204,7 +204,7 @@ const PostScreen = () => {
                 console.log("Image done uploading to Cloudinary")
                 console.log("Uploaded Images:", uploadedImageUrls);
 
-
+            }
 
             
             const newDiscussion = {
@@ -215,6 +215,7 @@ const PostScreen = () => {
                 Author:user?.Username,
                 CreatedAt:Timestamp.now(),
             }
+            
 
 
                     // Add the discussion post to Firestore
@@ -235,7 +236,10 @@ const PostScreen = () => {
 
 
             await updateDoc(discussionRecordRef,{
-                Discussions:arrayUnion(discussionRef.id)
+                Discussions:arrayUnion({
+                    discussionId:discussionRef.id,
+                    discussionTitle:title
+                })
             })
 
             console.log("Uploaded success")
@@ -243,7 +247,7 @@ const PostScreen = () => {
 
 
 
-            }
+            
 
             console.log("Skipped image upload empty image array")
 

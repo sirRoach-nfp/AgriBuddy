@@ -11,6 +11,8 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseconfig';
 import { useSearchParams } from 'expo-router/build/hooks';
 import { cropsImages } from '../Pestdat';
+import Foundation from '@expo/vector-icons/Foundation';
+
 import {
     LineChart,
     BarChart,
@@ -28,17 +30,20 @@ import { RectProps } from 'react-native-svg';
 
 interface PlotData{
     PlotId : string,
-    PlotName: string
+    PlotName: string,
+    PlotThumbnail:string,
   }
 interface CurrentCrop{
     CropAssocId:string | null,
     CropId:string | null,
     CropName:string | null
+    CropCover:string | null
 }
   
 interface Plots{
     PlotId : string,
-    PlotName: string
+    PlotName: string,
+    PlotThumbnail:string,
     currentCrops:CurrentCrop
 
 
@@ -128,8 +133,9 @@ const PlotManagementScreen = () => {
 
     const [plotData,setPlotData] = useState<Plots>({
         PlotId:'',
-        PlotName: '',  // Initialize as an empty array
-        currentCrops: { CropAssocId: '', CropId: '', CropName: '' } // Initialize as an empty object (map)
+        PlotName: '', 
+        PlotThumbnail:'', // Initialize as an empty array
+        currentCrops: { CropAssocId: '', CropId: '', CropName: '',CropCover:'' } // Initialize as an empty object (map)
       });
 
 
@@ -156,10 +162,12 @@ const PlotManagementScreen = () => {
                 const formattedData: Plots = {
                   PlotId: foundPlot.PlotId,
                   PlotName: foundPlot.PlotName,
+                  PlotThumbnail:foundPlot.PlotThumbnail,
                   currentCrops: foundPlot.CurrentCrops || {
                     CropAssocId: null,
                     CropId: null,
-                    CropName: null
+                    CropName: null,
+                    CropCover:null
                   }
                 };
       
@@ -346,7 +354,14 @@ const PlotManagementScreen = () => {
 
                 <View style={styles.plotInfoContainer}>
                     <View style={styles.thumbnail}>
-                        <Image source={require('../../assets/images/Misc/PlotIcon.svg')} style={{width:'40%',height:'40%',objectFit:'contain'}}  />
+
+                        {plotData.PlotThumbnail.length > 0 ? (
+                            <Image source={require('../../assets/images/Misc/PlotIcon.svg')} style={{width:'40%',height:'40%',objectFit:'contain'}}  />
+                        ) : (
+
+                            <Foundation name="photo" size={24} color="black" />
+                        )}
+                        
                     </View>
                     <View style={styles.infoWrapper}>
                         <View style={styles.infoHeaderwrapper}>
@@ -405,7 +420,7 @@ const PlotManagementScreen = () => {
 
                     <View style={stylesCrop.wrapper}>
                         <View style= {stylesCrop.cropThumbnailWrapper}>
-                            <Image style={{width:'100%',height:'100%',objectFit:'contain',borderRadius:10}} source={cropsImages[plotData.currentCrops.CropId as string]}/>
+                            <Image style={{width:'100%',height:'100%',objectFit:'contain',borderRadius:10}} source={{uri:plotData.currentCrops.CropCover as string}}/>
                         </View>
                         <View style={stylesCrop.textContainer}>
                             <Text style={stylesCrop.cropNameText}>
@@ -541,7 +556,7 @@ const PlotManagementScreen = () => {
                         </View>
                         <Text style={styles.chartsHeader}>Fertilizer Application</Text>
 
-                        <TouchableOpacity style={{flexShrink:1,borderWidth:0,marginLeft:'auto'}} onPress={()=> router.push(`/(screens)/PestOccurrencesDetailed?plotAssocId=${encodeURIComponent(plotId as string)}`)}>
+                        <TouchableOpacity style={{flexShrink:1,borderWidth:0,marginLeft:'auto'}} onPress={()=> router.push(`/(screens)/FertilizerDetailed?plotAssocId=${encodeURIComponent(plotId as string)}`)}>
 
                             <Text style={styles.chartsHeaderViewMore}>View In Detail </Text>
 
@@ -688,7 +703,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         alignItems:'center',
         justifyContent:'center',
-        backgroundColor:'#4C9142'
+        backgroundColor:'#D2D2D2'
     },
     infoWrapper:{
         marginLeft:10,
