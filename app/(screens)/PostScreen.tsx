@@ -179,7 +179,6 @@ const PostScreen = () => {
                       } as any);
 
 
-                    //formData.append("file", blob, "upload.jpg"); // Append Blob instead of object
                     formData.append("upload_preset", "dishlyunsignedpreset");
                     
 

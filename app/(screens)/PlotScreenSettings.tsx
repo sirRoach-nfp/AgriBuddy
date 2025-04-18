@@ -588,6 +588,8 @@ const PlotScreenSettings = () => {
 
                     <TextInput value={plotNameChange} onChange={(e)=>setPlotNameChange(e.nativeEvent.text)} placeholder="Title" style={styles.titleInput}></TextInput>
 
+
+                    <TouchableOpacity onPress={()=> handleSaveEdit()}><Text>Update Plot Information</Text></TouchableOpacity>
                 </View>
 
 
