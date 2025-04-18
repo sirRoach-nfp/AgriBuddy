@@ -236,18 +236,27 @@ const fetchFertilizerLogRecord = async(plotId:string) =>{
                     Usage Logs 
                 </Text>
 
-                <Picker style={{padding:0,borderRadius:5,fontSize:16,marginLeft:'auto'}}
-                        onValueChange={(value) => {setSelectedYear(value as string);filterLogsByYear(value as string)}}
-                >   
-
-                    {yearDataForFilter && yearDataForFilter.length>0 && yearDataForFilter.map((year,index)=>(
-                        <Picker.Item label={year} value={year} />
-
-                    ))}
+                <Picker
+                    selectedValue={selectedYear}
+                    style={{
+                        padding: 0,
+                        borderRadius: 5,
+                        fontSize: 16,
+                        marginLeft: 'auto',
+                        width: 150,
+                    }}
+                    onValueChange={(value) => {
+                        setSelectedYear(value as string);
+                        filterLogsByYear(value as string);
+                    }}
+                    >
+                    {yearDataForFilter && yearDataForFilter.length > 0 &&
+                        yearDataForFilter.map((year, index) => (
+                        <Picker.Item key={index} label={year} value={year} />
+                        ))
+                    }
                     <Picker.Item label="All" value="All" />
-                    <Picker.Item label="2024" value="2024" />
                 </Picker>
-
                 <TouchableOpacity style={{borderWidth:1,paddingHorizontal:20,marginRight:8,borderRadius:5,marginLeft:8}}><Text style={{fontSize:17}}>Filter</Text></TouchableOpacity>
 
 

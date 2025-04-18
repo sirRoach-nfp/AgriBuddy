@@ -20,6 +20,11 @@ interface PestLog {
     Temp:number
 }
 
+
+interface FertilizerLog{
+    DateApplied:string,
+    cropName:'Tomato',
+}
 interface PlotObject {
     PlotId: string;
     PlotName: string;
@@ -43,6 +48,9 @@ const PlotScreenSettings = () => {
   const[associatedCrops,setAssociatedCrops]= useState<string[]>([])
   const [pestLogs,setPestLogs] = useState<PestLog[]>([]);
 
+
+  const [fertilizerLogs,setFertilizerLogs] = useState<FertilizerLog[]>([]);
+  const [fertilizerCropNames,setFertilizerCropNames] = useState<string[]>([])
   useEffect(()=>{
 
 
@@ -114,7 +122,43 @@ const PlotScreenSettings = () => {
 
     }
 
+
+    const fetchFertilizerLog = async(plotId:string)=>{
+
+
+        try{
+            console.log("Fetching Fertilizer Log Record 2 ....")
+
+            const docRef = doc(db,'Records',user?.RecordsRefId as string)
+            const docSnap = await getDoc(docRef)
+
+
+            if(docSnap.exists()){
+
+                const data = docSnap.data()
+                console.log("Returned Data : ", data)
+                const existingLogs = data?.FertilizerLogs || []
+                console.log("Existing ferts data logs : ", existingLogs)
+
+
+                const logIndex = existingLogs.findIndex(
+                    (log:any) => log.PlotAssocId === plotRefIdParam
+                )
+
+                console.log("log index : ", logIndex)
+
+                const plotFertilizerLog = existingLogs[logIndex].FertilizerApplications;
+
+                const cropNames = [...new Set(plotFertilizerLog.map((log:any)=> log.cropName))]
+                console.log("Fertilizer log cropnames : ",cropNames )
+
+                setFertilizerCropNames(cropNames as string[])
+                setFertilizerLogs(plotFertilizerLog)
+            }
+        }catch(err){console.error(err)}
+    }
     fetchPestLogRecord(plotRefIdParam as string)
+    fetchFertilizerLog(plotRefIdParam as string)
     setImageUri(PlotCoverParam as string)
 
   },[plotRefIdParam])
@@ -223,36 +267,70 @@ const PlotScreenSettings = () => {
         setSelectedCropForRemoval([]); // Reset selection after deletion
         setPestLogs(existingLogs[logIndex].PlotPestLog); // Update state to reflect changes
         
-      
-
-
-        /*
-
-        let existingLogs = pestLogs
-        console.log("Selected crop to be removed : ", selectedCropForRemoval)
-        console.log("existing Logs ",existingLogs)
-        const updatedLogs = existingLogs.filter(
-            (log: any) => !selectedCropForRemoval.includes(log.CropName)
-          );
-        
-
-
-
-        
-        await updateDoc(doc(db, "Records", user?.RecordsRefId as string), { PestLogs: updatedLogs });
-
-        console.log("Selected crops deleted successfully.");
-
-        console.log(updatedLogs)
-        setPestLogs(updatedLogs)
-        setSelectedCropForRemoval([])
-        */
        setloadingForDeleteRecordData(false)
       } catch (error) {
         console.error("Error deleting crop data:", error);
       }
   }
   
+  const removeSelectedCropDataFromFertilizerLog = async ()=>{
+
+
+    try {
+
+        setShowDeleteRecordDataConfirmationForFertilizerRecord(false)
+        setShowDeleteRecordDataProcessForFertilizerRecord(true)
+        setLoadingForDeleteRecordDataFertilizer(true)
+        console.log("Selected Crops to be removed  :",SelectedCropForRemovalCropsVFertilizer)
+        const docRef = doc(db, "Records", user?.RecordsRefId as string );
+        const docSnap = await getDoc(docRef);
+    
+        if (!docSnap.exists()) {
+          console.log("Document does not exist.");
+          return;
+        }
+    
+        const data = docSnap.data();
+        let existingLogs = data?.FertilizerLogs || [];
+    
+        // Find the index of the entry that matches the current PlotAssocId
+        const logIndex = existingLogs.findIndex(
+          (log: any) => log.PlotAssocId === plotRefIdParam
+        );
+    
+        if (logIndex === -1) {
+          console.log("No matching PlotAssocId found.");
+          return;
+        }
+        
+        console.log("Existing fertilizer log before filter : ", existingLogs[logIndex])
+        // Filter out selected crops
+        existingLogs[logIndex].FertilizerApplications = existingLogs[logIndex].FertilizerApplications.filter(
+          (log: any) => !SelectedCropForRemovalCropsVFertilizer.includes(log.cropName)
+        );
+
+        console.log("Existing fertilizer log after filter : ", existingLogs)
+        
+        // Update Firestore with the new PestLogs array
+        await updateDoc(docRef, { FertilizerLogs: existingLogs });
+        const updatedCrops = fertilizerCropNames.filter(crop => !SelectedCropForRemovalCropsVFertilizer.includes(crop));
+        setFertilizerCropNames(updatedCrops)
+        console.log("Selected crops deleted successfully.");
+
+
+
+        setSelectedCropForRemovalCropsVFertilizer([]); // Reset selection after deletion
+        setFertilizerLogs(existingLogs[logIndex].FertilizerApplications); // Update state to reflect changes
+        
+       setloadingForDeleteRecordData(false)
+      } catch (error) {
+        console.error("Error deleting crop data:", error);
+      }finally{
+        setLoadingForDeleteRecordDataFertilizer(false)
+      }
+
+
+  }
   const [plotName,setPlotName] = useState("")
   const [plotNameChange,setPlotNameChange] = useState("")
 
@@ -279,111 +357,125 @@ const PlotScreenSettings = () => {
 
 
   const handleSaveEdit = async ()=>{
-    console.log("Fetching plot document using id : ",user?.PlotsRefId)
-
-    const docRef = doc(db,"Plots",user?.PlotsRefId as string)
-    const docSnap = await getDoc(docRef)
 
 
+
+    try{
+
+        setShowEditConfirmation(false)
+        setLoadForSaveEditProcess(true)
+        setShowEditProcess(true)
+
+        console.log("Fetching plot document using id : ",user?.PlotsRefId)
+
+        const docRef = doc(db,"Plots",user?.PlotsRefId as string)
+        const docSnap = await getDoc(docRef)
     
-    //upload to cloudinary
-    let finalImageUrl = ""
-
-    if (typeof imageUri === "string" && imageUri.startsWith("http")) {
-        // It's already a Cloudinary or remote image URL
-        finalImageUrl = imageUri;
-      } else if (typeof imageUri === "string") {
-        // Local file URI from picker - upload to Cloudinary
-
-        console.log("Selected plot image : ",imageUri)
-        const formData = new FormData();
-        formData.append("file", {
-          uri: imageUri,
-          type: "image/jpeg",
-          name: "upload.jpg",
-        } as any);
-        formData.append("upload_preset", "dishlyunsignedpreset");
-      
-        console.log("Uploading image to Cloudinary...");
-        const uploadResponse = await fetch(
-          "https://api.cloudinary.com/v1_1/dvl7mqi2r/image/upload",
-          {
-            method: "POST",
-            body: formData,
+    
+        
+        //upload to cloudinary
+        let finalImageUrl = ""
+    
+        if (typeof imageUri === "string" && imageUri.startsWith("http")) {
+            // It's already a Cloudinary or remote image URL
+            finalImageUrl = imageUri;
+          } else if (typeof imageUri === "string") {
+            // Local file URI from picker - upload to Cloudinary
+    
+            console.log("Selected plot image : ",imageUri)
+            const formData = new FormData();
+            formData.append("file", {
+              uri: imageUri,
+              type: "image/jpeg",
+              name: "upload.jpg",
+            } as any);
+            formData.append("upload_preset", "dishlyunsignedpreset");
+          
+            console.log("Uploading image to Cloudinary...");
+            const uploadResponse = await fetch(
+              "https://api.cloudinary.com/v1_1/dvl7mqi2r/image/upload",
+              {
+                method: "POST",
+                body: formData,
+              }
+            );
+          
+            const data = await uploadResponse.json();
+            if (data.secure_url) {
+              finalImageUrl = data.secure_url;
+              console.log("Image uploaded successfully:", finalImageUrl);
+            } else {
+              console.error("Cloudinary upload failed:", data);
+              throw new Error("Image upload failed");
+            }
           }
-        );
-      
-        const data = await uploadResponse.json();
-        if (data.secure_url) {
-          finalImageUrl = data.secure_url;
-          console.log("Image uploaded successfully:", finalImageUrl);
-        } else {
-          console.error("Cloudinary upload failed:", data);
-          throw new Error("Image upload failed");
-        }
-      }
-
-
-
-
-    if(docSnap.exists()){
-
-        console.log("Document exists : ",docSnap.data())
-        console.log("Plot ref id Is : ", plotRefIdParam)
-        const plots = docSnap.data().Plots as PlotObject[]
-
-        const updatedPlots = plots.map((plot)=>{
-            if(plot.PlotId === plotRefIdParam){
-                return{
-                    ...plot,
-                    PlotThumbnail:finalImageUrl,
-                    PlotName:plotName
+    
+    
+    
+    
+        if(docSnap.exists()){
+    
+            console.log("Document exists : ",docSnap.data())
+            console.log("Plot ref id Is : ", plotRefIdParam)
+            const plots = docSnap.data().Plots as PlotObject[]
+    
+            const updatedPlots = plots.map((plot)=>{
+                if(plot.PlotId === plotRefIdParam){
+                    return{
+                        ...plot,
+                        PlotThumbnail:finalImageUrl,
+                        PlotName:plotName
+                    }
                 }
-            }
+    
+                return plot;
+            })
+            console.log("Updated PLot data (before push) : ", updatedPlots )
+    
+    
+            await updateDoc(docRef,{
+                Plots:updatedPlots,
+            });
+            console.log("Plot updated successfully!")
+        }
+    
+    
+        //currentCrops Plot names update
+    
+    
+        const currentCropsRef = doc(db,"CurrentCrops",user?.CurrentCropsRefId as string);
+        const currentCropsSnap = await getDoc(currentCropsRef);
+    
+        if(currentCropsSnap.exists()){
+    
+            const currentCropsData = currentCropsSnap.data();
+            const cropsArray = currentCropsData.CurrentCrops as any[]
+    
+    
+    
+    
+            const updatedCropsArray = cropsArray.map((crop)=>{
+                if(crop.PlotAssoc === plotRefIdParam) {
+                    return {
+                        ...crop,
+                        PlotName:plotName
+                    };
+                }
+    
+                return crop;
+            })
+    
+            await updateDoc(currentCropsRef,{
+                CurrentCrops:updatedCropsArray
+            })
+    
+            console.log("Updated Current Crops plot name !!")
+        }
 
-            return plot;
-        })
-        console.log("Updated PLot data (before push) : ", updatedPlots )
-
-
-        await updateDoc(docRef,{
-            Plots:updatedPlots,
-        });
-        console.log("Plot updated successfully!")
+    }catch(err){console.error(err)}finally{
+        setLoadForSaveEditProcess(false)
     }
 
-
-    //currentCrops Plot names update
-
-
-    const currentCropsRef = doc(db,"CurrentCrops",user?.CurrentCropsRefId as string);
-    const currentCropsSnap = await getDoc(currentCropsRef);
-
-    if(currentCropsSnap.exists()){
-
-        const currentCropsData = currentCropsSnap.data();
-        const cropsArray = currentCropsData.CurrentCrops as any[]
-
-
-
-
-        const updatedCropsArray = cropsArray.map((crop)=>{
-            if(crop.PlotAssoc === plotRefIdParam) {
-                return {
-                    ...crop,
-                    PlotName:plotName
-                };
-            }
-
-            return crop;
-        })
-
-        await updateDoc(currentCropsRef,{
-            CurrentCrops:updatedCropsArray
-        })
-
-        console.log("Updated Current Crops plot name !!")
-    }
 
 
   }
@@ -398,11 +490,37 @@ const PlotScreenSettings = () => {
   const[loadingForDeletePlot,setLoadingForDeletePlot] = useState(false)
 
 
+  const [showSaveEditConfirmation,setShowEditConfirmation] = useState(false)
+  const [showSaveEditProcess,setShowEditProcess] = useState(false)
+  const [loadingForSaveEditProcess,setLoadForSaveEditProcess] = useState(false)
+
+
+  const [showDeleteRecordDataConfirmationForFertilizerRecord,setShowDeleteRecordDataConfirmationForFertilizerRecord] = useState(false)
+  const [showDeleteRecordDataProcessForFertilizerRecord,setShowDeleteRecordDataProcessForFertilizerRecord] = useState(false)
+  const [loadingForDeleteRecordDataFertilizer,setLoadingForDeleteRecordDataFertilizer] = useState(false)
+
+
+
+
+  //const [showSaveEditSuccess,setShowEditSuccess] = useState(false)
+
+
   //checbox controller 
   const [selectedCropForRemoval,setSelectedCropForRemoval] = useState<string[]>([]);
+  const [SelectedCropForRemovalCropsVFertilizer,setSelectedCropForRemovalCropsVFertilizer] = useState<string[]>([])
+
   const toggleCropSelectionRemoval = (crop:string)=>{
 
     setSelectedCropForRemoval(prev=>
+        prev.includes(crop)
+            ? prev.filter(c => c !== crop) // Remove if already selected
+            : [...prev, crop] // Add if not selected
+    )
+}
+
+const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
+
+    setSelectedCropForRemovalCropsVFertilizer(prev=>
         prev.includes(crop)
             ? prev.filter(c => c !== crop) // Remove if already selected
             : [...prev, crop] // Add if not selected
@@ -420,7 +538,7 @@ const PlotScreenSettings = () => {
 
 
             <Dialog.Title>
-                Confirm data deletion from plot:
+                Delete Crop Data?
             </Dialog.Title>
 
 
@@ -428,7 +546,8 @@ const PlotScreenSettings = () => {
                 {
                     selectedCrops.map((crop,index)=>(
                         <Text>
-                            {crop}
+                            This will permanently remove all records related to the selected crop(s) [{crop}] from pest logs. This action cannot be undone. Are you sure you want to proceed?
+                         
                         </Text>
 
                     ))
@@ -450,8 +569,6 @@ const PlotScreenSettings = () => {
         </Dialog>
     </Portal>
     )
-
-    
     const renderDeletePlotDataConfirmation = () => (
 
         <Portal>
@@ -487,7 +604,6 @@ const PlotScreenSettings = () => {
             </Dialog>
         </Portal>
     )
-
     const renderProcessDeletePlot = () => (
 
         <Portal>
@@ -532,9 +648,6 @@ const PlotScreenSettings = () => {
 
         </Portal>
     )
-
-
-
     const renderProcessDeleteRecordData = () => (
 
         <Portal>
@@ -548,11 +661,11 @@ const PlotScreenSettings = () => {
 
                 {loadingForDeleteRecordData? (
                     <Dialog.Content>
-                        <Text>Your Logs Are Being Deleted Please wait...</Text>
+                        <Text>Please wait while the selected crop data is being removed from Pest logs...</Text>
                     </Dialog.Content>
                 ) : (
                     <Dialog.Content>
-                    <Text>Crop logs were deleted successfully!</Text>
+                    <Text>The crop data has been successfully removed from pest logs.</Text>
                     </Dialog.Content>
                 )}
 
@@ -579,10 +692,177 @@ const PlotScreenSettings = () => {
 
         </Portal>
     )
+    const renderSaveEditConfirmation = () => (
+        <Portal>
+
+            <Dialog visible={showSaveEditConfirmation} onDismiss={()=>{}}>
+
+
+                <Dialog.Title>
+                    Save Changes?
+                </Dialog.Title>
+
+
+                <Dialog.Content>
+                    <Text>Are you sure you want to save the changes made to the plot name and thumbnail?
+
+                    </Text>
+
+                </Dialog.Content>
+
+
+                <Dialog.Actions>
+
+
+                    <TouchableOpacity onPress={()=>setShowEditConfirmation(false)} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+                        <Text style={{color:'white'}}>
+                            Cancel
+                        </Text>
+                    </TouchableOpacity>
+
+
+                    <TouchableOpacity onPress={()=>{handleSaveEdit()}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+
+                    <Text style={{color:'white'}}>
+                        Continue
+                    </Text>
+
+                    </TouchableOpacity>
+
+
+                </Dialog.Actions>
+
+            </Dialog>
+        </Portal>
+    )
+    const renderSaveEditProcess = ()=>(
+        <Portal>
+            <Dialog visible={showSaveEditProcess} onDismiss={()=>{}}>
+
+
+                <Dialog.Title>
+                    Saving Changes
+                </Dialog.Title>
+
+
+                {loadingForSaveEditProcess? (
+                    <Dialog.Content>
+                        <Text>Please wait while your changes are being saved...</Text>
+                    </Dialog.Content>
+                ) : (
+                    <Dialog.Content>
+                    <Text>Your plot name and thumbnail have been successfully updated.</Text>
+                    </Dialog.Content>
+                )}
 
 
 
+                {loadingForSaveEditProcess ? (
+                    <ProgressBar indeterminate color={MD3Colors.error50} style={{marginBottom:20,width:'80%',marginLeft:'auto',marginRight:'auto',borderRadius:'50%'}} />
+                ) : (
+                    <Dialog.Actions>
 
+                        <TouchableOpacity onPress={()=>setShowEditProcess(false)} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+
+                            <Text style={{color:'white'}}>
+                                Continue
+                            </Text>
+
+                        </TouchableOpacity>
+
+                    </Dialog.Actions>
+                )}
+
+            </Dialog>
+
+
+        </Portal>
+    )
+
+    const renderDeleteRecordDataConfirmationVFertilizer = (selectedCrops:string[]) => (
+
+        <Portal>
+    
+            <Dialog visible={showDeleteRecordDataConfirmationForFertilizerRecord} onDismiss={()=>{setShowDeleteRecordDataConfirmationForFertilizerRecord(false)}}>
+    
+    
+                <Dialog.Title>
+                    Delete Crop Data?
+                </Dialog.Title>
+    
+    
+                <Dialog.Content>
+                    {
+                        selectedCrops.map((crop,index)=>(
+                            <Text>
+                                This will permanently remove all records related to the selected crop(s) [{crop}] from fertilizer logs. This action cannot be undone. Are you sure you want to proceed?
+                             
+                            </Text>
+    
+                        ))
+                    }
+    
+                </Dialog.Content>
+    
+    
+                <Dialog.Actions>
+                    <TouchableOpacity onPress={()=>{removeSelectedCropDataFromFertilizerLog()}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+    
+                        <Text style={{color:'white'}}>
+                            Continue
+                        </Text>
+    
+                    </TouchableOpacity>
+                </Dialog.Actions>
+    
+            </Dialog>
+        </Portal>
+    )
+
+    const renderProcessDeleteRecordDataVFertilizer = () => (
+
+        <Portal>
+            <Dialog visible={showDeleteRecordDataProcessForFertilizerRecord} onDismiss={()=>{}}>
+
+
+                <Dialog.Title>
+                    Deleting Selected Crop Logs
+                </Dialog.Title>
+
+
+                {loadingForDeleteRecordDataFertilizer? (
+                    <Dialog.Content>
+                        <Text>Please wait while the selected crop data is being removed from Fertilizer logs...</Text>
+                    </Dialog.Content>
+                ) : (
+                    <Dialog.Content>
+                    <Text>The crop data has been successfully removed from Fertilizer logs.</Text>
+                    </Dialog.Content>
+                )}
+
+
+
+                {loadingForDeleteRecordData ? (
+                    <ProgressBar indeterminate color={MD3Colors.error50} style={{marginBottom:20,width:'80%',marginLeft:'auto',marginRight:'auto',borderRadius:'50%'}} />
+                ) : (
+                    <Dialog.Actions>
+
+                        <TouchableOpacity onPress={()=>setShowDeleteRecordDataProcessForFertilizerRecord(false)} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+
+                            <Text style={{color:'white'}}>
+                                Continue
+                            </Text>
+
+                        </TouchableOpacity>
+
+                    </Dialog.Actions>
+                )}
+
+            </Dialog>
+
+
+        </Portal>
+    )
   return (
 
     <PaperProvider>
@@ -594,9 +874,11 @@ const PlotScreenSettings = () => {
                 {renderDeletePlotDataConfirmation()}
                 {renderProcessDeletePlot()}
                 {renderProcessDeleteRecordData()}
+                {renderSaveEditConfirmation()}
+                {renderSaveEditProcess()}
+                {renderDeleteRecordDataConfirmationVFertilizer(SelectedCropForRemovalCropsVFertilizer)}
+                {renderProcessDeleteRecordDataVFertilizer()}
 
-
-            
                 <View style={styles.headerContainer}>
 
                     <TouchableOpacity onPress={()=> router.back()} style={{marginLeft:10}}>
@@ -629,7 +911,7 @@ const PlotScreenSettings = () => {
                     <TextInput value={plotName} onChange={(e)=>setPlotName(e.nativeEvent.text)} placeholder="Title" style={styles.titleInput}></TextInput>
 
 
-                    <TouchableOpacity onPress={()=> handleSaveEdit()}><Text>Update Plot Information</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={()=> setShowEditConfirmation(true)} style={{alignSelf:'flex-start',borderWidth:0,paddingVertical:5,paddingHorizontal:10,borderRadius:5,backgroundColor:'red',elevation:2}}><Text style={{color:"white"}}>Update Plot Information</Text></TouchableOpacity>
                 </View>
 
 
@@ -657,6 +939,35 @@ const PlotScreenSettings = () => {
 
                     <View style={stylesDataRemove.wrapperButton}>
                         <TouchableOpacity onPress={()=>{if(selectedCropForRemoval.length === 0){return};  setShowDeleteRecordDataConfirmation(true)}} style={{alignSelf:'flex-start',borderWidth:0,paddingVertical:5,paddingHorizontal:10,borderRadius:5,backgroundColor:'red',elevation:2}}>
+                            <Text style={{color:'white'}}>Delete Data</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+
+                <View style={stylesDataRemove.wrapper}>
+                    <View style={stylesDataRemove.wrapperHeader}>
+                        <Text style={{fontWeight:500,fontSize:14}}>Delete Crop Data From Fertilizer Logs</Text>
+                    </View>
+
+                    <View style={stylesDataRemove.wrapperControl}>
+                    {fertilizerCropNames.length === 0 ? (
+                        <Text style={{marginLeft:'auto',marginRight:'auto',fontWeight:500,fontSize:13}}>No associated crops available.</Text>
+                    ) : (
+                        fertilizerCropNames.map((item, index) => (
+                        <View key={index} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Checkbox
+                            status={SelectedCropForRemovalCropsVFertilizer.includes(item) ? 'checked' : 'unchecked'}
+                            onPress={() => toggleCropSelectionRemovalVFertilizer(item)}
+                            />
+                            <Text>{item}</Text>
+                        </View>
+                        ))
+                    )}
+                    </View>
+
+                    <View style={stylesDataRemove.wrapperButton}>
+                        <TouchableOpacity onPress={()=>{if(SelectedCropForRemovalCropsVFertilizer.length === 0){return};  setShowDeleteRecordDataConfirmationForFertilizerRecord(true)}} style={{alignSelf:'flex-start',borderWidth:0,paddingVertical:5,paddingHorizontal:10,borderRadius:5,backgroundColor:'red',elevation:2}}>
                             <Text style={{color:'white'}}>Delete Data</Text>
                         </TouchableOpacity>
                     </View>
