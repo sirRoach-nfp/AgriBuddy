@@ -336,7 +336,8 @@ const PlotScreenSettings = () => {
             if(plot.PlotId === plotRefIdParam){
                 return{
                     ...plot,
-                    PlotThumbnail:finalImageUrl
+                    PlotThumbnail:finalImageUrl,
+                    PlotName:plotName
                 }
             }
 
@@ -349,6 +350,39 @@ const PlotScreenSettings = () => {
             Plots:updatedPlots,
         });
         console.log("Plot updated successfully!")
+    }
+
+
+    //currentCrops Plot names update
+
+
+    const currentCropsRef = doc(db,"CurrentCrops",user?.CurrentCropsRefId as string);
+    const currentCropsSnap = await getDoc(currentCropsRef);
+
+    if(currentCropsSnap.exists()){
+
+        const currentCropsData = currentCropsSnap.data();
+        const cropsArray = currentCropsData.CurrentCrops as any[]
+
+
+
+
+        const updatedCropsArray = cropsArray.map((crop)=>{
+            if(crop.PlotAssoc === plotRefIdParam) {
+                return {
+                    ...crop,
+                    PlotName:plotName
+                };
+            }
+
+            return crop;
+        })
+
+        await updateDoc(currentCropsRef,{
+            CurrentCrops:updatedCropsArray
+        })
+
+        console.log("Updated Current Crops plot name !!")
     }
 
 
@@ -592,7 +626,7 @@ const PlotScreenSettings = () => {
                     </TouchableOpacity>
                     </View>
 
-                    <TextInput value={plotNameChange} onChange={(e)=>setPlotNameChange(e.nativeEvent.text)} placeholder="Title" style={styles.titleInput}></TextInput>
+                    <TextInput value={plotName} onChange={(e)=>setPlotName(e.nativeEvent.text)} placeholder="Title" style={styles.titleInput}></TextInput>
 
 
                     <TouchableOpacity onPress={()=> handleSaveEdit()}><Text>Update Plot Information</Text></TouchableOpacity>
