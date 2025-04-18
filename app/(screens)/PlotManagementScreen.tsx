@@ -339,8 +339,8 @@ const PlotManagementScreen = () => {
   }
 
 
-  const navigateToPlotSetting = (plotAssocId:string,plotName:string,currentCrop:any)=>{
-    const queryString = `?plotAssocId=${encodeURIComponent(plotAssocId)}&currentPlotName=${encodeURIComponent(plotName)}&currentCrop=${currentCrop}`
+  const navigateToPlotSetting = (plotAssocId:string,plotName:string,currentCrop:any,CropCover:string)=>{
+    const queryString = `?plotAssocId=${encodeURIComponent(plotAssocId)}&currentPlotName=${encodeURIComponent(plotName)}&currentCrop=${currentCrop}&PlotCover=${encodeURIComponent(CropCover)}`
     router.push(`/(screens)/PlotScreenSettings${queryString}` as any)
   }
 
@@ -400,7 +400,7 @@ const PlotManagementScreen = () => {
                     </View>
 
                     <View style={{borderWidth:0,width:30,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-                        <TouchableOpacity onPress={()=>navigateToPlotSetting(plotId as string,plotData?.PlotName,plotData.currentCrops.CropAssocId)}>
+                        <TouchableOpacity onPress={()=>navigateToPlotSetting(plotId as string,plotData?.PlotName,plotData.currentCrops.CropAssocId,plotData.PlotThumbnail)}>
 
                             <Ionicons name="options" size={24} color="black" />
 

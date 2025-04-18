@@ -9,7 +9,9 @@ import { useSearchParams } from 'expo-router/build/hooks'
 import { doc, getDoc, updateDoc } from 'firebase/firestore'
 import { db } from '../firebaseconfig'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
-
+import { Image } from 'react-native';
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from 'expo-file-system';
 
 interface PestLog {
     Date:string,
@@ -27,9 +29,10 @@ const PlotScreenSettings = () => {
   const plotRefIdParam = searchParams.get('plotAssocId')
   const plotNameParam = searchParams.get('currentPlotName')
   const isCurrentCrop = searchParams.get('currentCrop')
-
+  const PlotCoverParam = searchParams.get('PlotCover')
+  const [imageUri,setImageUri] = useState<File | String>()
   const [plotRefId,setPlotRefId] = useState("")
-
+ 
 
 
   const[associatedCrops,setAssociatedCrops]= useState<string[]>([])
@@ -248,6 +251,26 @@ const PlotScreenSettings = () => {
   const [plotName,setPlotName] = useState("")
   const [plotNameChange,setPlotNameChange] = useState("")
 
+
+
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      alert("Sorry, we need camera roll permissions to select images!");
+      return;
+    }
+  
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+  
+    if (!result.canceled && result.assets.length > 0) {
+      setImageUri(result.assets[0].uri);
+    }
+  };
 
 
   //dialog handlers
@@ -475,7 +498,17 @@ const PlotScreenSettings = () => {
                 <View style={styles.contentContainer}>
 
                     <View style={styles.plotThumbnailContainer}>
+                    {imageUri && (
+                        <Image
+                        source={{ uri: imageUri.toString() }}
+                        style={StyleSheet.absoluteFillObject} // covers full container
+                        resizeMode="cover"
+                        />
+                    )}
 
+                    <TouchableOpacity onPress={pickImage} style={styles.pickerIcon}>
+                        <MaterialCommunityIcons name="image-plus" size={30} color="#fff" />
+                    </TouchableOpacity>
                     </View>
 
                     <TextInput value={plotNameChange} onChange={(e)=>setPlotNameChange(e.nativeEvent.text)} placeholder="Title" style={styles.titleInput}></TextInput>
@@ -515,6 +548,7 @@ const PlotScreenSettings = () => {
                 <Text>{plotRefIdParam}</Text>
                 <Text>is Current Cropt : {isCurrentCrop}</Text>
                 <Text>Check Selected crops data : {selectedCropForRemoval}</Text>
+                <Text>Current Plot Thumbnail : {PlotCoverParam}</Text>
                 <TouchableOpacity onPress={()=>console.log(pestLogs)}><Text>check Pest Logs</Text></TouchableOpacity>
                 <TouchableOpacity onPress={()=>{setShowDeleteRecordDataConfirmation(true)}}><Text>check confirmation</Text></TouchableOpacity>
                      
@@ -566,10 +600,21 @@ const stylesDataRemove = StyleSheet.create({
 const styles = StyleSheet.create({
 
     plotThumbnailContainer:{
-        backgroundColor:'#D2D2D2',
-        width:'100%',
-        height:200
+        width: "100%",
+        height: 200,
+        borderRadius: 10,
+        overflow: "hidden",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#ccc", // fallback color
+        position: "relative",
     },
+    pickerIcon: {
+        zIndex: 1,
+        backgroundColor: "rgba(0,0,0,0.4)",
+        padding: 10,
+        borderRadius: 50,
+      },
 
 
     headerContainer:{
