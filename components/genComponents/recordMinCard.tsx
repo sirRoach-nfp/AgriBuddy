@@ -125,8 +125,9 @@ const styles = StyleSheet.create({
         display:'flex',
         flexDirection:'column',
         //marginBottom:15,
-        elevation:1,
-        backgroundColor:'#D8D8C0',
+        elevation:2,
+        backgroundColor:'#F9FAFB',
+        
         borderRadius:10,
         alignItems:'center',
         justifyContent:'center',
@@ -183,7 +184,7 @@ const styles = StyleSheet.create({
         
         fontSize:15,
         fontWeight:600,
-        color:'#253D2C',
+        color:'#333333',
         marginTop:10,
       
        

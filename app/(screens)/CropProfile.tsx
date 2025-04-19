@@ -291,7 +291,7 @@ const CropProfile = () => {
                                         <View style={subContainer.badgeWrapper} key={index}>
                 
                                             <Image source={{ uri: pest.pestCoverImage}} style={{width:65,height:65,marginBottom:5, borderRadius:10}}/>
-                                            <Text  style={styles.badgesText}>{pest.pestName}</Text>
+                                            <Text ellipsizeMode="tail" numberOfLines={1}   style={styles.badgesText}>{pest.pestName}</Text>
                 
                                         </View>
 
@@ -328,7 +328,7 @@ const CropProfile = () => {
                                     <View style={subContainer.badgeWrapper} key={index}>
             
                                         <Image source={{ uri: disease.diseaseCoverImage}} style={{width:65,height:65,marginBottom:5, borderRadius:10}}/>
-                                        <Text  style={styles.badgesText}>{disease.diseaseName}</Text>
+                                        <Text  style={styles.badgesText} numberOfLines={1} ellipsizeMode="tail">{disease.diseaseName}</Text>
             
                                     </View>
 
@@ -531,11 +531,12 @@ const subContainer = StyleSheet.create({
     containerWrappperPest: {
         paddingTop:10,
         width:'95%',
-        //borderWidth:1,
+        ///borderWidth:1,
         position:'relative',
         marginBottom:20,
-        backgroundColor:'#FAD4D4',
-        borderRadius:5
+        backgroundColor:'#ffffff',
+        borderRadius:5,
+        elevation:2
     },
 
 

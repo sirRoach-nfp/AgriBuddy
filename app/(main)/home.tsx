@@ -2,7 +2,7 @@ import { Dimensions, ImageBackground, StyleSheet, Text, TouchableOpacity, View }
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { router, Stack, useFocusEffect } from 'expo-router'
 
-
+import Entypo from '@expo/vector-icons/Entypo';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faNewspaper } from '@fortawesome/free-regular-svg-icons'
 
@@ -216,7 +216,7 @@ const home = () => {
           <View style={styles.AgriInsightContainer}>
 
             <View style={styles.AgriInsightHeader} >
-              <FontAwesomeIcon icon={faNewspaper} size={20} color='#2E6F40' style={styles.iconstyle}/>
+              <FontAwesomeIcon icon={faNewspaper} size={20} color='#607D8B' style={styles.iconstyle}/>
               <Text style={styles.AgriInsightH}>Agri Insights</Text>
               <TouchableOpacity style={{marginLeft:'auto'}} onPress={()=> router.push(`/(screens)/ArticleHomeScreen`)}>
                  <Text style={styles.AgriInsightSeeMore}>See More</Text>
@@ -309,7 +309,7 @@ const home = () => {
           <View style={styles.currentCropContainer}>
 
             <View style={styles.currentCropHeader}>
-              <FontAwesomeIcon icon={faNewspaper} size={20} color='#2E6F40' style={styles.iconstyle}/>
+              <Entypo name="leaf" size={24} color="#607D8B" />
               <Text style={styles.currentCropHeaderTitle }>Current Crop</Text>
             </View>
 
@@ -389,9 +389,10 @@ const styles = StyleSheet.create({
     paddingBottom:10
   },
   currentCropHeaderTitle : {
-    color:'#253D2C',
+    color:'#37474F',
     fontSize:16,
     fontWeight:600,
+    letterSpacing:0.5,
     marginLeft:5
   },
   currentCropContentWrapper:{
@@ -470,17 +471,18 @@ const styles = StyleSheet.create({
     //text
 
     AgriInsightH: {
-      color:'#253D2C',
+      color:'#37474F',
       fontSize:16,
       fontWeight:600,
+      letterSpacing:0.5,
       marginLeft:5
     },
 
     AgriInsightSeeMore: {
-      color:'#253D2C',
+      color:'#37474F',
       fontSize:16,
-      fontWeight:400,
-      
+      fontWeight:600,
+      letterSpacing:0.5,
       textDecorationLine:'underline'
     
     }
