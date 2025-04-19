@@ -213,6 +213,7 @@ const PostScreen = () => {
                 ReplyCount:0,
                 Author:user?.Username,
                 CreatedAt:Timestamp.now(),
+                Keyword: extractKeywords(title)
             }
             
 
@@ -263,7 +264,15 @@ const PostScreen = () => {
 
         }catch(err){console.log(err)}
     }
-
+    const extractKeywords = (text: string): string[] => {
+        return text
+          .toLowerCase()
+          .replace(/[^\w\s]/gi, '') // remove punctuation
+          .split(/\s+/)
+          .filter((word, index, self) =>
+            word.length > 1 && self.indexOf(word) === index
+          );
+      };
 
     const base64ToBlob = (base64: string): Blob => {
         const byteString = atob(base64.split(",")[1]); // Remove Base64 header

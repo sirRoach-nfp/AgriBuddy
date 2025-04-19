@@ -321,7 +321,7 @@ const account = () => {
             <View style={styles.plotContainerWrapper}>
 
               <View style={styles.plotHeaderWrapper}>
-                <View style={{width:30,height:30,borderWidth:0,borderRadius:50,backgroundColor:'green'}}></View>
+                <View style={{width:30,height:30,borderWidth:0,borderRadius:50,backgroundColor:'#37474F'}}></View>
                 <Text style={styles.plotHeaderText}>Your Farm Plots</Text> 
 
                 <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:'auto'}} onPress={showAddPlotConfirmation}><Ionicons name="add-outline" size={30} color="black" /></TouchableOpacity>
@@ -365,7 +365,7 @@ const account = () => {
 
 
                 <View style={styles.discussionHeaderWrapper}>
-                  <View style={{width:25,height:25,borderWidth:0,borderRadius:50,backgroundColor:'green'}}></View>
+                  <View style={{width:25,height:25,borderWidth:0,borderRadius:50,backgroundColor:'#37474F'}}></View>
                   <Text style={styles.discussionHeaderText}>My Discussions</Text>
                 </View>
                 <View style={styles.discussionContentWrapper}>
@@ -374,7 +374,12 @@ const account = () => {
                   {discussions && discussions.length > 0 && discussions.map((discussion,index)=>(
 
 
-                    <TouchableOpacity style={{display:'flex',flexDirection:'row', alignItems:'center'}}><Text style={{marginLeft:5,fontSize:16,fontWeight:400}}>{discussion.discussionTitle}</Text></TouchableOpacity>
+                    <TouchableOpacity style={{display:'flex',flexDirection:'row', alignItems:'center',borderWidth:1,paddingVertical:5,paddingHorizontal:5}}>
+
+                      
+                      <Octicons name="comment-discussion" size={20} color="#37474F" />
+                      <Text style={{marginLeft:5,fontSize:17,fontWeight:600,color:'#37474F'}}>{discussion.discussionTitle}</Text>
+                    </TouchableOpacity>
 
 
                   ))}
@@ -411,21 +416,23 @@ const styles = StyleSheet.create({
     flexDirection:'column',
     width:'100%',
     //borderWidth:1,
+   
   },
 
   discussionHeaderText:{
-    fontSize:17,
-    fontWeight:500,
-    color:'#253D2C',
+    color:'#37474F',
+    fontSize:18,
+    fontWeight:600,
+    letterSpacing:.5,
     marginLeft:10
   },
 
   discussionContainerWrapper:{
     width:'95%',
-    borderWidth:1,
+    //borderWidth:1,
     display:'flex',
     flexDirection:'column',
-    paddingVertical:5,
+    paddingVertical:25,
     gap:10
     
   },
@@ -433,7 +440,7 @@ const styles = StyleSheet.create({
   discussionHeaderWrapper:{
     width:'100%',
     paddingVertical:5,
-    borderWidth:1,
+    //borderWidth:1,
     display:'flex',
     flexDirection:'row',
     alignItems:'center'
@@ -512,7 +519,8 @@ const styles = StyleSheet.create({
     borderColor:'green',
     //borderWidth:1,
     display:'flex',
-    flexDirection:'column'
+    flexDirection:'column',
+    paddingVertical:25
   },
 
   plotHeaderWrapper:{
@@ -536,9 +544,10 @@ const styles = StyleSheet.create({
 
   plotHeaderText:{
 
-    fontSize:17,
-    fontWeight:500,
-    color:'#253D2C',
+    color:'#37474F',
+    fontSize:18,
+    fontWeight:600,
+    letterSpacing:.5,
     marginLeft:10
   }
 })

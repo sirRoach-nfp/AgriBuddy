@@ -1,4 +1,4 @@
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import RecordMinCard from '@/components/genComponents/recordMinCard'
@@ -35,6 +35,9 @@ const records = () => {
 
   const [recordData,setRecordData] = useState<RecordData>({})
   const [discussionData,setDiscussionData] = useState<DiscussionData[]>([])
+  const [loadingResult,setLoadingResult] = useState(true)
+
+
 
   const getReplyCount = async (discussionID:string) => {
     const repliesRef = collection(db, "Discussions", discussionID, "Comments");
@@ -68,6 +71,7 @@ const records = () => {
 
           console.log(discussions)
           setDiscussionData(discussions)
+          setLoadingResult(false)
         }catch(err){
           console.error(err)
         }
@@ -115,7 +119,11 @@ const records = () => {
 
   */
   const [searchQuery,setSearchQuery] = useState("")
-
+  const redirectToSearchResult = ()=>{
+      const queryString = `?searchQuery=${encodeURIComponent(searchQuery)}`
+      console.log("Query string is : ", queryString)
+      router.push(`/(screens)/DiscussionSearchResult${queryString}` as any)
+  }
 
 
   return (
@@ -130,6 +138,11 @@ const records = () => {
             placeholder="Search"
             onChangeText={setSearchQuery}
             value={searchQuery}
+
+            onSubmitEditing={() => {
+              // You can call your search handler here
+                  redirectToSearchResult()
+              }}
           />
 
 
@@ -143,20 +156,35 @@ const records = () => {
 
       </View>
 
-      <ScrollView style={styles.contentContainer} contentContainerStyle={{alignItems:'center'}}>
 
-        {discussionData && discussionData.length >0 &&
-          discussionData?.map((data,index)=>(
 
-              <PostCard Author={data.Author} CreatedAt={data.CreatedAt} Content={data.Content} Id={data.DocumentId} key={index} Title={data.Title} ReplyCount={data.ReplyCount}/>
-          ))
-        
-        
-        
-        }
-        
 
-      </ScrollView>
+
+
+      {loadingResult === true ? (
+          <View style={{borderWidth:0,flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+
+              <ActivityIndicator size={75 }color="#607D8B"  />
+          </View>
+      ) : (
+
+        <ScrollView style={styles.contentContainer} contentContainerStyle={{alignItems:'center'}}>
+
+          {discussionData && discussionData.length >0 &&
+            discussionData?.map((data,index)=>(
+
+                <PostCard Author={data.Author} CreatedAt={data.CreatedAt} Content={data.Content} Id={data.DocumentId} key={index} Title={data.Title} ReplyCount={data.ReplyCount}/>
+            ))
+          
+          
+          
+          }
+        </ScrollView>
+
+
+      )}
+
+
 
 
 

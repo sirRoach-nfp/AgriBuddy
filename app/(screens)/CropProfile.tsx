@@ -166,7 +166,7 @@ const CropProfile = () => {
                         family: cropDataDocSnapshot.data().family as string || " ",
                         growthTime: cropDataDocSnapshot.data().growthTime as string || " ",
                         bestSeason: cropDataDocSnapshot.data().bestSeason as string || " ",
-                        soilType: cropDataDocSnapshot.data().cropCover as string[] || [],
+                        soilType: cropDataDocSnapshot.data().soilType as string[] || [],
                         soilPh: cropDataDocSnapshot.data().soilPh as string || "",
                         commonPests: cropDataDocSnapshot.data().pests as pestType[] || [],
                         commonDiseases: cropDataDocSnapshot.data().diseases as diseaseType[] || "",
@@ -244,30 +244,67 @@ const CropProfile = () => {
 
                             <View style={subContainer.badgeContainer}>
 
-                                <View style={subContainer.badgeWrapper}>
-                                    
-                                    <Image source={soilImages['loamy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
-                                    <Text  style={styles.badgesText}>Loamy</Text>
+                                    <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Loamy") && { backgroundColor: '#CFFFDC' }]}>
+                                        
+                                        <Image source={soilImages['loamy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
+                                        <Text  style={styles.badgesText}>Loamy</Text>
 
-                                </View>
+                                    </View>
 
-                                <View style={subContainer.badgeWrapper}>
-                                    <Image source={soilImages['sandy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
-                                    <Text style={styles.badgesText}>Sandy</Text>
-                                </View>
+                                    <View style={subContainer.badgeWrapper}>
+                                        <Image source={soilImages['sandy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
+                                        <Text style={styles.badgesText}>Sandy</Text>
+                                    </View>
 
-                                <View style={subContainer.badgeWrapper}>
-                                    <Image source={soilImages['clay']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
-                                    <Text style={styles.badgesText}>Clayey</Text>
-                                </View>
+                                    <View style={subContainer.badgeWrapper}>
+                                        <Image source={soilImages['clay']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
+                                        <Text style={styles.badgesText}>Clayey</Text>
+                                    </View>
+
+                                    <View style={subContainer.badgeWrapper}>
+                                        
+                                        <Image source={soilImages['loamy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
+                                        <Text  style={styles.badgesText}>Silty</Text>
+
+                                    </View>
+
+                                    <View style={subContainer.badgeWrapper}>
+                                        <Image source={soilImages['sandy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
+                                        <Text style={styles.badgesText}>Peaty</Text>
+                                    </View>
+
+                                    <View style={subContainer.badgeWrapper}>
+                                        <Image source={soilImages['clay']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
+                                        <Text style={styles.badgesText}>Sandy Loam</Text>
+                                    </View>
+
+                                    <View style={subContainer.badgeWrapper}>
+                                        
+                                        <Image source={soilImages['loamy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
+                                        <Text  style={styles.badgesText}>Clay Loam</Text>
+
+                                    </View>
+
+                                    <View style={subContainer.badgeWrapper}>
+                                        <Image source={soilImages['sandy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
+                                        <Text style={styles.badgesText}>Silty Loam</Text>
+                                    </View>
+
+                                    <View style={subContainer.badgeWrapper}>
+                                        <Image source={soilImages['clay']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
+                                        <Text style={styles.badgesText}>Sandy Clay Loam</Text>
+                                    </View>
+
+
+
                                 </View>
 
 
                                 <View style={subContainer.phIndi}>
-                                <Text style={styles.phText}>
-                                    Optimal Soil PH is {cropData?.soilPh}
-                                </Text>
-                            </View>
+                                    <Text style={styles.phText}>
+                                        Optimal Soil PH is {cropData?.soilPh}
+                                    </Text>
+                                </View>
 
 
 
@@ -403,7 +440,7 @@ const styles = StyleSheet.create({
     subContainerHeaderPest:{
         color:'#A94442',
         fontWeight:500,
-        fontSize:14,
+        fontSize:18,
         marginBottom:20,
         marginLeft:10
         
@@ -413,7 +450,7 @@ const styles = StyleSheet.create({
     phText:{
         color:'#253D2C',
         fontWeight:300,
-        fontSize:13,
+        fontSize:16,
         fontStyle:'italic',
         marginLeft:10
     },
@@ -421,7 +458,7 @@ const styles = StyleSheet.create({
     subContainerHeader:{
         color:'#253D2C',
         fontWeight:500,
-        fontSize:14,
+        fontSize:18,
         marginBottom:5,
         marginLeft:10
     },
@@ -429,7 +466,7 @@ const styles = StyleSheet.create({
     badgesText:{
         color:'#253D2C',
         fontWeight:400,
-        fontSize:14,
+        fontSize:16,
         fontStyle:'italic'
     },
     mainContainer:{
@@ -481,24 +518,24 @@ const styles = StyleSheet.create({
 
     cropName:{
         marginLeft:15,
-        fontWeight:500,
-        fontSize:25,
+        fontWeight:600,
+        fontSize:30,
         color:'#253D2C',
         
         
     },
     scientificName:{
         marginLeft:15,
-        fontWeight:300,
+        fontWeight:400,
         fontStyle:'italic',
-        fontSize:15,
+        fontSize:18,
         marginBottom:10,
         color:'#253D2C',
     },
     familyName:{
         marginLeft:15,
         fontWeight:300,
-        fontSize:16,
+        fontSize:18,
         fontStyle:'italic',
         color:'#253D2C',
     },
@@ -549,22 +586,20 @@ const subContainer = StyleSheet.create({
     },
     badgeContainer:{
         width:'100%',
-        borderWidth:1,
+        //borderWidth:1,
         position:'relative',
-        
-        display:'flex',
-        flexDirection:'row',
-        //justifyContent:'space-between',
-        alignItems:'center',
-        justifyContent:'center',
-        gap:20,
-        flexWrap:'wrap',
-        marginBottom:10
+        //borderWidth: 1,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        paddingVertical:10,
+        justifyContent: 'center',
+       // gap: 20,
+        paddingHorizontal: 10,
     },
     badgeWrapper:{
         height:100,
-        width:90,
-        borderWidth:1,
+        width:150,
+        //borderWidth:1,
         display:'flex',
         flexDirection:'column',
         alignItems:'center',

@@ -45,7 +45,7 @@ const PlotMinCard = ({plotAssocId,plotName,CurrentCrops,plotThumbnail}:props) =>
 
 
             {plotThumbnail.length>0 ?(
-                <Image source={require('../../assets/images/Misc/PlotIcon.svg')} style={styles.img} resizeMode="cover"/>
+                <Image source={{uri:plotThumbnail}} style={styles.img} resizeMode="cover"/>
             ) : (
                 <Foundation name="photo" size={24} color="black" />
             )}
@@ -144,15 +144,16 @@ const styles = StyleSheet.create({
         marginTop:'auto'
     },
     img:{
-        width:45,
-        height:45,
-        borderWidth:1
+        width:'100%',
+        height:'100%',
+        borderWidth:0    ,borderRadius:5
     },
     //text 
     plotName:{
         fontSize:16,
         fontWeight:500,
-         color:'#253D2C'
+         color:'#253D2C',
+        
     },
     badgeText:{
         color:'#ffffff',

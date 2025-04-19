@@ -9,7 +9,7 @@ import { faNewspaper } from '@fortawesome/free-regular-svg-icons'
 import WeatherCard from '@/components/genComponents/WeatherCard'
 import TaskCard from '@/components/genComponents/TaskCard'
 import ArticleCard from '@/components/genComponents/ArticleCard'
-
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 
 import { ScrollView } from 'react-native-gesture-handler'
@@ -316,24 +316,28 @@ const home = () => {
 
             <View style={styles.currentCropContentWrapper}>
 
-
-
-              {currentCrop && (
-
-                currentCrop.crop?.map((crop,index)=>(
-                  <RecordMinCard key={index} 
-                  cropName={crop.CropName} 
-                  cropId={crop.CropId} 
-                  status={crop.SessionId} 
+             
+            {currentCrop && currentCrop.crop?.length > 0 ? (
+              currentCrop.crop.map((crop, index) => (
+                <RecordMinCard
+                  key={index}
+                  cropName={crop.CropName}
+                  cropId={crop.CropId}
+                  status={crop.SessionId}
                   SessionId={crop.SessionId}
                   PlotAssoc={crop.PlotAssoc}
-                  PlotName={crop.PlotName} 
+                  PlotName={crop.PlotName}
                   cropCover={crop.CropThumbnail}
-                  datePlanted="01/01/2023"/>
-                ))
+                  datePlanted="01/01/2023"
+                />
+              ))
+            ) : (
+              <View style={{ gap:10,width:"100%",height:200,borderWidth:0,display:'flex',flexDirection:"column",alignItems:'center',justifyContent:'center'}}> 
+                <FontAwesome6 name="note-sticky" size={30} color="#607D8B" />
+                <Text style={{color:'#333333', fontSize:17,fontWeight:400}}>You're currently not tracking any crop</Text>
 
-              )}
-
+              </View>
+            )}
               
 
             </View>
@@ -385,28 +389,28 @@ const styles = StyleSheet.create({
     display:'flex',
     flexDirection:'row',
     marginBottom:10,
-    paddingTop:10,
-    paddingBottom:10
+    
   },
   currentCropHeaderTitle : {
     color:'#37474F',
-    fontSize:16,
+    fontSize:18,
     fontWeight:600,
     letterSpacing:0.5,
     marginLeft:5
   },
   currentCropContentWrapper:{
-    //borderWidth:1,
-    display:'flex',
-    flexDirection:'row',
-    flexWrap:'wrap',
-    justifyContent:'center',
-    gap:20
+    borderWidth: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 20,
+    paddingHorizontal: 10,
   },
   currentCropContainer : {
     width:'95%',
     marginBottom:25,
     //borderWidth:1,
+    paddingVertical:25
   },
     mainContainer: {
       flex:1,
@@ -426,7 +430,8 @@ const styles = StyleSheet.create({
       width:'95%',
       flexShrink:1,
       //borderWidth:1,
-      marginTop:10
+      marginTop:10,
+      paddingVertical:25
     },
 
     AgriInsightHeader : {
@@ -472,7 +477,7 @@ const styles = StyleSheet.create({
 
     AgriInsightH: {
       color:'#37474F',
-      fontSize:16,
+      fontSize:18,
       fontWeight:600,
       letterSpacing:0.5,
       marginLeft:5
@@ -492,7 +497,7 @@ const styles = StyleSheet.create({
     //icon
 
     iconstyle : {
-      marginLeft:10
+      //marginLeft:10
     }
 
 

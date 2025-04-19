@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faSeedling } from '@fortawesome/free-solid-svg-icons';
@@ -34,46 +34,27 @@ const RecordMinCard = ({cropName,cropId,status,datePlanted,SessionId,PlotAssoc,P
 
 
   return (
-        <TouchableOpacity style={styles.container} onPress={navigateToManagement}  >
-    
-            <View style={styles.thumbnail}>
-                <Image source={{ uri: cropCover}} style={{width:'100%',height:'100%',borderRadius:10,alignSelf: 'stretch',aspectRatio: 1}}resizeMode="cover"  />
-            </View>
-    
-    
-    
-           
-    
+    <TouchableOpacity style={styles.container} onPress={navigateToManagement}>
+        <ImageBackground
+            source={{ uri: cropCover }}
+            style={styles.backgroundImage}
+            imageStyle={styles.imageBackgroundStyle}
+        >
+            <View style={styles.overlay}>
             <Text style={styles.commonName}>{cropName}</Text>
 
-            {
-                PlotAssoc && PlotAssoc !== "null" ?(    
-                
-
-
-
-
+            {PlotAssoc && PlotAssoc !== 'null' ? (
                 <View style={styles.badgeWrapperPlot}>
-                    <Text style={styles.badgeTextPlot}>{PlotName}</Text>
+                <Text style={styles.badgeTextPlot}>{PlotName}</Text>
                 </View>
-                
-                
-                ) : (
-
-
+            ) : (
                 <View style={styles.badgeWrapperNoPlot}>
-                    <Text style={styles.badgeText}>No Plot</Text>
+                <Text style={styles.badgeText}>No Plot</Text>
                 </View>
-                )
-            }
-
-            
-
-    
-    
-    
-    
-        </TouchableOpacity>
+            )}
+            </View>
+        </ImageBackground>
+    </TouchableOpacity>
   )
 }
 
@@ -82,6 +63,20 @@ export default RecordMinCard
 
 
 const styles = StyleSheet.create({
+    backgroundImage: {
+        flex: 1,
+        justifyContent: 'flex-end', // content at bottom
+      },
+      imageBackgroundStyle: {
+        resizeMode: 'cover',
+        borderRadius: 10,
+      },
+      overlay: {
+        backgroundColor: 'rgba(255,255,255,0.85)', // slight overlay for readability
+        padding: 10,
+        alignItems: 'center',
+      },
+      
     badgeWrapperNoPlot:{
         width:80,
         //borderWidth:1,
@@ -120,22 +115,15 @@ const styles = StyleSheet.create({
 
     },
     container: {
-        width:150,
-        //borderWidth:1,
-        display:'flex',
-        flexDirection:'column',
-        //marginBottom:15,
-        elevation:2,
-        backgroundColor:'#F9FAFB',
-        
-        borderRadius:10,
-        alignItems:'center',
-        justifyContent:'center',
-        paddingTop:15,
-        paddingBottom:15
-
-    },
-
+        width: '47%',
+        aspectRatio: 1,
+        borderRadius: 10,
+        overflow: 'hidden',
+        elevation: 2,
+        marginBottom: 15,
+        borderWidth:1
+      },
+      
     infoWrapper:{
         display:'flex',
         flexDirection:'column',
@@ -181,18 +169,11 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
     },
     commonName: {
-        
-        fontSize:15,
-        fontWeight:600,
-        color:'#333333',
-        marginTop:10,
-      
-       
-
-
-
-
-    },
+        fontSize: 15,
+        fontWeight: '600',
+        color: '#333',
+        marginBottom: 5,
+      },
     scientificName:{
         fontWeight:300,
         color:'#253D2C',

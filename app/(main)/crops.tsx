@@ -231,35 +231,14 @@ const crops = () => {
       
       <ScrollView style={styles.scrollContentWrapper} contentContainerStyle={{alignItems:'center'}}>
         
-        {rotationPlan?.map((plan,index)=>(
-
-          <PlanMinCard key={index} Title={plan.PlanTitle} SessionId={plan.SessionId} Plan={plan.Crops} />
-        ))}
-        
-        
 
 
 
-
-        <TouchableOpacity style={styles.CreatePlan} onPress={navigateToCreatePlan}> 
-
-          <View style={styles.createPlanThumb}>
-            <FontAwesomeIcon icon={faPlus} size={40} color='#FFFFFF'/>
-          </View>
-
-          <View style={styles.createPlanTextWrap}>
-            <Text style={styles.createPlanText}>
-              Create A New Plan
-            </Text>
-          </View>
+        <Text>Crop Rotation Planner Is Currently Unavailable</Text>
 
 
-        </TouchableOpacity>
 
-
-        <TouchableOpacity onPress={testPlanData}>
-          Test data
-        </TouchableOpacity>
+ 
       </ScrollView> 
 
       }
@@ -359,16 +338,17 @@ const styles = StyleSheet.create({
   segmentText: {
     color: 'black',
     fontSize: 16,
+    fontWeight:500
   },
   activeText: {
     fontWeight: 'bold',
-    color: '#2E6F40',
+    color: '#37474F',
   },
   activeLine: {
     marginTop: 4,
     height: 2,
     width: '100%',
-    backgroundColor: '#2E6F40',
+    backgroundColor: '#37474F',
   },
   content: {
     paddingTop: 20,

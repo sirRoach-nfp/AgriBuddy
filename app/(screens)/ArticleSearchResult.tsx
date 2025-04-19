@@ -9,7 +9,7 @@ import { db } from '../firebaseconfig'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useSearchParams } from 'expo-router/build/hooks'
 
-
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 interface ArticleData {
     cover:string,
@@ -84,7 +84,7 @@ const ArticleSearchResult = () => {
         </View>
 
         <ScrollView style={styles.scrollContainer}  contentContainerStyle={{alignItems:'center'}}>
-            {articleData && articleData.length > 0 && articleData.map((article,index)=>(
+            {articleData && articleData.length > 0 ? articleData.map((article,index)=>(
 
 
             <TouchableOpacity key={index}
@@ -137,7 +137,14 @@ const ArticleSearchResult = () => {
 
 
 
-            ))}
+            )) : (
+              <View style={{marginTop:100,borderWidth:0,display:'flex',flexDirection:'column', alignItems:'center',justifyContent:'center'}}>
+                
+                <MaterialIcons name="search-off" size={75} color="#607D8B" />
+                <Text style={{fontSize:25,fontWeight:600, color:"#37474F"}}>No Result Found</Text>
+                <Text style={{fontSize:16,fontWeight:400,color:"#333333"}}>We Can't Find Any Article Matching Yourself</Text>
+              </View>
+            )}
         </ScrollView>
 
 
@@ -168,8 +175,9 @@ const styles = StyleSheet.create({
         display:'flex',
         width:'98%',
         flexDirection:'column',
+       
         flex:1,
-        //borderWidth:1,
+        borderWidth:1,
         paddingTop:10
     }
 })

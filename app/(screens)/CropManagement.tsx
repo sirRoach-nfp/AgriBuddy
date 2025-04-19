@@ -1103,9 +1103,7 @@ const CropManagement = () => {
               
               
 
-              <TouchableOpacity onPress={()=>console.log("assocPlot =", assocPlot, typeof assocPlot)} >
-                test button  ss
-              </TouchableOpacity>
+
             </View>
 
 
@@ -1584,8 +1582,7 @@ const CropManagement = () => {
         
         </>)}
 
-        <TouchableOpacity onPress={()=>console.log("Selected pest names : ", selectedPestnames, " Pestdata static : ",pestData)}>Test pest names</TouchableOpacity>
-
+       
         
 
 
@@ -1660,29 +1657,29 @@ const stylesAiles = StyleSheet.create({
   containerWrappperPest: {
     paddingTop:10,
     width:'95%',
-    //borderWidth:1,
+    ///borderWidth:1,
     position:'relative',
     marginBottom:20,
-    backgroundColor:'#FAD4D4',
-    borderRadius:5
+    backgroundColor:'#ffffff',
+    borderRadius:5,
+    elevation:2
 },
 badgeContainer:{
   width:'100%',
   //borderWidth:1,
   position:'relative',
-  
-  display:'flex',
-  flexDirection:'row',
-  gap:30,
-  alignItems:'center',
-  justifyContent:'center',
-  marginBottom:10,
-  flexWrap:'wrap'
+  //borderWidth: 1,
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  paddingVertical:10,
+  justifyContent: 'center',
+  gap: 10,
+  paddingHorizontal: 10,
 },
 badgeWrapper:{
-  height:90,
-  width:90,
- // borderWidth:1,
+  height:100,
+  width:150,
+  //borderWidth:1,
   display:'flex',
   flexDirection:'column',
   alignItems:'center',
@@ -1859,7 +1856,7 @@ const styles = StyleSheet.create({
 
   scientificName:{
     color:'#253D2C',
-    fontSize:15,
+    fontSize:16,
     fontStyle:'italic',
     fontWeight:400
   },
@@ -1934,7 +1931,8 @@ const styles = StyleSheet.create({
   },
   segmentText: {
     color: 'black',
-    fontSize: 14,
+    fontSize: 16,
+    fontWeight:500
   },
   activeText: {
     fontWeight: 'bold',

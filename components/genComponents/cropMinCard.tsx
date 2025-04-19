@@ -106,8 +106,8 @@ const CropMinCard = ({commonName,scientificName,imgUrl,cropId}: CropMinCardProps
         },
         commonName: {
             
-            fontSize:15,
-            fontWeight:600,
+            fontSize:17,
+            fontWeight:500,
             color:'#253D2C',
             marginLeft:15,
 
@@ -116,12 +116,12 @@ const CropMinCard = ({commonName,scientificName,imgUrl,cropId}: CropMinCardProps
 
         },
         scientificName:{
-            fontWeight:300,
+            fontWeight:400,
             color:'#253D2C',
             fontStyle:'italic',
             marginTop:'auto',
             marginBottom:'auto',
-            marginLeft:15,
+            marginLeft:16,
 
 
         },
