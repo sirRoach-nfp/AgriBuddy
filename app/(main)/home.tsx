@@ -399,17 +399,18 @@ const styles = StyleSheet.create({
     marginLeft:5
   },
   currentCropContentWrapper:{
-    borderWidth: 1,
+    //borderWidth: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     gap: 20,
-    paddingHorizontal: 10,
+    //paddingHorizontal: 10,
+    backgroundColor:'#F2F3F5',
   },
   currentCropContainer : {
     width:'95%',
     marginBottom:25,
-    borderWidth:1,
+    //borderWidth:1,
     paddingVertical:25
   },
     mainContainer: {

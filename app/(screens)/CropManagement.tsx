@@ -717,8 +717,11 @@ const CropManagement = () => {
 
       const data = docSnap.data();
       const existingPestLogs = data?.PestLogs || [];
+      
       const existingFertilizerLogs = data?.FertilizerLogs || [];
 
+      console.log("Fetched Existing Fertilizer Logs : ",existingFertilizerLogs,)
+      console.log("Fetched From Assoc Id of : ",)
       let updatePayload: any = {};
 
 
@@ -764,11 +767,15 @@ const CropManagement = () => {
           fertilizerAmmount: amountFertilzer,
           selectedApplication: selectedApplication,
         };
+
+        console.log("New fert entry : ", newFertilizerEntry)
   
         const fertLogIndex = existingFertilizerLogs.findIndex(
           (log: any) => log.PlotAssocId === plotAssocId
         );
-  
+        
+
+        console.log("Targeted Fertilzer Plot : ", existingFertilizerLogs[fertLogIndex])
         if (fertLogIndex !== -1) {
           existingFertilizerLogs[fertLogIndex].FertilizerApplications = [
             ...(existingFertilizerLogs[fertLogIndex].FertilizerApplications || []),
@@ -790,6 +797,9 @@ const CropManagement = () => {
       if (Object.keys(updatePayload).length > 0) {
         await updateDoc(docRef, updatePayload);
         console.log("Data successfully updated:", updatePayload);
+        setSelectedApplication(""),
+        setFertilizer("")
+        setAmountFertilizer('')
       } else {
         console.log("No data to log. All fields empty.");
       }
