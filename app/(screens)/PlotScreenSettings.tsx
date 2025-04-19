@@ -918,7 +918,7 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
 
                 <View style={stylesDataRemove.wrapper}>
                     <View style={stylesDataRemove.wrapperHeader}>
-                        <Text style={{fontWeight:500,fontSize:14}}>Delete Crop Pest Logs</Text>
+                        <Text style={{fontWeight:500,fontSize:16,color:'#37474F',letterSpacing:.5}}>Delete Crop Pest Logs</Text>
                     </View>
 
                     <View style={stylesDataRemove.wrapperControl}>
@@ -947,14 +947,14 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
 
                 <View style={stylesDataRemove.wrapper}>
                     <View style={stylesDataRemove.wrapperHeader}>
-                        <Text style={{fontWeight:500,fontSize:14}}>Delete Crop Data From Fertilizer Logs</Text>
+                        <Text style={{fontWeight:500,fontSize:16,color:'#37474F',letterSpacing:.5}}>Delete Fertilizer Logs</Text>
                     </View>
 
                     <View style={stylesDataRemove.wrapperControl}>
-                    {fertilizerCropNames.length === 0 ? (
-                        <Text style={{marginLeft:'auto',marginRight:'auto',fontWeight:500,fontSize:13}}>No associated crops available.</Text>
+                    {fertilizerCropNames?.length === 0 ? (
+                        <Text style={{marginLeft:'auto',marginRight:'auto',fontWeight:500,fontSize:13,color:'#333333'}}>No associated crops available.</Text>
                     ) : (
-                        fertilizerCropNames.map((item, index) => (
+                        fertilizerCropNames?.map((item, index) => (
                         <View key={index} style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Checkbox
                             status={SelectedCropForRemovalCropsVFertilizer.includes(item) ? 'checked' : 'unchecked'}
@@ -973,13 +973,7 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
                     </View>
                 </View>
 
-                <Text>{plotRefIdParam}</Text>
-                <Text>is Current Cropt : {isCurrentCrop}</Text>
-                <Text>Check Selected crops data : {selectedCropForRemoval}</Text>
-                <Text>Current Plot Thumbnail : {PlotCoverParam}</Text>
-                <TouchableOpacity onPress={()=>console.log(pestLogs)}><Text>check Pest Logs</Text></TouchableOpacity>
-                <TouchableOpacity onPress={()=>{setShowDeleteRecordDataConfirmation(true)}}><Text>check confirmation</Text></TouchableOpacity>
-               <Text>Passed plot cover : {imageUri as string}</Text>
+  
             </ScrollView>
             
         </SafeAreaView>
@@ -1002,7 +996,8 @@ const stylesDataRemove = StyleSheet.create({
         flexDirection:'column',
         backgroundColor:'#F2F3F5',
         borderRadius:5,
-        elevation:1
+        elevation:1,
+        marginBottom:5,
     },
     wrapperHeader:{
         paddingVertical:10,
@@ -1060,20 +1055,30 @@ const styles = StyleSheet.create({
         display:'flex',
         width:'95%',
         //backgroundColor:"red"
+        //borderWidth:1,
+        flexDirection:'column',
+        //gap:5
     },
     mainContainer:{
         borderWidth:1,
         flex:1,
         display:'flex',
         flexDirection:'column',
-        alignItems:'center'
+        alignItems:'center',
+        //backgroundColor:'#F2F3F5',
     },
     contentContainer:{
         marginTop:10,
         width:"100%",
-        borderWidth:1,
+        paddingHorizontal:10,
+        paddingVertical:10,
+        //borderWidth:1,
         display:'flex',
         flexDirection:'column',
+        backgroundColor:'#F2F3F5',
+        borderRadius:5,
+        elevation:1,
+        marginBottom:5,
 
     },
     titleInput:{

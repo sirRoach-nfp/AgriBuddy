@@ -356,7 +356,7 @@ const PlotManagementScreen = () => {
                     <View style={styles.thumbnail}>
 
                         {plotData.PlotThumbnail.length > 0 ? (
-                            <Image source={require('../../assets/images/Misc/PlotIcon.svg')} style={{width:'40%',height:'40%',objectFit:'contain'}}  />
+                            <Image source={{uri:plotData.PlotThumbnail}} style={{width:'100%',height:'100%',objectFit:'cover'}}  />
                         ) : (
 
                             <Foundation name="photo" size={24} color="black" />
@@ -443,9 +443,7 @@ const PlotManagementScreen = () => {
                             Not Growing A Crop
                             </Text>
                         </View>
-                        <View style={stylesNoRotation.add}>
-                            <FontAwesomeIcon icon={faPlus} size={40} color='#FFFFFF'/>
-                        </View>
+          
                     </View>
 
                 )}
@@ -453,7 +451,7 @@ const PlotManagementScreen = () => {
 
 
 
-            <View style={{borderWidth:0,marginTop:30,width:'100%',marginLeft:'auto',marginRight:'auto',backgroundColor:'white',paddingVertical:10,elevation:2}}>
+            <View style={{borderWidth:0,marginTop:0,width:'100%',marginLeft:'auto',marginRight:'auto',backgroundColor:'white',paddingVertical:10,elevation:1}}>
 
                 <View style={styles.chartsHeaderWrapper}>
 
@@ -547,7 +545,7 @@ const PlotManagementScreen = () => {
 
 
 
-            <View style={{width:'100%',borderWidth:0,marginTop:5,backgroundColor:'white',paddingVertical:10,elevation:2}}>
+            <View style={{width:'100%',borderWidth:0,marginTop:5,backgroundColor:'white',paddingVertical:10,elevation:1}}>
 
                     <View style={styles.chartsHeaderWrapper}>
 
@@ -611,7 +609,6 @@ const PlotManagementScreen = () => {
                     
             </View>
 
-            <TouchableOpacity onPress={()=>console.log(plotData)}><Text>test</Text></TouchableOpacity>
 
 
     </ScrollView>
@@ -684,7 +681,7 @@ const styles = StyleSheet.create({
         //borderWidth:1,
         display:'flex',
         flexDirection:'row',
-        marginBottom:20,
+        //marginBottom:20,
         backgroundColor:'white',
         borderRadius:0,
         paddingTop:10,
@@ -692,12 +689,12 @@ const styles = StyleSheet.create({
         paddingLeft:10,
         paddingRight:10,
         height:110,
-        elevation:2
+        elevation:0
     },
     thumbnail:{
         width:140,
         height:90,
-        borderWidth:1,
+        //borderWidth:1,
         borderRadius:5,
         display:'flex',
         flexDirection:'row',
@@ -750,11 +747,18 @@ const styles = StyleSheet.create({
 const stylesNoRotation = StyleSheet.create({
 
     wrapper:{
-        width:'95%',
-        
+        width:'100%',
+        height:90,
+        paddingHorizontal:5,
+        paddingVertical:10,
+        //borderWidth:1,
+        backgroundColor:"white",
         display:'flex',
         flexDirection:'row',
-        marginBottom:20,
+        marginBottom:5,
+        justifyContent:'center',
+        
+        elevation:1,
 
     },
     add:{
@@ -778,8 +782,7 @@ const stylesNoRotation = StyleSheet.create({
         justifyContent:'center',
         borderWidth:2,
         borderStyle:'dotted',
-        borderTopLeftRadius:10,
-        borderBottomLeftRadius:10,
+        borderRadius:10,
         marginRight:10,
         borderColor:'#9B9B9B'
     },
@@ -803,23 +806,25 @@ const stylesCrop = StyleSheet.create({
         //borderWidth:1,
         display:'flex',
         flexDirection:'row',
-        marginBottom:0,
+        marginBottom:5,
         paddingTop:5,
         paddingBottom:5,
-        paddingLeft:5,
+        paddingHorizontal:15,
+        paddingVertical:50,
         //borderWidth:2,
         //borderStyle:'dotted',
         borderColor:'#253D2C',
         borderRadius:5,
         //backgroundColor:'#D8D8C0',
         backgroundColor:'white',
-        elevation:2
+        elevation:1,
+
 
     },
 
 
     cropThumbnailWrapper:{
-        width:50,
+        width:70,
         height:50,
         //borderWidth:1,
         //borderRadius:'50%'

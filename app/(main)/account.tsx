@@ -374,11 +374,11 @@ const account = () => {
                   {discussions && discussions.length > 0 && discussions.map((discussion,index)=>(
 
 
-                    <TouchableOpacity style={{display:'flex',flexDirection:'row', alignItems:'center',borderWidth:1,paddingVertical:5,paddingHorizontal:5}}>
+                    <TouchableOpacity style={{borderRadius:5,elevation:0,display:'flex',flexDirection:'row', alignItems:'center',borderWidth:0,paddingVertical:10,paddingHorizontal:10}}>
 
                       
                       <Octicons name="comment-discussion" size={20} color="#37474F" />
-                      <Text style={{marginLeft:5,fontSize:17,fontWeight:600,color:'#37474F'}}>{discussion.discussionTitle}</Text>
+                      <Text style={{marginLeft:5,fontSize:17,fontWeight:500,color:'#37474F'}}>{discussion.discussionTitle}</Text>
                     </TouchableOpacity>
 
 
@@ -415,6 +415,7 @@ const styles = StyleSheet.create({
     display:'flex',
     flexDirection:'column',
     width:'100%',
+    gap:3
     //borderWidth:1,
    
   },
@@ -439,11 +440,13 @@ const styles = StyleSheet.create({
 
   discussionHeaderWrapper:{
     width:'100%',
-    paddingVertical:5,
+    paddingVertical:10,
     //borderWidth:1,
     display:'flex',
     flexDirection:'row',
-    alignItems:'center'
+    alignItems:'center',
+    borderColor:'#666666',
+    borderBottomWidth:1
   },
 
 

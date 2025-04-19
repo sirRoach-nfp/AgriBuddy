@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
   currentCropContainer : {
     width:'95%',
     marginBottom:25,
-    //borderWidth:1,
+    borderWidth:1,
     paddingVertical:25
   },
     mainContainer: {
