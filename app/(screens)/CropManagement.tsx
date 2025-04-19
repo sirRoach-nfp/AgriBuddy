@@ -76,6 +76,7 @@ interface diseaseType{
 
 interface CropData{
   cropId:string,
+  sessionId:string,
   thumbnail: string;
   scientificName: string;
   commonName:string,
@@ -149,7 +150,7 @@ const CropManagement = () => {
   //crop session datas
 
   const [assocPlot,setAssocPlot] = useState<string | null>(null);
-
+  const [tempCropName,setTempCropName] = useState<string | null>(null);
   const [selectedOption,setSelectedOption] = useState<String>('CareGuide')
 
 
@@ -235,7 +236,7 @@ const CropManagement = () => {
   const [selectedPestnames,setSelectedPestNames] = useState<string[]>([])
   const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
   const [selectedFertilizer, setSelectedFertilizer] = useState('');
-  const [selectedApplication, setSelectedApplication] = useState('');
+  const [selectedApplication, setSelectedApplication] = useState('Side-dressing');
   const multiSelectRef = React.useRef<MultiSelect | null>(null);
   const [amountFertilzer, setAmountFertilizer] = useState('');
 
@@ -283,7 +284,7 @@ const CropManagement = () => {
               const cropDataDocRef = doc(db,'Crops',cropId as string)
               const cropDataDocSnapshot = await getDoc(cropDataDocRef)
 
-
+              console.log("Fetched Data : ", cropDataDocSnapshot.data())
               if(cropDataDocSnapshot.exists()){
 
                   const rawData = {
@@ -299,6 +300,7 @@ const CropManagement = () => {
                       commonPests: cropDataDocSnapshot.data().pests as pestType[] || [],
                       commonDiseases: cropDataDocSnapshot.data().diseases as diseaseType[] || "",
                       content:cropDataDocSnapshot.data().contents as guideStep[] || "",
+                      sessionId:cropDataDocSnapshot.data().SessionId as string || ""
                   }
                   console.log("Done Fetching Data : ",rawData)
 
@@ -499,24 +501,31 @@ const CropManagement = () => {
 
   const setPlotToCurrentCrop = async(plotAssoc:string,plotName:string)=>{
     console.log("Plot name param passed : ", plotName)
+    console.log("Plot assoc id param passed : ", plotAssoc)
     try{
 
+      console.log("Session Id to target : ", cropData?.sessionId)
+
+     
       const cropRef = doc(db,"CurrentCrops",user?.CurrentCropsRefId as string);
       const cropRefSnap = await getDoc(cropRef);
 
 
       const currentCrop = cropRefSnap.data()?.CurrentCrops as any[];
-
+      console.log("Current crops data before setting plotname is : ",currentCrop,)
       const updatedCrops = currentCrop.map(crop => 
-        crop.CropId === cropId 
+        crop.SessionId === sessionId
           ? { ...crop, PlotAssoc: plotAssoc, PlotName:plotName } 
           : crop
       );
+
+      console.log("Updated Crops is : ", updatedCrops)
 
       
       // Update Firestore with the modified array
       await updateDoc(cropRef, { CurrentCrops: updatedCrops });
       setAssocPlot(plotName);
+      setTempCropName(plotName)
     }catch(err){
       console.error(err)
     }
@@ -568,7 +577,7 @@ const CropManagement = () => {
       await setCurrentCropToPlot(cropId,cropName,cropSessionId,plotId,cropData?.thumbnail as string)
 
       await setPlotToCurrentCrop(plotId,plotName)
-
+      setDialogVisible(false)
       console.log("Updated plot and crop")
       hideDialog
 
@@ -701,8 +710,8 @@ const CropManagement = () => {
 
     const cropName = cropNameParam;
     const plotAssocId = plotAssocParam;
-    const date = new Date().toISOString().slice(0, 10);
-
+    const date = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' }).slice(0, 10);
+    console.log("Date is " , date)
 
     try{
 
@@ -721,7 +730,7 @@ const CropManagement = () => {
       const existingFertilizerLogs = data?.FertilizerLogs || [];
 
       console.log("Fetched Existing Fertilizer Logs : ",existingFertilizerLogs,)
-      console.log("Fetched From Assoc Id of : ",)
+      console.log("Fetched From Assoc Id of : ",plotAssocId)
       let updatePayload: any = {};
 
 
@@ -797,9 +806,7 @@ const CropManagement = () => {
       if (Object.keys(updatePayload).length > 0) {
         await updateDoc(docRef, updatePayload);
         console.log("Data successfully updated:", updatePayload);
-        setSelectedApplication(""),
-        setFertilizer("")
-        setAmountFertilizer('')
+
       } else {
         console.log("No data to log. All fields empty.");
       }
@@ -1123,7 +1130,7 @@ const CropManagement = () => {
               {assocPlot && assocPlot !== "null" ?(
 
                 <View style={styles.BadgeWrapper}>
-                  <Text style={styles.BadgeText}>{PlotName}</Text>
+                  <Text style={styles.BadgeText}>{tempCropName || PlotName}</Text>
                 </View>
                
               ):(

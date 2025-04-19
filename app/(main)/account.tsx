@@ -70,7 +70,13 @@ interface userData{
 
 const account = () => {
 
+  const navigateToPost = (RefId:string) =>{
 
+    const queryString= `?PostRefId=${encodeURIComponent(RefId)}`
+    //router.push(`/(sc)${queryString}` as any)
+
+    router.push(`/(screens)/DisussionScreen${queryString}` as any)
+}
 
   const {user,logout} = useUserContext();
 
@@ -374,7 +380,7 @@ const account = () => {
                   {discussions && discussions.length > 0 && discussions.map((discussion,index)=>(
 
 
-                    <TouchableOpacity style={{borderRadius:5,elevation:0,display:'flex',flexDirection:'row', alignItems:'center',borderWidth:0,paddingVertical:10,paddingHorizontal:10}}>
+                    <TouchableOpacity onPress={()=> navigateToPost(discussion.discussionId)} style={{borderRadius:5,elevation:0,display:'flex',flexDirection:'row', alignItems:'center',borderWidth:0,paddingVertical:10,paddingHorizontal:10}}>
 
                       
                       <Octicons name="comment-discussion" size={20} color="#37474F" />

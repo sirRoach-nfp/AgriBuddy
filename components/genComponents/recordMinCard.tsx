@@ -120,8 +120,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         overflow: 'hidden',
         elevation: 2,
-        marginBottom: 15,
-        borderWidth:1
+        //marginBottom: 15,
+        //borderWidth:1
       },
       
     infoWrapper:{

@@ -1,5 +1,5 @@
 
-import { Button, SafeAreaView, Text,TextInput,Touchable,TouchableOpacity,View } from "react-native"
+import { ActivityIndicator, Button, SafeAreaView, Text,TextInput,Touchable,TouchableOpacity,View } from "react-native"
 import { StyleSheet } from "react-native"
 import { Link } from "expo-router"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -20,12 +20,12 @@ export default function LoginPage(){
 
     const [loginErrorVisible,setlogInErrorVisible] = useState(false);
     const [logProcess,SetLogProcess] = useState(false)
-        
+    const [loading,setLoading] = useState(false)
 
 
     const login = async(email:string,password:string) => {
 
-
+        setLoading(true)
 
         if(email.length === 0 || password.length === 0){return} 
 
@@ -53,7 +53,7 @@ export default function LoginPage(){
 
        
 
-
+            setLoading(false)
             router.replace('/(main)/home');
         }
         catch(err){
@@ -82,6 +82,38 @@ export default function LoginPage(){
     )
 
 
+
+
+
+    const renderLogInLoading = () => (
+
+        <Portal>
+        <Dialog
+            visible={loading}
+            onDismiss={() => {}}
+            style={{
+            width: 150,
+            height: 150,
+            alignSelf: 'center',
+            borderRadius: 12,
+            justifyContent: 'center',
+            }}
+        >
+            <Dialog.Content
+            style={{
+                padding: 0, // removes the default padding
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+            >
+            <ActivityIndicator size={50} color="#607D8B" />
+            </Dialog.Content>
+        </Dialog>
+        </Portal>
+
+    )
+
     return(
 
         <PaperProvider>
@@ -93,7 +125,7 @@ export default function LoginPage(){
         <SafeAreaView style={styles.mainContainer}>
 
                 {renderLogInError()}
-
+                {renderLogInLoading()}
 
                 
 
