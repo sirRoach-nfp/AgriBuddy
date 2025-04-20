@@ -3,10 +3,11 @@ import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseconfig';
-
+import Ionicons from '@expo/vector-icons/Ionicons'
 import { Image } from 'react-native';
 import { useUserContext } from '../Context/UserContext';
 import { useSearchParams } from 'expo-router/build/hooks';
+import { router } from 'expo-router';
 
 
 interface Symptoms{
@@ -72,10 +73,25 @@ const DiseasePestScreen = () => {
 
         <View style={styles.headerContainer}>
             <Image source={{ uri: pestData?.PestSnapshot }}
-                style={{width:'100%',height:'100%',objectFit:'contain',        borderBottomLeftRadius:20,
+                style={{width:'100%',height:'100%',objectFit:'cover',        borderBottomLeftRadius:20,
                     borderBottomRightRadius:20,}}
                    
             />
+
+            <TouchableOpacity 
+                onPress={() => router.back()}
+                style={{
+                position: 'absolute',
+                top: 10, // adjust for safe area
+                left: 10,
+                backgroundColor: 'rgba(0, 0, 0, 0.5)', // semi-transparent dark background
+                borderRadius: 20,
+                padding: 8,
+                }}
+            >
+                <Ionicons name="arrow-back" size={24} color="white" />
+            </TouchableOpacity>
+            
         </View>
 
         <View style={styles.infoHeaderContainer}>

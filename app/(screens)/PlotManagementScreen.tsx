@@ -348,9 +348,18 @@ const PlotManagementScreen = () => {
   return (
     <SafeAreaView style={styles.mainContainer}>
 
+        <View style={styles.headerContainer}>
+
+            <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10}} onPress={()=> router.back()}>
+
+                <Ionicons name="arrow-back" size={30} color="#607D8B" />
+
+            </TouchableOpacity>
 
 
-        <ScrollView style={{borderWidth:1,width:'100%',flex:1}}>
+        </View>
+
+        <ScrollView style={{borderWidth:0,width:'100%',flex:1}}>
 
                 <View style={styles.plotInfoContainer}>
                     <View style={styles.thumbnail}>
@@ -629,6 +638,19 @@ const PlotManagementScreen = () => {
 export default PlotManagementScreen
 
 const styles = StyleSheet.create({
+    headerContainer:{
+        width:'100%',
+        maxHeight:50,
+        //borderWidth:1,
+        display:'flex',
+        flexDirection:'row',
+        alignItems:'center',
+        paddingVertical:10,
+        height:50,
+        //backgroundColor:'#2E6F40',
+        //marginBottom:20,
+        backgroundColor:'white'
+    },
     legendWrapper:{
         width:'100%',
         //borderWidth:1,
@@ -673,9 +695,9 @@ const styles = StyleSheet.create({
         flex:1,
         display:"flex",
         flexDirection:'column',
-        borderWidth:1,
+        //borderWidth:1,
         alignItems:'center',
-        paddingTop:10,
+        paddingTop:0,
         backgroundColor:'#F2F3F5'
     },
     plotInfoContainer:{

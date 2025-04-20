@@ -382,14 +382,48 @@ const DisussionScreen = () => {
             // Step 2: Delete the discussion document
             await deleteDoc(discussionRef);
             console.log("Discussion deleted successfully");
+
+
+
     
             // Step 3: Remove discussion reference from user's DiscussionRecords
+
+
+            const discussionRecordRef = doc(db,'DiscussionRecords',user?.DiscussionRecordRefId as string)
+            const discussionRecorSnap = await getDoc(discussionRecordRef)
+
+
+            if(discussionRecorSnap.exists()){
+
+                let recordsArray = discussionRecorSnap.data().Discussions || []
+                
+                console.log("Discussion Records Array before remove : ", recordsArray)
+
+
+                const discussionRecordIndex = recordsArray.findIndex((discussion:any)=>discussion.discussionId === discussionId);
+                console.log("Index of discussion record to remove : ", discussionRecordIndex)
+
+                if(discussionRecordIndex !== -1){
+                    const updatedRecord = [...recordsArray.slice(0, discussionRecordIndex), ...recordsArray.slice(discussionRecordIndex + 1)];
+                    console.log("Updated Record : after remove", updatedRecord)
+
+
+                    await updateDoc(discussionRecordRef,{Discussions:updatedRecord})
+                }
+
+            }
+
+
+            /*
             const userDiscussionRef = doc(db, "DiscussionRecords", discussionRecordRefId);
             await updateDoc(userDiscussionRef, {
                 Discussions: arrayRemove({
                     discussionId:discussionId
                 }),
             });
+            */
+
+
             console.log("Removed discussion reference from DiscussionRecords");
 
 

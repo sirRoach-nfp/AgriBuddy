@@ -374,23 +374,38 @@ const account = () => {
                   <View style={{width:25,height:25,borderWidth:0,borderRadius:50,backgroundColor:'#37474F'}}></View>
                   <Text style={styles.discussionHeaderText}>My Discussions</Text>
                 </View>
-                <View style={styles.discussionContentWrapper}>
+
+                {discussions && discussions.length>0 ? (
 
 
-                  {discussions && discussions.length > 0 && discussions.map((discussion,index)=>(
+                  <View style={styles.discussionContentWrapper}>
 
 
-                    <TouchableOpacity onPress={()=> navigateToPost(discussion.discussionId)} style={{borderRadius:5,elevation:0,display:'flex',flexDirection:'row', alignItems:'center',borderWidth:0,paddingVertical:10,paddingHorizontal:10}}>
-
-                      
-                      <Octicons name="comment-discussion" size={20} color="#37474F" />
-                      <Text style={{marginLeft:5,fontSize:17,fontWeight:500,color:'#37474F'}}>{discussion.discussionTitle}</Text>
-                    </TouchableOpacity>
+                    {discussions && discussions.length > 0 && discussions.map((discussion,index)=>(
 
 
-                  ))}
+                      <TouchableOpacity onPress={()=> navigateToPost(discussion.discussionId)} style={{borderRadius:5,elevation:0,display:'flex',flexDirection:'row', alignItems:'center',borderWidth:0,paddingVertical:10,paddingHorizontal:10}}>
 
-                </View>
+                        
+                        <Octicons name="comment-discussion" size={20} color="#37474F" />
+                        <Text style={{marginLeft:5,fontSize:17,fontWeight:500,color:'#37474F'}}>{discussion.discussionTitle}</Text>
+                      </TouchableOpacity>
+
+
+                    ))}
+
+                  </View>
+
+
+                ) : (
+
+                  <View style={{ gap:10,width:"100%",height:200,borderWidth:0,display:'flex',flexDirection:"column",alignItems:'center',justifyContent:'center'}}> 
+                    <Octicons name="comment-discussion" size={30} color="#37474F" />
+                    <Text style={{color:'#333333', fontSize:17,fontWeight:400}}>You're currently not tracking any crop</Text>
+      
+                  </View>
+                )}
+
 
 
 

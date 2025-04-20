@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ScrollView } from 'react-native-gesture-handler'
-
+import Ionicons from '@expo/vector-icons/Ionicons'
 import {pestImages,diseaseImages,soilImages} from '../Pestdat'
 
 //firestore imports
@@ -217,10 +217,26 @@ const CropProfile = () => {
             
             <>
             
-                <View style={styles.thumbnail}>
-                
-                    <Image source={{ uri: cropData?.thumbnail}} style={{width:'100%',height:'100%'}} resizeMode="cover" />
-            
+            <View style={styles.thumbnail}>
+                    <Image 
+                        source={{ uri: cropData?.thumbnail }} 
+                        style={{ width: '100%', height: '100%' }} 
+                        resizeMode="cover" 
+                    />
+
+                    <TouchableOpacity 
+                        onPress={() => router.back()}
+                        style={{
+                        position: 'absolute',
+                        top: 10, // adjust for safe area
+                        left: 10,
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)', // semi-transparent dark background
+                        borderRadius: 20,
+                        padding: 8,
+                        }}
+                    >
+                        <Ionicons name="arrow-back" size={24} color="white" />
+                    </TouchableOpacity>
                 </View>
 
 

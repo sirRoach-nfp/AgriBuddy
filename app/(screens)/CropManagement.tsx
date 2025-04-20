@@ -13,7 +13,7 @@ import Collapsible from 'react-native-collapsible';
 import { SelectList } from 'react-native-dropdown-select-list';
 import MultiSelect from 'react-native-multiple-select';
 import { Menu, Divider, PaperProvider,Portal, Dialog } from 'react-native-paper';
-
+import Ionicons from '@expo/vector-icons/Ionicons'
 
 //react native paper imports
 import { Button } from 'react-native-paper';
@@ -1037,6 +1037,17 @@ const CropManagement = () => {
         </View>
         ) : (
         <> 
+
+        <View style={styles.headerContainer}>
+
+          <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10}} onPress={()=> router.back()}>
+
+              <Ionicons name="arrow-back" size={30} color="black" />
+
+          </TouchableOpacity>
+
+
+        </View>
         
         
         <View style={styles.segmentContainer}>
@@ -1819,7 +1830,19 @@ const stylesRecords = StyleSheet.create({
 })
 
 const styles = StyleSheet.create({
-
+  headerContainer:{
+    width:'100%',
+    maxHeight:50,
+    //borderWidth:1,
+    display:'flex',
+    flexDirection:'row',
+    alignItems:'center',
+    paddingVertical:10,
+    height:50,
+    //backgroundColor:'#2E6F40',
+    //marginBottom:20,
+    backgroundColor:'white'
+},
   picker: {
     height: 60,
     width: '100%',

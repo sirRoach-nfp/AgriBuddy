@@ -6,7 +6,7 @@ import { router } from 'expo-router';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
-
+import { LinearGradient } from 'expo-linear-gradient';
 
 
 const WeatherCard = () => {
@@ -73,13 +73,42 @@ const WeatherCard = () => {
           case 'Thunderstorm' : 
             <Ionicons name="thunderstorm-outline" size={80} color="#253D2C" />
             break
+
+            case 'Mainly clear' : 
+              return  <MaterialCommunityIcons name="weather-sunny" size={80} color="#253D2C" />
+            break
      
          
         }
       }
 
       
-
+      const getWeatherGradient = (status: string): readonly [string, string] => {
+        switch (status) {
+          case 'Clear sky':
+          case 'Mainly clear':
+            return ['#FFE082', '#FFCA28'] as const;
+      
+          case 'Partly cloudy':
+            return ['#E0F7FA', '#B2EBF2'] as const;
+      
+          case 'Cloudy':
+          case 'Overcast':
+            return ['#ECEFF1', '#CFD8DC'] as const;
+      
+          case 'Slight rain':
+            return ['#B3E5FC', '#81D4FA'] as const;
+      
+          case 'Light drizzle':
+            return ['#D0E6F6', '#A7C7E7'] as const;
+      
+          case 'Thunderstorm':
+            return ['#616161', '#9E9E9E'] as const;
+      
+          default:
+            return ['#E0F7FA', '#B2EBF2'] as const;
+        }
+      };
 
 
   const navigateToWeather = ()=>{
@@ -107,18 +136,40 @@ const WeatherCard = () => {
           const data = await response.json();
       
           const currentHourIndex = new Date().getHours(); // Get the current hour index
-      
+
+
+          // get time
+          const now = new Date();
+          const localTimeString = now.toLocaleString('sv-SE', { timeZone: 'Asia/Manila', hour12: false });
+          const [datePart, timePart] = localTimeString.split(' ');
+          const hourOnly = timePart.slice(0, 2); // "21"
+          const currentHourString = `${datePart}T${hourOnly}:00`; // "2025-04-20T21:00"
+
+          const timeIndex = data.hourly.time.findIndex((t:any )=> t === currentHourString)
+          console.log("time index is ",timeIndex)
+          console.log("Matched time string:", currentHourString);
+          // ==> get time end
+
+
+          if(timeIndex !== -1){
+            const currentTemperature = data.hourly.temperature_2m[timeIndex];
+            const currentWeatherCode = data.hourly.weathercode[timeIndex];
+        
+            setWeatherData({
+              temperature: currentTemperature,
+              weatherStatus: currentWeatherCode,
+            });
+
+            console.log('Current Temperature:', currentTemperature);
+            console.log('Current Weather Code:', currentWeatherCode);
+          }else{
+            console.log("Could not match current hour")
+          }
+
           // Extract current weather status and temperature
-          const currentTemperature = data.hourly.temperature_2m[currentHourIndex];
-          const currentWeatherCode = data.hourly.weathercode[currentHourIndex];
+
       
-          setWeatherData({
-            temperature: currentTemperature,
-            weatherStatus: currentWeatherCode,
-          });
-      
-          console.log('Current Temperature:', currentTemperature);
-          console.log('Current Weather Code:', currentWeatherCode);
+
       
           setLoading(false);
         } catch (err) {
@@ -136,7 +187,11 @@ const WeatherCard = () => {
 
   
   return (
-    <View style={styles.container}>
+    <LinearGradient 
+      colors={getWeatherGradient(status)}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.container}>
 
 
         {loading ? ( <Text>Loading...</Text>) : (
@@ -181,7 +236,7 @@ const WeatherCard = () => {
 
         
       
-    </View>
+    </LinearGradient >
   ) 
 }
 

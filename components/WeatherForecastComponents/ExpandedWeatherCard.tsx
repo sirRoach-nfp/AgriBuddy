@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { Image } from 'react-native';
-
+import { LinearGradient } from 'expo-linear-gradient';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import Feather from '@expo/vector-icons/Feather';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -53,9 +53,42 @@ const ExpandedWeatherCard = ({temperature,status,humidity,windSpeed,chanceOfRain
      
     }
   }
+
+  const getWeatherGradient = (status: string): readonly [string, string] => {
+    switch (status) {
+      case 'Clear sky':
+      case 'Mainly clear':
+        return ['#FFE082', '#FFCA28'] as const;
+  
+      case 'Partly cloudy':
+        return ['#E0F7FA', '#B2EBF2'] as const;
+  
+      case 'Cloudy':
+      case 'Overcast':
+        return ['#ECEFF1', '#CFD8DC'] as const;
+  
+      case 'Slight rain':
+        return ['#B3E5FC', '#81D4FA'] as const;
+  
+      case 'Light drizzle':
+        return ['#D0E6F6', '#A7C7E7'] as const;
+  
+      case 'Thunderstorm':
+        return ['#616161', '#9E9E9E'] as const;
+  
+      default:
+        return ['#E0F7FA', '#B2EBF2'] as const;
+    }
+  };
   
   return (
-    <View style={styles.mainWrapper}>
+    <LinearGradient 
+    
+      colors={getWeatherGradient(status)}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    
+      style={styles.mainWrapper}>
       
       <Text style={styles.locationText}>San Antonio</Text>
 
@@ -128,7 +161,7 @@ const ExpandedWeatherCard = ({temperature,status,humidity,windSpeed,chanceOfRain
 
       </View>
       
-    </View>
+    </LinearGradient>
   )
 }
 
