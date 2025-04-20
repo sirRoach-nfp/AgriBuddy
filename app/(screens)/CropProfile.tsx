@@ -456,7 +456,7 @@ const styles = StyleSheet.create({
     },
 
     subContainerHeader:{
-        color:'#253D2C',
+        color:"#37474F",
         fontWeight:500,
         fontSize:18,
         marginBottom:5,
@@ -520,7 +520,8 @@ const styles = StyleSheet.create({
         marginLeft:15,
         fontWeight:600,
         fontSize:30,
-        color:'#253D2C',
+      
+        color:"#37474F"
         
         
     },
@@ -530,14 +531,14 @@ const styles = StyleSheet.create({
         fontStyle:'italic',
         fontSize:18,
         marginBottom:10,
-        color:'#253D2C',
+        color:"#37474F"
     },
     familyName:{
         marginLeft:15,
         fontWeight:300,
         fontSize:18,
         fontStyle:'italic',
-        color:'#253D2C',
+        color:'#333333',
     },
     bestGrown:{
         marginLeft:15,
@@ -582,7 +583,12 @@ const subContainer = StyleSheet.create({
         width:'95%',
         //borderWidth:1,
         position:'relative',
-        marginBottom:20
+        marginBottom:20,
+        paddingVertical:10,
+        paddingHorizontal:5,
+        backgroundColor:'#ffffff',
+        borderRadius:5,
+        elevation:2
     },
     badgeContainer:{
         width:'100%',

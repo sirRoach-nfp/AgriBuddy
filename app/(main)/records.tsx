@@ -134,7 +134,14 @@ const records = () => {
       <View style={styles.tabHeader}>
 
         <Searchbar
-            style={{borderWidth:0,flex:1}}
+              style={{
+                backgroundColor: '#f5f5f5', // ✅ soft off-white
+                borderRadius: 10,
+                borderWidth: 0,
+                flex: 1,
+                marginLeft:5,
+                elevation: 0, // removes Android shadow
+              }}
             placeholder="Search"
             onChangeText={setSearchQuery}
             value={searchQuery}
@@ -148,7 +155,7 @@ const records = () => {
 
         <TouchableOpacity onPress={()=>{router.push('/(screens)/PostScreen')}} style={{alignSelf:'flex-start',marginRight:20,marginLeft:10,borderWidth:0,marginTop:'auto',marginBottom:'auto'}}>
 
-            <Octicons name="diff-added" size={30} color="#828282"  />
+            <Octicons name="diff-added" size={30} color="#607D8B"  />
 
         </TouchableOpacity>
 
@@ -220,7 +227,8 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     alignItems:'center',
     justifyContent:'center',
-    marginTop:30
+    marginTop:30,
+    paddingVertical:5
     
 
   },

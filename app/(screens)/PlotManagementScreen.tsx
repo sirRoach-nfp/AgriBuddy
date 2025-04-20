@@ -359,7 +359,7 @@ const PlotManagementScreen = () => {
                             <Image source={{uri:plotData.PlotThumbnail}} style={{width:'100%',height:'100%',objectFit:'cover'}}  />
                         ) : (
 
-                            <Foundation name="photo" size={24} color="black" />
+                            <Foundation name="photo" size={24} color="#607D8B" />
                         )}
                         
                     </View>
@@ -402,7 +402,7 @@ const PlotManagementScreen = () => {
                     <View style={{borderWidth:0,width:30,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
                         <TouchableOpacity onPress={()=>navigateToPlotSetting(plotId as string,plotData?.PlotName,plotData.currentCrops.CropAssocId,plotData.PlotThumbnail)}>
 
-                            <Ionicons name="options" size={24} color="black" />
+                            <Ionicons name="options" size={24} color="#607D8B" />
 
                         </TouchableOpacity>
                         
@@ -645,6 +645,7 @@ const styles = StyleSheet.create({
         marginRight:5,
         backgroundColor:'#E9A800',
         borderRadius:5,
+        color:"#37474F"
     },
     chartsHeaderWrapper:{
         width:'100%',
@@ -658,12 +659,13 @@ const styles = StyleSheet.create({
     chartsHeaderViewMore:{
         marginLeft:'auto',
         textDecorationLine:'underline',
-        color:'#253D2C'
+        color:'#333333'
     },
     chartsHeader:{
         fontSize:17,
         fontWeight:500,
-        color:'#253D2C',
+        color:"#37474F",
+        //borderWidth:1,
         marginBottom:5,
         marginTop:5
     },
@@ -735,7 +737,8 @@ const styles = StyleSheet.create({
 
     plotName:{
         fontSize:18,
-        fontWeight:500
+        fontWeight:600,
+        color:"#37474F"
     },
     status:{
         fontSize:15,
@@ -848,14 +851,14 @@ const stylesCrop = StyleSheet.create({
 
 
     datePlantedText:{
-        fontSize:15,
+        fontSize:14,
         fontWeight:400,
         marginTop:'auto',
-        color: '#253D2C',
+        color: '#333333',
     },
     cropNameText:{
         fontSize:16,
-        fontWeight:600,
-        color: '#253D2C',
+        fontWeight:500,
+        color:"#37474F"
     }
 })

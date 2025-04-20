@@ -92,8 +92,9 @@ const styles = StyleSheet.create({
         display:'flex',
         flexDirection:'row',
         padding:15,
-        backgroundColor:'#CFFFDC',
+        backgroundColor:'#ffffff',
         borderRadius:5,
+        elevation:2,
         marginBottom:10
 
     },

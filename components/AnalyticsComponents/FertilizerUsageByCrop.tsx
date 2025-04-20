@@ -132,7 +132,7 @@ const FertilizerUsageByCrop:React.FC<cropsDat> = ({cropNames,data}) => {
             <BarChart
                 key={selectedCrops.join(',')}
                 data={filteredBarData}
-                width={screenWidth - 32}
+                width={screenWidth}
                 height={280}
                 yAxisSuffix=" kg"
                 fromZero

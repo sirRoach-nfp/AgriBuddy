@@ -81,12 +81,26 @@ const ArticleHomeScreen = () => {
                     placeholder="Search"
                     onChangeText={setSearchQuery}
                     value={searchQuery}
-                    style={{borderWidth:0,paddingVertical:0,width:'80%'}}
+                    style={{
+                      borderWidth:0,paddingVertical:0,
+                      backgroundColor: '#f5f5f5', // ✅ soft off-white
+                      borderRadius: 10,
+                 
+                      flex: 1,
+                      marginLeft:10,
+                      marginRight:10,
+                      elevation: 0, // removes Android shadow
+                    
+                    
+                    }}
                     inputStyle={{
                         paddingVertical: 0,
                         fontSize: 14,
                         margin: 0,
                         borderWidth:0,
+
+                        
+
                         
                       }}
 
@@ -175,8 +189,8 @@ const styles = StyleSheet.create({
     
     headerContainer:{
         width:'100%',
-      
-        borderWidth:1,
+        paddingVertical:5,
+        //borderWidth:1,
         display:'flex',
         flexDirection:'row',
         alignItems:'center',

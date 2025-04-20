@@ -192,14 +192,16 @@ const colorMap: Record<string, string> = {
                 const data = getFilteredPieChartDataByYear(selectedYearFilter);
                 return data.length > 0 ? (
                 <PieChart
+                    style={{borderWidth:1}}
                     data={data}
-                    width={screenWidth - 32}
+                    width={screenWidth}
                     height={220}
                     chartConfig={{
                     backgroundColor: "#fff",
                     backgroundGradientFrom: "#fff",
                     backgroundGradientTo: "#fff",
                     color: () => "#000"
+                    
                     }}
                     accessor="amount"
                     backgroundColor="transparent"
@@ -243,32 +245,42 @@ const colorMap: Record<string, string> = {
         <View style={styles.componentFilterWrapper}>
             
 
-            {selectedOption === 'monthly' && (
-                <>
-                {/* Month Dropdown */}
-                <Picker selectedValue={selectedMonthFilter} onValueChange={setSelectedMonthFilter}>
-                    {months.map((month, index) => (
-                    <Picker.Item key={month} label={month} value={index} />
-                    ))}
-                </Picker>
+        {selectedOption === 'monthly' && (
+            <>
+              {/* Month Dropdown */}
+              <Picker
+                selectedValue={selectedMonthFilter}
+                onValueChange={setSelectedMonthFilter}
+                style={{ height: 80,width:150 }} // 👈 fix for native rendering
+              >
+                {months.map((month, index) => (
+                  <Picker.Item key={month} label={month} value={index} />
+                ))}
 
-                {/* Year Dropdown */}
-                <Picker selectedValue={selectedYearFilter} onValueChange={setSelectedYearFilter}>
-                    {yearDataFilter.map(year => (
-                    <Picker.Item key={year} label={`${year}`} value={year} />
-                    ))}
-                </Picker>
-                </>
-            )}
+              </Picker>
+
+              {/* Year Dropdown */}
+              <Picker
+                selectedValue={selectedYearFilter}
+                onValueChange={setSelectedYearFilter}
+                style={{ height: 80,width:150 }} // 👈 fix for native rendering
+              >
+                {yearDataFilter.map((year) => (
+                  <Picker.Item key={year} label={`${year}`} value={year} />
+                ))}
+   
+              </Picker>
+            </>
+          )}
 
             {selectedOption === 'yearly' && (
 
-                <Picker style={{padding:0,borderRadius:5,fontSize:16}}
+                <Picker style={{padding:0,borderRadius:5,fontSize:16,width:150,height:80,borderWidth:1}}
                 onValueChange={(value) => {setSelectedYearFilter(value as string)}}
                 >   
 
                     {yearDataFilter && yearDataFilter.length>0 && yearDataFilter.map((year,index)=>(
-                    <Picker.Item label={year} value={year} />
+                    <Picker.Item label={year} value={year}  />
 
                     ))}
                 
@@ -277,6 +289,7 @@ const colorMap: Record<string, string> = {
 
             )}
         </View>
+
 
 
 
