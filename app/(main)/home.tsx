@@ -16,7 +16,7 @@ import { ScrollView } from 'react-native-gesture-handler'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import RecordMinCard from '@/components/genComponents/recordMinCard'
 import { db } from '../firebaseconfig'
-import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, limit, orderBy, query } from 'firebase/firestore'
 import { useUserContext } from '../Context/UserContext'
 import { Image } from 'react-native';
 
@@ -171,37 +171,32 @@ const home = () => {
 
 
 
-  const fetchArticlesFromFirebase = async()=>{
-
-    try{
-
-      
-
-      const articleDocRef = collection(db,'Articles')
-      const articleSnapshot = await getDocs(articleDocRef)
-
-
-      if(articleSnapshot){
-        const rawData = articleSnapshot.docs.map((doc)=>{
-
-          return{
-            cover:doc.data().cover,
-            title:doc.data().title,
-            articleId:doc.id
-          }
-        })
-
-        setArticleData(rawData)
+  const fetchArticlesFromFirebase = async () => {
+    try {
+      const articleQuery = query(
+        collection(db, 'Articles'),
+        orderBy('CreatedAt', 'desc'),
+        limit(5)
+      );
+  
+      const articleSnapshot = await getDocs(articleQuery);
+  
+      if (articleSnapshot) {
+        const rawData = articleSnapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            cover: data.cover,
+            title: data.title,
+            articleId: doc.id
+          };
+        });
+  
+        setArticleData(rawData);
       }
-        
-
-
-
-      
-
-    }catch(err){console.error(err)}
-  }
-
+    } catch (err) {
+      console.error(err);
+    }
+  };
   
   return (
 

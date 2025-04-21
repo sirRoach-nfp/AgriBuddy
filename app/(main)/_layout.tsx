@@ -10,8 +10,10 @@ import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Tabs } from 'expo-router';
+import Entypo from '@expo/vector-icons/Entypo';
+import Octicons from '@expo/vector-icons/Octicons';
 
-
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 
 const _mainlayout = () => {
@@ -45,7 +47,7 @@ const _mainlayout = () => {
 
                 options={{
                   title: 'Home',
-                  tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+                  tabBarIcon: ({ color }) => <Entypo name="home" size={28} color={color} />,
                   headerShown:false,
            
                 }}
@@ -57,7 +59,7 @@ const _mainlayout = () => {
       
                 options={{
                 title: 'Crops',
-                tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+                tabBarIcon: ({ color }) => <Entypo name="leaf" size={28} color={color} />,
                 headerShown:false,
                 }}
       
@@ -67,7 +69,7 @@ const _mainlayout = () => {
       
                 options={{
                     title: 'discussions',
-                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+                    tabBarIcon: ({ color }) => <Octicons name="comment-discussion" size={28} color={color} />,
                     headerShown:false,
                 }}
       
@@ -86,7 +88,7 @@ const _mainlayout = () => {
       
                 options={{
                     title: 'account',
-                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+                    tabBarIcon: ({ color }) => <MaterialIcons name="account-box" size={28} color={color} /> ,
                     headerShown:false,
                 }}
       

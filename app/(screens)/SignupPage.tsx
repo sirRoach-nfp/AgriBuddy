@@ -341,7 +341,8 @@ const styles = StyleSheet.create({
     inputWrapperHeader:{
         fontSize:16,
         fontWeight:500,
-        marginBottom:5
+        marginBottom:5,
+        color:'#333333'
     },
     forgotPasswordButton:{
         //borderWidth:1,
@@ -364,7 +365,7 @@ const styles = StyleSheet.create({
         flexDirection:'column',
         alignItems:'center',
         justifyContent:'center',
-        backgroundColor:'#253D2C'
+        backgroundColor:'#607D8B'
     },
     logButtonText:{
         color:'#ffffff',
@@ -382,7 +383,7 @@ const styles = StyleSheet.create({
         fontWeight:500
     },
     headerTextMain:{
-        color:'#253D2C',
+        color:'#37474F',
         fontSize:25,
         fontWeight:600,
         marginBottom:5

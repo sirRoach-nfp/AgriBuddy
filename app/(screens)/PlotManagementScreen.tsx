@@ -54,7 +54,11 @@ interface PestLog {
     CropName: string;
     PestName: string;
   }
-
+interface DiseaseLog {
+    Date: string;
+    CropName: string;
+    Diseasename: string;
+  }
 interface FertilizerLog{
     DateApplied:string,
     cropName:string,
@@ -91,11 +95,14 @@ const PlotManagementScreen = () => {
 
 
     const [pestChartLoading,setPestChartLoading] = useState(true);
-
+    const [diseaseChartLoading,setDiseaseChartLoading] = useState(true);
 
     const [pestLogs, setPestLogs] = useState<PestLog[]>([]);
+    const [diseaseLogs,setDiseaseLogs] = useState<DiseaseLog[]>([])
     const [pestListData,setPestListData] = useState<string[]>([]);
+    const [diseaseListData,setDiseaseListData] = useState<string[]>([]);
     const [chartData,setChartData] = useState<any>(null);
+    const [diseaseChartData,setDiseaseChartData] = useState<any>(null)
     const [fertilizerChartMonthlyTotal,setFertilizerChartMonthlyTotal] = useState<any>([])
 
     const [fertilizerLogs,setFertilizerLogs]= useState<FertilizerLog[]>([])
@@ -227,6 +234,55 @@ const PlotManagementScreen = () => {
             }
 
         }
+
+
+        const fetchDiseaseLogRecord = async(plotId:string) =>{
+            
+            console.log("Fetching Diseaes Log Record....")
+            try{
+
+                console.log("Fetching Diseaes Log Record 2....")
+
+
+
+                const docRef = doc(db,'Records',user?.RecordsRefId as string)
+                const docSnap = await getDoc(docRef)
+
+
+                if(docSnap.exists()){
+                     
+
+                    const data = docSnap.data()
+                    console.log("Returned Data : ", data)
+                    const existingLogs = data?.DiseaseLogs || []
+                    console.log("existing data logs : ", existingLogs)
+
+                    const logIndex = existingLogs.findIndex(
+                        (log:any) => log.PlotAssocId === plotId
+                    )
+                    console.log("log index : ", logIndex)
+                    const plotDiseaseLog = existingLogs[logIndex].PlotDiseaseLog;
+
+                    
+                    console.log( "Filtered Plot Diseaes log entry", existingLogs[logIndex].PlotDiseaseLog)
+
+                    const diseaseNames = [...new Set(plotDiseaseLog.map((log: any) => log.Diseasename))];
+                    console.log("Disease List Data: ", diseaseNames);
+
+                    setDiseaseListData(diseaseNames as string[])
+                    setDiseaseLogs(existingLogs[logIndex].PlotDiseaseLog)
+
+
+                }else{
+                    console.log("Document not found records")
+                }
+
+            }catch(err){
+                console.error(err)
+            }
+
+        }
+
         const fetchFertilizerLogRecord = async(plotId:string) =>{
 
             console.log("Fetching Fertilizer Log Record.....")
@@ -260,11 +316,15 @@ const PlotManagementScreen = () => {
             }catch(err){console.log(err)}
         }
 
+
+        
+
       
         if (plotId) {
           fetchPlotData(plotId);
           fetchPestLogRecord(plotId)
           fetchFertilizerLogRecord(plotId)
+          fetchDiseaseLogRecord(plotId)
         }
       }, [plotId]);
 
@@ -320,17 +380,83 @@ const PlotManagementScreen = () => {
                 pestColors, // Return colors for legend
             };
           };
+
+
+          const getMonthlyDiseaseCounts = (logs: any[], diseaseNames: string[]) => {
+
+            if(!diseaseListData || diseaseListData.length === 0){
+                console.log("No disease log to display")
+                return;
+            }
+            console.log("Getting monthly disease counts...");
           
+            // Get last 6 months from today
+            const today = new Date();
+            const months: any[] = [];
+            for (let i = 5; i >= 0; i--) {
+              const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+              const monthLabel = date.toLocaleString('default', { month: 'short' });
+              const year = date.getFullYear();
+              months.push({ label: `${monthLabel}`, year, month: date.getMonth() });
+            }
+          
+            // Initialize counts per disease per month
+            const monthlyData = diseaseNames.reduce((acc: any, disease) => {
+              acc[disease] = new Array(6).fill(0);
+              return acc;
+            }, {});
+          
+            const diseaseColors: { [key: string]: string } = {};
+            diseaseNames.forEach((disease) => {
+              // Generate consistent random colors
+              diseaseColors[disease] = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
+            });
+          
+            // Process logs
+            logs.forEach((log: any) => {
+              const logDate = new Date(log.Date || log.date);
+              const disease = log.Diseasename || log.diseasename;
+          
+              if (!logDate || !disease || !monthlyData[disease]) return;
+          
+              months.forEach((month: any, index: number) => {
+                if (
+                  logDate.getFullYear() === month.year &&
+                  logDate.getMonth() === month.month
+                ) {
+                  monthlyData[disease][index] += 1;
+                }
+              });
+            });
+          
+            // Final chart data
+            return {
+              labels: months.map((m: any) => m.label),
+              datasets: diseaseNames.map((disease) => ({
+                data: monthlyData[disease],
+                label: disease,
+                color: () => diseaseColors[disease],
+                strokeWidth: 2
+              })),
+              pestColors: diseaseColors // this is used for your legends
+            };
+          };
+          
+
+
           setChartData(getWeeklyPestCounts(pestLogs,pestListData))
+          setDiseaseChartData(getMonthlyDiseaseCounts(diseaseLogs,diseaseListData))
           console.log(getWeeklyPestCounts(pestLogs,pestListData))
         
-      },[pestLogs,pestListData])
+      },[pestLogs,pestListData,diseaseLogs,diseaseListData])
 
 
-      useEffect(()=> {
+    useEffect(()=> {
         setPestChartLoading(false)
+        setDiseaseChartLoading(false)
         console.log("Chart data ", chartData)
-      },[chartData])
+        console.log("Chart data for disease  ", diseaseChartData)
+    },[chartData,diseaseChartData])
 
 
  
@@ -550,6 +676,103 @@ const PlotManagementScreen = () => {
             )}
             
             </View>
+
+
+
+
+
+        <View style={{borderWidth:0,marginTop:0,width:'100%',marginLeft:'auto',marginRight:'auto',backgroundColor:'white',paddingVertical:10,elevation:1}}>
+
+             <View style={styles.chartsHeaderWrapper}>
+
+                <View style={styles.chartsHeaderWrapperIcon}>
+
+            </View>
+            <Text style={styles.chartsHeader}>Disease Trend (last 6 months)</Text>
+            
+            <TouchableOpacity style={{flexShrink:1,borderWidth:0,marginLeft:'auto'}} onPress={()=> router.push(`/(screens)/PestOccurrencesDetailed?plotAssocId=${encodeURIComponent(plotId as string)}`)}>
+
+                <Text style={styles.chartsHeaderViewMore}>View In Detail </Text>
+
+            </TouchableOpacity>
+            
+        </View>
+
+
+        {!diseaseChartLoading && diseaseChartData && diseaseListData ? (
+
+        <>
+
+
+
+            <LineChart
+                data={{
+                    labels: diseaseChartData?.labels, // Weeks
+                    datasets: diseaseChartData?.datasets, // Pest occurrence per week
+                }}
+                width={Dimensions.get("window").width} // from react-native
+                height={220}
+                //yAxisLabel="$"
+                //yAxisSuffix="k"
+                yAxisInterval={1} // optional, defaults to 1
+                chartConfig={{
+                backgroundGradientFrom: "#f1f1f1",
+                backgroundGradientTo: "#f1f1f1",
+                decimalPlaces: 2, // optional, defaults to 2dp
+                color: (opacity = 1) => `rgba(75, 192, 192, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                style: {
+                    borderRadius: 16
+                },
+                propsForDots: {
+                    r: "6",
+                    strokeWidth: "2",
+                    stroke: "#ffa726"
+                }
+                }}
+                bezier
+                style={{
+                marginVertical: 8,
+                borderRadius: 0
+                }}
+            />
+
+            <View style={styles.legendWrapper}> 
+
+
+                {Object.entries(diseaseChartData?.pestColors).map(([pest, color]) => (
+                    <View key={pest} style={{ flexDirection: "row", alignItems: "center", marginRight: 10 }}>
+                        {/* Color Indicator */}
+                        <View style={{
+                            width: 15,
+                            height: 15,
+                            backgroundColor: color as string,
+                            marginRight: 5,
+                            borderRadius: 3,
+                            borderWidth:1
+                        }} />
+                        
+                        {/* Pest Name */}
+                        <Text style={{ fontSize: 14,fontWeight:500,color:'#253D2C' }}>{pest}</Text>
+                    </View>
+                ))}
+
+
+            </View>
+
+
+        </>
+
+
+            ) : (
+            <View style={{width:'100%',borderWidth:0,marginTop:15,backgroundColor:'#D2D2D2',height:220,borderRadius:5,display:'flex',alignItems:'center',justifyContent:'center'}}> 
+                <Text style={{fontSize:15,fontWeight:600,color:'#909090'}}>No Available Data To Display</Text>
+            </View>
+            )}
+
+        </View>
+
+            
 
 
 

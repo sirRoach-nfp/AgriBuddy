@@ -84,7 +84,7 @@ const ExpandedWeatherCard = ({temperature,status,humidity,windSpeed,chanceOfRain
   return (
     <LinearGradient 
     
-      colors={getWeatherGradient(status)}
+      colors={['#E0F7FA','#B2EBF2']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     

@@ -24,11 +24,11 @@ export default function LoginPage(){
 
 
     const login = async(email:string,password:string) => {
+        if(email.length === 0 || password.length === 0){return} 
 
         setLoading(true)
 
-        if(email.length === 0 || password.length === 0){return} 
-
+        
 
 
         
@@ -58,6 +58,7 @@ export default function LoginPage(){
         }
         catch(err){
             console.error(err)
+            setLoading(false)
             setlogInErrorVisible(true)
         }
     }
@@ -168,7 +169,7 @@ export default function LoginPage(){
 
                 </View>
 
-                <TouchableOpacity onPress={()=>console.log(user)}>test</TouchableOpacity>
+             
                 <Text style={styles.signUpText}>
 
                     Don't Have An Account ? <TouchableOpacity onPress={()=> router.push('/(screens)/SignupPage')}> <Text style={styles.signUpTextClick}> Sign Up </Text>  </TouchableOpacity>
@@ -237,7 +238,8 @@ const styles = StyleSheet.create({
     inputWrapperHeader:{
         fontSize:16,
         fontWeight:500,
-        marginBottom:5
+        marginBottom:5,
+        color:'#333333'
     },
     forgotPasswordButton:{
         //borderWidth:1,
@@ -260,7 +262,7 @@ const styles = StyleSheet.create({
         flexDirection:'column',
         alignItems:'center',
         justifyContent:'center',
-        backgroundColor:'#253D2C'
+        backgroundColor:'#607D8B'
     },
     logButtonText:{
         color:'#ffffff',
@@ -278,13 +280,13 @@ const styles = StyleSheet.create({
         fontWeight:500
     },
     headerTextMain:{
-        color:'#253D2C',
+        color:'#37474F',
         fontSize:25,
         fontWeight:600,
         marginBottom:5
     },
     headerTextSub:{
-        color:'#7F7B72',
+        color:'#333333',
         fontSize:15
     }
   })

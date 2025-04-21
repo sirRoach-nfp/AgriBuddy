@@ -234,6 +234,7 @@ const CropManagement = () => {
   //pest selected
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [selectedPestnames,setSelectedPestNames] = useState<string[]>([])
+  const [selectedDiseaseNames,setSelectedDiseaseNames] = useState<string[]>([])
   const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
   const [selectedFertilizer, setSelectedFertilizer] = useState('');
   const [selectedApplication, setSelectedApplication] = useState('Side-dressing');
@@ -256,6 +257,10 @@ const CropManagement = () => {
     setSelectedPestNames(selectedNames);
 
   };
+
+
+
+
   const handleAmountChange = (text:string) => {
     // Optional: allow only numbers (with optional decimal)
     const numericValue = text.replace(/[^0-9.]/g, '');
@@ -264,7 +269,11 @@ const CropManagement = () => {
 
   const onSelectedDiseaseChange = (items:string[])=>{
     console.log("Selected disease : ", items)
+    console.log("Local disease data : ", localDiseaseData)
+    const selectedNames = localDiseaseData.filter(disease=>items.includes(disease.id)).map(disease => disease.name);
+    console.log("Selected Disease names conv : ", selectedNames)
     setSelectedDiseases(items);
+    setSelectedDiseaseNames(selectedNames)
   }
 
   const onChangeNotes = (text:string) => {
@@ -726,7 +735,7 @@ const CropManagement = () => {
 
       const data = docSnap.data();
       const existingPestLogs = data?.PestLogs || [];
-      
+      const existingDiseaseLogs = data?.DiseaseLogs || [];
       const existingFertilizerLogs = data?.FertilizerLogs || [];
 
       console.log("Fetched Existing Fertilizer Logs : ",existingFertilizerLogs,)
@@ -763,6 +772,40 @@ const CropManagement = () => {
 
         updatePayload.PestLogs = existingPestLogs;
       }
+
+      //======Disease Logging ======
+      if(selectedDiseaseNames && selectedDiseaseNames.length > 0) {
+        console.log('Selected Disease names : ', selectedDiseaseNames)
+
+
+        const diseaseLogEntries = selectedDiseaseNames.map((disease)=>({
+          Diseasename : disease,
+          Date:date,
+          CropName:cropName,
+          Temp:currentTemp
+        }))
+        
+        const diseaseLogIndex = existingDiseaseLogs.findIndex(
+          (log:any) => log.PlotAssocId === plotAssocId
+        );
+
+        if(diseaseLogIndex !== -1){
+          existingDiseaseLogs[diseaseLogIndex].PlotDiseaseLog = [
+            ...(existingDiseaseLogs[diseaseLogIndex].PlotDiseaseLog || []),
+            ...diseaseLogEntries,
+          ];
+        } else {
+          existingDiseaseLogs.push({
+            PlotAssocId: plotAssocId,
+            PlotDiseaseLog: diseaseLogEntries
+          })
+        }
+
+        updatePayload.DiseaseLogs = existingDiseaseLogs
+
+
+      }
+
 
 
       // ===== Fertilizer Logging =====

@@ -9,6 +9,7 @@ import DailyForecastCard from '@/components/WeatherForecastComponents/DailyForec
 
 
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { LinearGradient } from 'expo-linear-gradient'
 
 
 
@@ -18,7 +19,7 @@ const WeatherForecast = () => {
   const [weatherData,setWeatherData] = useState<any>(null)
   const [loading,setLoading]= useState(true)
   const [weatherStatus,setWeatherStatus] = useState<number>(0)
-
+  const [timeIndex,setTimeIndex] = useState<number>(0)
   const [HourlyForecast,setHourlyForecast] = useState<any>([])
 
   const weatherDescriptions: { [key: number]: string } = {
@@ -56,37 +57,67 @@ const WeatherForecast = () => {
 
   useEffect(()=>{
     
-    const FetchWeather = async()=> {
+    const FetchWeather = async () => {
       const today = new Date();
-      const formattedDate = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+      const formattedDate = today.toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+      });
       setCurrentDate(formattedDate);
-      try{
+    
+      try {
         setLoading(true);
-        const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=15.3066&longitude=120.8564&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,windspeed_10m,surface_pressure,weathercode&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max,weathercode&timezone=Asia/Manila')
-        const data = await response.json()
-        setWeatherData(data)
-        setWeatherStatus(data.hourly.temperature_2m[0])
-        //alert('success')
-        console.log(data)
-        setLoading(false)
-
-        const currentHourIndex = new Date().getHours(); 
-
-
-        const nextHours = data.hourly.time.map((time:string,index:number)=>({
-          time: new Date(time).getHours(),
-          temp: data.hourly.temperature_2m[index],
-          rain: data.hourly.precipitation_probability[index],
-          code:data.hourly.weathercode[index]
-        })).slice(currentHourIndex, currentHourIndex + 5)
-
-        console.log(nextHours)
-        setHourlyForecast(nextHours)
-
-      }catch(err){console.log(err)}
-
-      finally{}
-    }
+    
+        const response = await fetch(
+          'https://api.open-meteo.com/v1/forecast?latitude=15.3066&longitude=120.8564&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,windspeed_10m,surface_pressure,weathercode&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max,weathercode&timezone=Asia/Manila'
+        );
+    
+        const data = await response.json();
+        setWeatherData(data);
+    
+        // Get current time in Manila timezone
+        const now = new Date();
+        const localTimeString = now.toLocaleString('sv-SE', {
+          timeZone: 'Asia/Manila',
+          hour12: false,
+        });
+        const [datePart, timePart] = localTimeString.split(' ');
+        const hourOnly = timePart.slice(0, 2); // e.g. "21"
+        const currentHourString = `${datePart}T${hourOnly}:00`; // "2025-04-20T21:00"
+    
+        const timeIndex = data.hourly.time.findIndex(
+          (t: string) => t === currentHourString
+        );
+        setTimeIndex(timeIndex)
+        console.log('⏱ Matched Manila time string:', currentHourString);
+        console.log('🧭 Time index:', timeIndex);
+    
+        // Fallback if index not found
+        if (timeIndex === -1) {
+          throw new Error('Current time not found in hourly data.');
+        }
+    
+        // Extract current temperature for top card (optional)
+        setWeatherStatus(data.hourly.temperature_2m[timeIndex]);
+    
+        // Prepare next few hours forecast
+        const nextHours = data.hourly.time
+          .map((time: string, index: number) => ({
+            time: new Date(time).getHours(),
+            temp: data.hourly.temperature_2m[index],
+            rain: data.hourly.precipitation_probability[index],
+            code: data.hourly.weathercode[index],
+          }))
+          .slice(timeIndex, timeIndex + 5); // Get current + next 4 hours
+    
+        console.log('📊 Next few hours:', nextHours);
+        setHourlyForecast(nextHours);
+    
+        setLoading(false);
+      } catch (err) {
+        console.log('⚠️ Error:', err);
+      }
+    };
 
     FetchWeather()
 
@@ -94,61 +125,77 @@ const WeatherForecast = () => {
 
   return (
     <SafeAreaView style={styles.mainContainer}>
+        <ScrollView contentContainerStyle={{alignItems:'center'}} style={{paddingTop:10,borderWidth:0,flex:1,width:'100%',display:'flex',flexDirection:'column'}}>
 
+          {loading ? (
+              <Text>Loading weather data...</Text>
+            ) : (
+              <>
+                <ExpandedWeatherCard
+                  temperature={weatherData.hourly.temperature_2m[timeIndex]}
+                  status={weatherDescriptions[ weatherData.hourly.weathercode[0]]}
+                  humidity={weatherData.hourly.relative_humidity_2m?.[0]}
+                  chanceOfRain={weatherData?.hourly?.precipitation_probability?.[0]}
+                  windSpeed={weatherData?.hourly?.windspeed_10m?.[0]}
+                  pressure={weatherData?.hourly?.surface_pressure?.[0]}
+                  currentDate={currentDate}
+                />
 
-        {loading ? (
-            <Text>Loading weather data...</Text>
-          ) : (
-            <>
-              <ExpandedWeatherCard
-                temperature={weatherData.hourly.temperature_2m[0]}
-                status={weatherDescriptions[ weatherData.hourly.weathercode[0]]}
-                humidity={weatherData.hourly.relative_humidity_2m?.[0]}
-                chanceOfRain={weatherData?.hourly?.precipitation_probability?.[0]}
-                windSpeed={weatherData?.hourly?.windspeed_10m?.[0]}
-                pressure={weatherData?.hourly?.surface_pressure?.[0]}
-                currentDate={currentDate}
-              />
+                <LinearGradient 
+                colors={['#E0F7FA','#B2EBF2']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.hourlyWrapper}>
+                  <Text style={styles.hourlyForecastHeader}>{currentDate}</Text>
+                  <View style={styles.hourlyCardWrapper}>
 
-              <View style={styles.hourlyWrapper}>
-                <Text style={styles.hourlyForecastHeader}>{currentDate}</Text>
-                <View style={styles.hourlyCardWrapper}>
+                    {HourlyForecast.map((forecast:any,index:number)=> (
+                      <WeatherForecastHourly
+                        key={index}
+                        hour={forecast.time}
+                        temp={forecast.temp}
+                        rain={forecast.rain}
+                        code={forecast.code}
 
-                  {HourlyForecast.map((forecast:any,index:number)=> (
-                    <WeatherForecastHourly
-                      key={index}
-                      hour={forecast.time}
-                      temp={forecast.temp}
-                      rain={forecast.rain}
-                      code={forecast.code}
-
-                    />
-                  ))}
-                  
-                </View>
-              </View>
-              <ScrollView style={styles.dailyForecastWrapper}>
-                <Text style={styles.dailyForecastHeader}>Forecast Daily</Text>
-
-                {weatherData?.daily?.time?.map((day:string,index:number)=>(
-                      <DailyForecastCard
-                      key={index}
-                      day={day}
-                      temp={weatherData.daily.temperature_2m_max[index]}
-                      rain={weatherData.daily.precipitation_probability_max[index]}
-                      code={weatherData.daily.weathercode[index]}
-                      currentDate={currentDate}
-                      
-                      
                       />
+                    ))}
+                    
+                  </View>
+                </LinearGradient>
 
-                ))}
 
+                <LinearGradient 
                 
-             
-              </ScrollView>
-            </>
-        )}
+                  colors={['#E0F7FA','#B2EBF2']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.dailyForecastWrapper}>
+                  <Text style={styles.dailyForecastHeader}>Forecast Daily</Text>
+
+                  {weatherData?.daily?.time?.map((day:string,index:number)=>(
+                        <DailyForecastCard
+                        key={index}
+                        day={day}
+                        temp={weatherData.daily.temperature_2m_max[index]}
+                        rain={weatherData.daily.precipitation_probability_max[index]}
+                        code={weatherData.daily.weathercode[index]}
+                        currentDate={currentDate}
+                        
+                        
+                        />
+
+                  ))}
+
+                  
+              
+                </LinearGradient>
+              </>
+          )}
+
+
+        </ScrollView>
+
+
 
 
 
@@ -169,7 +216,7 @@ const styles = StyleSheet.create({
         display:'flex',
         flexDirection:'column',
         alignItems:'center',
-        paddingTop:20
+        //paddingTop:20
     },
 
     scrollWrapper:{
