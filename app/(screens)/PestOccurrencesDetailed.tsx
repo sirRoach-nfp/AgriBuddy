@@ -10,11 +10,11 @@ import { DataTable } from 'react-native-paper';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseconfig';
 import { useSearchParams } from 'expo-router/build/hooks';
-
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 import DatePicker from 'react-native-date-picker';
 import { LineChart,PieChart } from 'react-native-chart-kit';
-import { useNavigation } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import { useUserContext } from '../Context/UserContext';
 
 interface PestLog {
@@ -462,10 +462,16 @@ const PestOccurrencesDetailed = () => {
 
 
 
-            <Appbar.Header style={{width:'100%',flex:1,height:50}}>
-                <Appbar.BackAction onPress={()=> navigation.goBack()} />
-                <Appbar.Content title="Pest Occurrences Detailed Overview" />
-            </Appbar.Header>
+        <View style={styles.headerContainer}>
+
+            <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10}} onPress={()=> router.back()}>
+
+                <Ionicons name="arrow-back" size={30} color="#607D8B" />
+
+            </TouchableOpacity>
+
+
+        </View>
 
 
 
@@ -827,6 +833,21 @@ const PestOccurrencesDetailed = () => {
 export default PestOccurrencesDetailed
 
 const styles = StyleSheet.create({
+
+    
+    headerContainer:{
+        width:'100%',
+        maxHeight:50,
+        //borderWidth:1,
+        display:'flex',
+        flexDirection:'row',
+        alignItems:'center',
+        paddingVertical:10,
+        height:50,
+        //backgroundColor:'#2E6F40',
+        //marginBottom:20,
+        //backgroundColor:'white'
+    },
     scrollContainer:{
         display:'flex',
         flexDirection:'column',

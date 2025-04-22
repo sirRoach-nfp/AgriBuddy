@@ -317,14 +317,17 @@ const styles = StyleSheet.create({
     componentMainWrapper:{
         width:'100%',
         paddingVertical:10,
-        borderWidth:1,
-        borderColor:'red'
+        //borderWidth:1,
+        //borderColor:'red',
+        marginBottom:5,
+        marginTop:5,
+        elevation:1
     },
     componentHeaderWrapper:{
         width:'100%',
         paddingVertical:10,
         borderColor:'blue',
-        borderWidth:1,
+        //borderWidth:1,
         display:'flex',
         flexDirection:'column',
         alignItems:'center',
@@ -337,7 +340,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         alignItems:'center',
         justifyContent:'center',
-        borderWidth:1,
+        //borderWidth:1,
         borderColor:'yellow',
         gap:20
     },
@@ -348,9 +351,10 @@ const styles = StyleSheet.create({
 
     //text
     componentHeaderText:{
-        fontSize:16,
+        fontSize:17,
         fontWeight:600,
-        marginBottom:10
+        marginBottom:10,
+        color:'#37474F'
     },
 
 
@@ -377,12 +381,12 @@ const styles = StyleSheet.create({
       },
       activeText: {
         fontWeight: 'bold',
-        color: '#2E6F40',
+        color: '#37474F',
       },
       activeLine: {
         marginTop: 4,
         height: 2,
         width: '100%',
-        backgroundColor: '#2E6F40',
+        backgroundColor: '#37474F',
       },
 })

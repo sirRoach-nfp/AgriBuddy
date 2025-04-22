@@ -1,15 +1,16 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import WeatherForecastHourly from '@/components/WeatherForecastComponents/WeatherForecastHourly'
 import ExpandedWeatherCard from '@/components/WeatherForecastComponents/ExpandedWeatherCard'
 import DailyForecastCard from '@/components/WeatherForecastComponents/DailyForecastCard'
-
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { LinearGradient } from 'expo-linear-gradient'
+import { router } from 'expo-router'
 
 
 
@@ -125,6 +126,16 @@ const WeatherForecast = () => {
 
   return (
     <SafeAreaView style={styles.mainContainer}>
+        <View style={styles.headerContainer}>
+
+            <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10}} onPress={()=> router.back()}>
+
+                <Ionicons name="arrow-back" size={30} color="#607D8B" />
+
+            </TouchableOpacity>
+
+
+        </View>
         <ScrollView contentContainerStyle={{alignItems:'center'}} style={{paddingTop:10,borderWidth:0,flex:1,width:'100%',display:'flex',flexDirection:'column'}}>
 
           {loading ? (
@@ -218,6 +229,19 @@ const styles = StyleSheet.create({
         alignItems:'center',
         //paddingTop:20
     },
+    headerContainer:{
+      width:'100%',
+      maxHeight:50,
+      //borderWidth:1,
+      display:'flex',
+      flexDirection:'row',
+      alignItems:'center',
+      paddingVertical:10,
+      height:50,
+      //backgroundColor:'#2E6F40',
+      //marginBottom:20,
+      //backgroundColor:'white'
+  },
 
     scrollWrapper:{
         flex:1,

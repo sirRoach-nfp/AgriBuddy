@@ -16,23 +16,17 @@ export default function App(){
 
 
 
-                <Link href='/(main)/home'>
-                    <Text>
-                            Continue
-                    </Text>
-                
-                
-                </Link>
 
 
 
 
 
-
-                <Text style={styles.signUpText}>
-
-                    Don't Have An Account ? <TouchableOpacity onPress={()=> {router.push('/(screens)/SignupPage')}}> <Text style={styles.signUpTextClick}> Sign Up </Text>  </TouchableOpacity>
-                </Text>
+        <Text style={styles.signUpText}>
+        Don't Have An Account ? 
+        <TouchableOpacity onPress={() => {router.push('/(screens)/SignupPage')}}> 
+            <Text style={styles.signUpTextClick}> Sign Up </Text>  
+        </TouchableOpacity>
+        </Text>
 
 
                 

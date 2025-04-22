@@ -170,10 +170,15 @@ export default function LoginPage(){
                 </View>
 
              
-                <Text style={styles.signUpText}>
 
-                    Don't Have An Account ? <TouchableOpacity onPress={()=> router.push('/(screens)/SignupPage')}> <Text style={styles.signUpTextClick}> Sign Up </Text>  </TouchableOpacity>
-                </Text>
+
+
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 0,borderWidth:0,display:'flex' }}>
+                    <Text style={styles.signUpText}>Don't Have An Account?</Text>
+                    <TouchableOpacity onPress={() => router.push('/(screens)/SignupPage')}>
+                        <Text style={styles.signUpTextClick}> Sign Up</Text>
+                    </TouchableOpacity>
+                </View>
 
 
 
@@ -271,8 +276,8 @@ const styles = StyleSheet.create({
 
     signUpText:{
         fontSize:15,
-        marginTop:'auto',
-        marginBottom:20,
+        //marginTop:'auto',
+        //marginBottom:20,
         color:'#7F7B72'
     },
     signUpTextClick:{

@@ -338,7 +338,7 @@ const PostScreen = () => {
 
                     {
                         imageUri.map((item,index)=>(
-                            <TouchableOpacity style={styles.thumbImagesWrapper} onPress={()=>removeImage(index)}>
+                            <TouchableOpacity style={styles.thumbImagesWrapper} onPress={()=>removeImage(index)} key={item + index}>
 
                                 <Image source={{uri:imageUri[index]}} style={styles.thumbImg}/>
 
@@ -435,7 +435,7 @@ const styles = StyleSheet.create({
         borderWidth:1,
         borderRadius:10,
         marginLeft:'auto',
-        marginRight:10
+        marginRight:10,
     },
     imageThumbContainer:{
         width:'100%',

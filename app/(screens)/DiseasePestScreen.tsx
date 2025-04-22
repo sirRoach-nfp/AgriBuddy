@@ -190,9 +190,7 @@ const DiseasePestScreen = () => {
                     </Text>
                 ))}
 
-                <TouchableOpacity onPress={()=>{console.log(pestData?.DamageSymptoms)}}>
-                    Test
-                </TouchableOpacity>
+        
 
             </ScrollView>
         }
@@ -217,14 +215,14 @@ const DiseasePestScreen = () => {
             <ScrollView style={stylesContent.mainContainer}>
 
 
-                {pestData?.DamageSymptoms.Symptoms.replace(/\\n/g, '\n').split('\n').map((line, index) => (
+                {pestData?.DamageSymptoms?.Symptoms && pestData?.DamageSymptoms.Symptoms.replace(/\\n/g, '\n').split('\n').map((line, index) => (
                     <Text key={index} style={stylesContent.contentText}>
                         {line}
                     </Text>
                 ))}
 
 
-                {pestData?.DamageSymptoms.SymptomsSnapshot.map((snapshot,index)=>(
+                {pestData?.DamageSymptoms?.SymptomsSnapshot && pestData?.DamageSymptoms.SymptomsSnapshot.map((snapshot,index)=>(
                     <View key={index} style={stylesContent.snapShots}>
                         <Image source={{ uri: snapshot }} style={{ width: '100%', height: '100%',borderRadius:5 }} />
                     </View>
@@ -241,14 +239,14 @@ const DiseasePestScreen = () => {
         {selectedOption === 'ControlMeasures' && 
         
             <ScrollView style={stylesContent.mainContainer}>
-                <Text style={stylesContent.contentText}>
+                <View style={{ paddingHorizontal: 10, marginTop: 10 }}>
                     
-                {pestData?.ControlMeasures.replace(/\\n/g, '\n').split('\n').map((line, index) => (
-                    <Text key={index} style={stylesContent.contentText}>
-                        {line}
-                    </Text>
-                ))}
-                </Text>
+                    {pestData?.ControlMeasures.replace(/\\n/g, '\n').split('\n').map((line, index) => (
+                        <Text key={index} style={stylesContent.contentText}>
+                            {line}
+                        </Text>
+                    ))}
+                </View>
 
 
 

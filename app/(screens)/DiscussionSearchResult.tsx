@@ -134,11 +134,11 @@ const DiscussionSearchResult = () => {
 
             <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10,marginTop:'auto',marginBottom:'auto'}} onPress={()=> router.back()}>
 
-                <Ionicons name="arrow-back" size={30} color="black" />
+                <Ionicons name="arrow-back" size={30} color="#607D8B" />
 
             </TouchableOpacity>
 
-            <Text>
+            <Text style={{fontSize:18,fontWeight:600,color:'#37474F'}}>
                 Search Results For {queryString}
             </Text>
 

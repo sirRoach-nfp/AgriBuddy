@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View,KeyboardAvoidingView, Platform } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ScrollView } from 'react-native-gesture-handler'
@@ -1063,6 +1063,12 @@ const CropManagement = () => {
   }
   return (
 
+
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+
     <PaperProvider>
 
 
@@ -1261,7 +1267,7 @@ const CropManagement = () => {
 
 
           
-      
+        
         <ScrollView style={styles.contentWrapper} contentContainerStyle={{alignItems:'center'}}>
 
 
@@ -1665,6 +1671,7 @@ const CropManagement = () => {
     </SafeAreaView>
 
     </PaperProvider>
+    </KeyboardAvoidingView>
   )
 }
 
