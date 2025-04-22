@@ -1704,20 +1704,22 @@ const stylesCollapsible = StyleSheet.create({
     paddingTop:10,
     paddingBottom:10,
     paddingLeft:10,
-    backgroundColor:'#CFFFDC',
-    marginBottom:10
+    backgroundColor:'white',
+    marginBottom:10,
+    elevation:2
   },
 
   header:{
-    color:'#253D2C',
-    fontSize:17,
+    color:'#37474F',
+    fontSize:18,
     fontWeight:700
   },
   contentText:{
     marginBottom:20,
     marginTop:30,
     fontWeight:400,
-    fontSize:16
+    fontSize:17,
+    color:'#333333'
   }
 })
 
@@ -1848,12 +1850,12 @@ const stylesRecords = StyleSheet.create({
     width:25,
     height:25,
     borderRadius:5,
-    backgroundColor:'#253D2C'
+    backgroundColor:'#37474F'
   },
   inputText:{
     fontSize:16,
     fontWeight:600,
-    color:'#253D2C',
+    color:'#37474F',
     marginRight:10,
     marginLeft:10
   },
@@ -1870,7 +1872,7 @@ const stylesRecords = StyleSheet.create({
   header:{
     fontSize:20,
     fontWeight:500,
-    color:'#253D2C',
+    color:'#37474F',
     textAlign:'center',
     marginBottom:35
   }
@@ -1945,7 +1947,7 @@ const styles = StyleSheet.create({
   },
 
   scientificName:{
-    color:'#253D2C',
+    color:'#333333',
     fontSize:16,
     fontStyle:'italic',
     fontWeight:400
@@ -1953,7 +1955,7 @@ const styles = StyleSheet.create({
 
 
   cropName:{
-    color:'#253D2C',
+    color:'#37474F',
     fontSize:30,
     fontWeight:600,
     marginRight:5
@@ -2021,18 +2023,18 @@ const styles = StyleSheet.create({
   },
   segmentText: {
     color: 'black',
-    fontSize: 16,
-    fontWeight:500
+    fontSize: 17,
+    fontWeight:600
   },
   activeText: {
     fontWeight: 'bold',
-    color: '#2E6F40',
+    color: '#37474F',
   },
   activeLine: {
     marginTop: 4,
     height: 2,
     width: '100%',
-    backgroundColor: '#2E6F40',
+    backgroundColor: '#37474F',
   }
 
 

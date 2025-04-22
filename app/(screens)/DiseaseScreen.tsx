@@ -281,7 +281,9 @@ const stylesContent = StyleSheet.create({
     },
     contentText:{
         marginBottom:15,
-        fontSize:16
+        color:'#333333',
+        fontSize:19,
+        fontWeight:400
     }
 })
 
@@ -324,17 +326,17 @@ const styles = StyleSheet.create({
       },
       segmentText: {
         color: 'black',
-        fontSize: 17,
+        fontSize: 19,
       },
       activeText: {
         fontWeight: 'bold',
-        color: '#2E6F40',
+        color: '#37474F',
       },
       activeLine: {
         marginTop: 4,
         height: 2,
         width: '100%',
-        backgroundColor: '#2E6F40',
+        backgroundColor: '#37474F',
       },
       scrollContainer: {
         flexDirection: 'row',
@@ -343,8 +345,8 @@ const styles = StyleSheet.create({
       //header info
 
       cropName:{
-        fontSize:30,
-        color:'#253D2C',
+        fontSize:35,
+        color:'#37474F',
         fontWeight:600,
         marginBottom:5
       },
