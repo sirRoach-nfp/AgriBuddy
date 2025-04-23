@@ -150,6 +150,7 @@ const DisussionScreen = () => {
                 Content: doc.data().Content || "",
             }));
             
+            replies.sort((a,b) => b.CreatedAt.toDate().getTime() - a.CreatedAt.toDate().getTime())
             setComments(replies)
             console.log("ReFetched Replies:", replies);
 
