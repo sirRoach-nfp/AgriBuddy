@@ -703,7 +703,7 @@ const PestOccurrencesDetailed = () => {
                 </View>
 
 
-         //temp chart
+ 
 
                 <View style={styleComparisonChart.wrapper}>
 
@@ -811,8 +811,7 @@ const PestOccurrencesDetailed = () => {
 
 
 
-                <TouchableOpacity onPress={()=>console.log(cropNameListData)}>See crops</TouchableOpacity>
-
+                
             </ScrollView>
 
 

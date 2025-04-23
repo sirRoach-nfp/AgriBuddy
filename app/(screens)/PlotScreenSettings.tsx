@@ -963,7 +963,7 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
                     <TextInput value={plotName} onChange={(e)=>setPlotName(e.nativeEvent.text)} placeholder="Title" style={styles.titleInput}></TextInput>
 
 
-                    <TouchableOpacity onPress={()=> setShowEditConfirmation(true)} style={{alignSelf:'flex-start',borderWidth:0,paddingVertical:5,paddingHorizontal:10,borderRadius:5,backgroundColor:'red',elevation:2}}><Text style={{color:"white"}}>Update Plot Information</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={()=> setShowEditConfirmation(true)} style={{alignSelf:'flex-start',borderWidth:0,paddingVertical:5,paddingHorizontal:10,borderRadius:5,backgroundColor:'#297340',elevation:2}}><Text style={{color:"white"}}>Update Plot Information</Text></TouchableOpacity>
                 </View>
 
 

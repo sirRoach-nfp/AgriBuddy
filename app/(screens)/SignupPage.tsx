@@ -258,7 +258,7 @@ export default function SignupPage() {
 
                     <View style={styles.inputWrapper}>
                         <Text style={styles.inputWrapperHeader}>Password : </Text>
-                        <TextInput placeholder="Enter Your Password" style={styles.textInput} onChange={(e)=>setPassword(e.nativeEvent.text)} value={password}></TextInput>
+                        <TextInput secureTextEntry={true} placeholder="Enter Your Password" style={styles.textInput} onChange={(e)=>setPassword(e.nativeEvent.text)} value={password}></TextInput>
                     </View>
 
                     

@@ -1,10 +1,10 @@
-import { ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { router } from 'expo-router'
 import { Searchbar } from 'react-native-paper'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from '../firebaseconfig'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useSearchParams } from 'expo-router/build/hooks'
@@ -25,9 +25,17 @@ const ArticleSearchResult = () => {
     const searchParams = useSearchParams()
 
     const queryString = searchParams.get('searchQuery')
+    const [loadingResult,setLoadingResult] = useState(false)
 
-
-
+    const preprocessSearch = (text: string): string[] => {
+      return text
+        .toLowerCase()
+        .replace(/[^\w\s]/gi, '')
+        .split(/\s+/)
+        .filter((word, index, self) => 
+          word.length > 1 && self.indexOf(word) === index
+        );
+    };
 
     useEffect(()=>{
 
@@ -35,8 +43,18 @@ const ArticleSearchResult = () => {
 
             try{
 
-                const articleDocRef = collection(db,'Articles')
-                const articleDocSnap = await getDocs(articleDocRef)
+                setLoadingResult(true)
+
+                const keywords = preprocessSearch(queryString as string).slice(0,10);
+
+                const q = query(
+                    collection(db,'Articles'),
+                    where("keywords","array-contains-any",keywords)
+                )
+
+
+       
+                const articleDocSnap = await getDocs(q)
 
 
 
@@ -51,28 +69,32 @@ const ArticleSearchResult = () => {
 
                     console.log("Fetched Article Data : ", rawData)
                     setArticleData(rawData)
+
+                    setLoadingResult(false)
+                }else{
+                  setLoadingResult(false)
                 }
             }catch(err){console.error(err)}
             
 
         }
 
-        //fetchArticles()
+        fetchArticles()
     },[])
   return (
 
 
-    <SafeAreaView style={{flex:1,borderWidth:1,flexDirection:'column',display:'flex',alignItems:'center'}}>
+    <SafeAreaView style={{flex:1,borderWidth:0,flexDirection:'column',display:'flex',alignItems:'center'}}>
 
         <View style={styles.headerContainer}>
 
             <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10,marginTop:'auto',marginBottom:'auto'}} onPress={()=> router.back()}>
 
-                <Ionicons name="arrow-back" size={30} color="black" />
+                <Ionicons name="arrow-back" size={30} color="#607D8B" />
 
             </TouchableOpacity>
 
-            <Text>
+            <Text numberOfLines={2} ellipsizeMode="tail" style={{marginLeft:10,fontSize:18,fontWeight:600,color:'#37474F'}} >
                 Search Results For {queryString}
             </Text>
 
@@ -83,69 +105,80 @@ const ArticleSearchResult = () => {
 
         </View>
 
-        <ScrollView style={styles.scrollContainer}  contentContainerStyle={{alignItems:'center'}}>
+        {loadingResult === true ? (
+              <View style={{borderWidth:0,flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+  
+                  <ActivityIndicator size={75 }color="#607D8B"  />
+              </View>
+        ) : (
+
+          <ScrollView style={styles.scrollContainer}  contentContainerStyle={{alignItems:'center'}}>
             {articleData && articleData.length > 0 ? articleData.map((article,index)=>(
 
 
             <TouchableOpacity key={index}
-                    style={{
-                      width: '100%',
-                      height: 200,
-                      borderRadius: 10,
-                      overflow: 'hidden', // Important to clip children like the rounded corners
-                    }}
-                    onPress={() => {
-                      router.push(`/(screens)/ArticleMainScreen?articleId=${encodeURIComponent(article.articleId)}`);
-                    }}
-                  >
-                    <ImageBackground
-                      source={{ uri: article.cover }}
-                      resizeMode="cover"
                       style={{
-                        flex: 1,
-                        display:'flex',
-                        flexDirection:'column'
+                        width: '100%',
+                        height: 200,
+                        borderRadius: 10,
+                        overflow: 'hidden', // Important to clip children like the rounded corners
+                      }}
+                      onPress={() => {
+                        router.push(`/(screens)/ArticleMainScreen?articleId=${encodeURIComponent(article.articleId)}`);
                       }}
                     >
-                      {/* Overlay Gradient to improve text readability */}
-                      <LinearGradient
-                        colors={['transparent', 'rgba(0,0,0,0.6)']}
+                      <ImageBackground
+                        source={{ uri: article.cover }}
+                        resizeMode="cover"
                         style={{
-                          padding: 10,
-                          width: '100%',
-                          position: 'absolute',
-                          bottom: 0,
+                          flex: 1,
+                          display:'flex',
+                          flexDirection:'column'
                         }}
                       >
-                        <Text
-                          numberOfLines={2}
-                          ellipsizeMode="tail"
+                        {/* Overlay Gradient to improve text readability */}
+                        <LinearGradient
+                          colors={['transparent', 'rgba(0,0,0,0.6)']}
                           style={{
-                            color: 'white',
-                            fontSize: 20,
-                            fontWeight: '600',
-                            marginTop:'auto'
+                            padding: 10,
+                            width: '100%',
+                            position: 'absolute',
+                            bottom: 0,
                           }}
                         >
+                          <Text
+                            numberOfLines={2}
+                            ellipsizeMode="tail"
+                            style={{
+                              color: 'white',
+                              fontSize: 20,
+                              fontWeight: '600',
+                              marginTop:'auto'
+                            }}
+                          >
 
 
-                          {article.title}
-                        </Text>
-                      </LinearGradient>
-                    </ImageBackground>
-                </TouchableOpacity>
+                            {article.title}
+                          </Text>
+                        </LinearGradient>
+                      </ImageBackground>
+                  </TouchableOpacity>
 
 
 
-            )) : (
-              <View style={{marginTop:100,borderWidth:0,display:'flex',flexDirection:'column', alignItems:'center',justifyContent:'center'}}>
-                
-                <MaterialIcons name="search-off" size={75} color="#607D8B" />
-                <Text style={{fontSize:25,fontWeight:600, color:"#37474F"}}>No Result Found</Text>
-                <Text style={{fontSize:16,fontWeight:400,color:"#333333"}}>We Can't Find Any Article Matching Yourself</Text>
-              </View>
-            )}
-        </ScrollView>
+              )) : (
+                <View style={{marginTop:100,borderWidth:0,display:'flex',flexDirection:'column', alignItems:'center',justifyContent:'center'}}>
+                  
+                  <MaterialIcons name="search-off" size={75} color="#607D8B" />
+                  <Text style={{fontSize:25,fontWeight:600, color:"#37474F"}}>No Result Found</Text>
+                  <Text style={{fontSize:16,fontWeight:400,color:"#333333"}}>We Can't Find Any Article Matching Yourself</Text>
+                </View>
+              )}
+          </ScrollView>
+
+        )}
+
+
 
 
 
@@ -161,7 +194,7 @@ const styles = StyleSheet.create({
     headerContainer:{
         width:'100%',
         height:56,
-        borderWidth:1,
+        //borderWidth:1,
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
@@ -175,9 +208,9 @@ const styles = StyleSheet.create({
         display:'flex',
         width:'98%',
         flexDirection:'column',
-       
+
         flex:1,
-        borderWidth:1,
-        paddingTop:10
+        //borderWidth:1,
+        paddingTop:20
     }
 })

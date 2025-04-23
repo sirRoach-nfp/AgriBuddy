@@ -150,7 +150,7 @@ export default function LoginPage(){
 
                     <View style={styles.inputWrapper}>
                         <Text style={styles.inputWrapperHeader}>Password : </Text>
-                        <TextInput onChange={(e)=>setPassword(e.nativeEvent.text)} placeholder="Enter Your Password" style={styles.textInput}></TextInput>
+                        <TextInput secureTextEntry={true} onChange={(e)=>setPassword(e.nativeEvent.text)} placeholder="Enter Your Password" style={styles.textInput}></TextInput>
                     </View>
 
 

@@ -334,6 +334,7 @@ const PlotManagementScreen = () => {
       useEffect(()=>{
 
 
+        /*
 
         const getWeeklyPestCounts = (logs:any,pestDataName:string[]) => {
             console.log("Getting weekly pest counts...")
@@ -380,6 +381,78 @@ const PlotManagementScreen = () => {
                 pestColors, // Return colors for legend
             };
           };
+            */
+
+
+
+          const getMonthlyPestCounts =(logs:any[],pestDataName:string[])=>{
+
+            
+
+            if (!pestListData || pestListData.length === 0) {
+                console.warn("No pests available, skipping chart update.");
+                return;
+            }
+
+            // Get last 6 months from today
+            const today = new Date();
+            const months: any[] = [];
+            for (let i = 5; i >= 0; i--) {
+                const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+                const monthLabel = date.toLocaleString('default', { month: 'short' });
+                const year = date.getFullYear();
+                months.push({ label: `${monthLabel}`, year, month: date.getMonth() });
+            }
+
+            // Initialize counts per disease per month
+            const monthlyData = pestDataName.reduce((acc: any, pest) => {
+                acc[pest] = new Array(6).fill(0);
+                return acc;
+                }, {});
+
+
+            const diseaseColors: { [key: string]: string } = {};
+            pestDataName.forEach((pest) => {
+                // Generate consistent random colors
+                diseaseColors[pest] = `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
+            });
+
+
+            // Process logs
+            logs.forEach((log: any) => {
+                const logDate = new Date(log.Date || log.date);
+                const pest = log.Pestname || log.pestname;
+            
+                if (!logDate || !pest || !monthlyData[pest]) return;
+            
+                months.forEach((month: any, index: number) => {
+                  if (
+                    logDate.getFullYear() === month.year &&
+                    logDate.getMonth() === month.month
+                  ) {
+                    monthlyData[pest][index] += 1;
+                  }
+                });
+              });
+
+              return {
+                labels: months.map((m: any) => m.label),
+                datasets: pestDataName.map((pest) => ({
+                  data: monthlyData[pest],
+                  label: pest,
+                  color: () => diseaseColors[pest],
+                  strokeWidth: 2
+                })),
+                pestColors: diseaseColors // this is used for your legends
+              };
+
+
+
+
+
+
+          }
+
 
 
           const getMonthlyDiseaseCounts = (logs: any[], diseaseNames: string[]) => {
@@ -444,9 +517,9 @@ const PlotManagementScreen = () => {
           
 
 
-          setChartData(getWeeklyPestCounts(pestLogs,pestListData))
+          setChartData(getMonthlyPestCounts(pestLogs,pestListData))
           setDiseaseChartData(getMonthlyDiseaseCounts(diseaseLogs,diseaseListData))
-          console.log(getWeeklyPestCounts(pestLogs,pestListData))
+          //console.log(getWeeklyPestCounts(pestLogs,pestListData))
         
       },[pestLogs,pestListData,diseaseLogs,diseaseListData])
 
@@ -690,11 +763,7 @@ const PlotManagementScreen = () => {
             </View>
             <Text style={styles.chartsHeader}>Disease Trend (last 6 months)</Text>
             
-            <TouchableOpacity style={{flexShrink:1,borderWidth:0,marginLeft:'auto'}} onPress={()=> router.push(`/(screens)/PestOccurrencesDetailed?plotAssocId=${encodeURIComponent(plotId as string)}`)}>
-
-                <Text style={styles.chartsHeaderViewMore}>View In Detail </Text>
-
-            </TouchableOpacity>
+ 
             
         </View>
 

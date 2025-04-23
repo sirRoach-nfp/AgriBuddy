@@ -241,7 +241,7 @@ const DiseasePestScreen = () => {
             <ScrollView style={stylesContent.mainContainer}>
                 <View style={{ paddingHorizontal: 10, marginTop: 10 }}>
                     
-                    {pestData?.ControlMeasures.replace(/\\n/g, '\n').split('\n').map((line, index) => (
+                    {pestData && pestData.ControlMeasures && pestData?.ControlMeasures.replace(/\\n/g, '\n').split('\n').map((line, index) => (
                         <Text key={index} style={stylesContent.contentText}>
                             {line}
                         </Text>

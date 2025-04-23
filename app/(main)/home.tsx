@@ -84,6 +84,8 @@ const home = () => {
 
 
     useCallback(()=>{
+
+    
       const fetchCurrentCrop = async()=>{
 
         if (!user?.CurrentCropsRefId) {
