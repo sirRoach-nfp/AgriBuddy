@@ -69,6 +69,9 @@ const records = () => {
             })
           );
 
+
+          
+
           console.log(discussions)
           setDiscussionData(discussions)
           setLoadingResult(false)

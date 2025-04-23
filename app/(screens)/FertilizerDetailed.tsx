@@ -305,7 +305,7 @@ const fetchFertilizerLogRecord = async(plotId:string) =>{
 
         {selectedOption === 'analytics' && (
 
-                <ScrollView style={{display:'flex',flexDirection:'column',width:'100%',flex:1,borderWidth:1,borderColor:'blue'}}>
+                <ScrollView style={{display:'flex',flexDirection:'column',width:'100%',flex:1,borderWidth:0,borderColor:'blue'}}>
                     <FertilizerDistributionPiechart data={fertilizerLogs} yearDataFilter={yearDataForFilter}/>
                     <FertilizerUsageByCrop data={fertilizerLogs} cropNames={onCropsData}/>
 

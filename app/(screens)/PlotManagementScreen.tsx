@@ -666,7 +666,7 @@ const PlotManagementScreen = () => {
                     <View style={styles.chartsHeaderWrapperIcon}>
 
                     </View>
-                    <Text style={styles.chartsHeader}>Pest Occurrences Per Week</Text>
+                    <Text style={styles.chartsHeader}>Pest Trend (last 6 months)</Text>
                     
                     <TouchableOpacity style={{flexShrink:1,borderWidth:0,marginLeft:'auto'}} onPress={()=> router.push(`/(screens)/PestOccurrencesDetailed?plotAssocId=${encodeURIComponent(plotId as string)}`)}>
 

@@ -37,7 +37,7 @@ const DiseaseScreen = () => {
 
     const [diseaseData,setDiseaseData] = useState<DiseaseData>()
 
-    const [selectedOption,setSelectedOption] = useState<String>('Characteristics');
+    const [selectedOption,setSelectedOption] = useState<String>('Symptoms');
     const handleSegmentChange = (value:String) => {
     setSelectedOption(value);
     };

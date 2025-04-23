@@ -267,46 +267,46 @@ const CropProfile = () => {
 
                                     </View>
 
-                                    <View style={subContainer.badgeWrapper}>
+                                    <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Sandy") && { backgroundColor: '#CFFFDC' }]}>
                                         <Image source={soilImages['sandy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
                                         <Text style={styles.badgesText}>Sandy</Text>
                                     </View>
 
-                                    <View style={subContainer.badgeWrapper}>
+                                    <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Clayey") && { backgroundColor: '#CFFFDC' }]}>
                                         <Image source={soilImages['clay']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
                                         <Text style={styles.badgesText}>Clayey</Text>
                                     </View>
 
-                                    <View style={subContainer.badgeWrapper}>
+                                    <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Silty") && { backgroundColor: '#CFFFDC' }]}>
                                         
                                         <Image source={soilImages['loamy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
                                         <Text  style={styles.badgesText}>Silty</Text>
 
                                     </View>
 
-                                    <View style={subContainer.badgeWrapper}>
+                                    <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Peaty") && { backgroundColor: '#CFFFDC' }]}>
                                         <Image source={soilImages['sandy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
                                         <Text style={styles.badgesText}>Peaty</Text>
                                     </View>
 
-                                    <View style={subContainer.badgeWrapper}>
+                                    <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Sandy loam") && { backgroundColor: '#CFFFDC' }]}>
                                         <Image source={soilImages['clay']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
                                         <Text style={styles.badgesText}>Sandy Loam</Text>
                                     </View>
 
-                                    <View style={subContainer.badgeWrapper}>
+                                    <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Clay Loam") && { backgroundColor: '#CFFFDC' }]}>
                                         
                                         <Image source={soilImages['loamy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
                                         <Text  style={styles.badgesText}>Clay Loam</Text>
 
                                     </View>
 
-                                    <View style={subContainer.badgeWrapper}>
+                                    <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Silty Loam") && { backgroundColor: '#CFFFDC' }]}>
                                         <Image source={soilImages['sandy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
                                         <Text style={styles.badgesText}>Silty Loam</Text>
                                     </View>
 
-                                    <View style={subContainer.badgeWrapper}>
+                                    <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Sandy Clay Loam") && { backgroundColor: '#CFFFDC' }]}>
                                         <Image source={soilImages['clay']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
                                         <Text style={styles.badgesText}>Sandy Clay Loam</Text>
                                     </View>

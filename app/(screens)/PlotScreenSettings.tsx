@@ -164,9 +164,11 @@ const PlotScreenSettings = () => {
   },[plotRefIdParam])
 
   const deletePlot = async (selectedPlotId: string) => {
+
+    console.log("Before check - isCurrentCrop:", isCurrentCrop);
     setShowDeletePlotConfirmation(false)
     console.log("Is current Crop : ",isCurrentCrop)
-    if (isCurrentCrop) {
+    if (isCurrentCrop !== 'null') {
         setDeletePlotError(true);
         return;
       }

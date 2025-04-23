@@ -122,7 +122,7 @@ const home = () => {
       }
 
       fetchCurrentCrop()
-
+      fetchArticlesFromFirebase()
     },[])
   )
 
