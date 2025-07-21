@@ -125,25 +125,29 @@ const FertilizerUsageByCrop:React.FC<cropsDat> = ({cropNames,data}) => {
 
 
         <View style={styles.componentChartWrapper}>
-        {formattedData &&
-        formattedData.labels?.length > 0 &&
-        formattedData.datasets?.[0]?.data?.length > 0 && (
+            {formattedData &&
+            formattedData.labels?.length > 0 &&
+            formattedData.datasets?.[0]?.data?.length > 0 ? (
 
-            <BarChart
-                key={selectedCrops.join(',')}
-                data={filteredBarData}
-                width={screenWidth}
-                height={280}
-                yAxisSuffix=" kg"
-                fromZero
-                chartConfig={chartConfig}
-                yAxisLabel=''
-                showValuesOnTopOfBars
-              
-            />
+                <BarChart
+                    key={selectedCrops.join(',')}
+                    data={filteredBarData}
+                    width={screenWidth}
+                    height={280}
+                    yAxisSuffix=" kg"
+                    fromZero
+                    chartConfig={chartConfig}
+                    yAxisLabel=''
+                    showValuesOnTopOfBars
+                    
+                />
 
 
-        )}
+            ) : (
+                <View style={{height:280,width:'100%',borderWidth:0,display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center',backgroundColor:"#D2D2D2"}}>
+                    <Text style={{fontSize:15,fontWeight:600,color:'#909090'}}>No Data</Text>
+                </View>
+            )}
 
 
         </View>
@@ -156,7 +160,7 @@ const FertilizerUsageByCrop:React.FC<cropsDat> = ({cropNames,data}) => {
                     status={selectedCrops.includes(item) ? 'checked' : 'unchecked'}
                     onPress={() => toggleCropSelection(item)}
                 />
-                <Text>{item}</Text>
+                <Text style={{color:''}}>{item}</Text>
             </View>
 
             ))}
@@ -173,13 +177,14 @@ const styles = StyleSheet.create({
         width:'100%',
         paddingVertical:10,
         borderColor:'green',
-        borderWidth:1
+        elevation:1,
+        //borderWidth:1,
     },
     componentHeaderWrapper:{
         width:'100%',
         paddingVertical:10,
         borderColor:'red',
-        borderWidth:1,
+        //borderWidth:1,
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
@@ -187,9 +192,10 @@ const styles = StyleSheet.create({
     },
 
     componentHeaderText:{
-        fontSize:16,
-        fontWeight:500,
-        //color:'#253D2C'
+        fontSize:17,
+        fontWeight:600,
+        
+        color:'#37474F'
     },
 
     componentFilterWrapper:{
@@ -199,7 +205,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         alignItems:'center',
         justifyContent:'center',
-        borderWidth:1,
+        //borderWidth:1,
         borderColor:'yellow',
       
     },

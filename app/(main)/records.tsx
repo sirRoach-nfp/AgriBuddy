@@ -69,7 +69,13 @@ const records = () => {
             })
           );
 
+
+          
+
           console.log(discussions)
+          discussions.sort((a, b) => {
+            return b.CreatedAt.toDate().getTime() - a.CreatedAt.toDate().getTime();
+          });
           setDiscussionData(discussions)
           setLoadingResult(false)
         }catch(err){

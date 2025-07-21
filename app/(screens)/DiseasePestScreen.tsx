@@ -190,9 +190,7 @@ const DiseasePestScreen = () => {
                     </Text>
                 ))}
 
-                <TouchableOpacity onPress={()=>{console.log(pestData?.DamageSymptoms)}}>
-                    Test
-                </TouchableOpacity>
+        
 
             </ScrollView>
         }
@@ -217,14 +215,14 @@ const DiseasePestScreen = () => {
             <ScrollView style={stylesContent.mainContainer}>
 
 
-                {pestData?.DamageSymptoms.Symptoms.replace(/\\n/g, '\n').split('\n').map((line, index) => (
+                {pestData?.DamageSymptoms?.Symptoms && pestData?.DamageSymptoms.Symptoms.replace(/\\n/g, '\n').split('\n').map((line, index) => (
                     <Text key={index} style={stylesContent.contentText}>
                         {line}
                     </Text>
                 ))}
 
 
-                {pestData?.DamageSymptoms.SymptomsSnapshot.map((snapshot,index)=>(
+                {pestData?.DamageSymptoms?.SymptomsSnapshot && pestData?.DamageSymptoms.SymptomsSnapshot.map((snapshot,index)=>(
                     <View key={index} style={stylesContent.snapShots}>
                         <Image source={{ uri: snapshot }} style={{ width: '100%', height: '100%',borderRadius:5 }} />
                     </View>
@@ -241,14 +239,14 @@ const DiseasePestScreen = () => {
         {selectedOption === 'ControlMeasures' && 
         
             <ScrollView style={stylesContent.mainContainer}>
-                <Text style={stylesContent.contentText}>
+                <View style={{ paddingHorizontal: 10, marginTop: 10 }}>
                     
-                {pestData?.ControlMeasures.replace(/\\n/g, '\n').split('\n').map((line, index) => (
-                    <Text key={index} style={stylesContent.contentText}>
-                        {line}
-                    </Text>
-                ))}
-                </Text>
+                    {pestData && pestData.ControlMeasures && pestData?.ControlMeasures.replace(/\\n/g, '\n').split('\n').map((line, index) => (
+                        <Text key={index} style={stylesContent.contentText}>
+                            {line}
+                        </Text>
+                    ))}
+                </View>
 
 
 
@@ -279,7 +277,9 @@ const stylesContent = StyleSheet.create({
     },
     contentText:{
         marginBottom:15,
-        fontSize:16
+        color:'#333333',
+        fontSize:19,
+        fontWeight:400
     }
 })
 
@@ -322,17 +322,17 @@ const styles = StyleSheet.create({
       },
       segmentText: {
         color: 'black',
-        fontSize: 17,
+        fontSize: 19,
       },
       activeText: {
         fontWeight: 'bold',
-        color: '#2E6F40',
+        color: '#37474F',
       },
       activeLine: {
         marginTop: 4,
         height: 2,
         width: '100%',
-        backgroundColor: '#2E6F40',
+        backgroundColor: '#37474F',
       },
       scrollContainer: {
         flexDirection: 'row',
@@ -341,14 +341,15 @@ const styles = StyleSheet.create({
       //header info
 
       cropName:{
-        fontSize:30,
-        color:'#253D2C',
+        fontSize:35,
+        color:'#37474F',
         fontWeight:600,
         marginBottom:5
       },
       scientificName:{
         fontStyle:'italic',
-        fontSize:18,
+        fontSize:19,
+        color:'#333333',
         marginBottom:5
       }
 })

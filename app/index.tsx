@@ -26,25 +26,20 @@ export default function App(){
 
 
 
-                <Link href='/(main)/home'>
-                    <Text>
-                            Continue
-                    </Text>
-                
-                
-                </Link>
 
 
 
+        
 
 
 
-                <Text style={styles.signUpText}>
-
-                    Don't Have An Account ? <TouchableOpacity onPress={()=> {router.push('/(screens)/SignupPage')}}> <Text style={styles.signUpTextClick}> Sign Up </Text>  </TouchableOpacity>
-                </Text>
+        <TouchableOpacity style={styles.logButtonWrapper} onPress={()=>{router.push(`/(screens)/LoginPage`)}}>
 
 
+            <Text style={styles.logButtonText}>Continue</Text>
+
+
+        </TouchableOpacity>
                 
 
 
@@ -70,6 +65,7 @@ const styles = StyleSheet.create({
       flexDirection:'column',
       display:"flex",
       alignItems:'center',
+      justifyContent:'center',
       paddingTop:50
     },
 
@@ -121,19 +117,20 @@ const styles = StyleSheet.create({
         
     },
     logButtonWrapper:{
-        width:'100%',
+        width:'60%',
         //borderWidth:1,
-        padding:10,
+        paddingVertical:10,
         borderRadius:7,
         display:'flex',
         flexDirection:'column',
         alignItems:'center',
         justifyContent:'center',
-        backgroundColor:'#253D2C'
+        backgroundColor:'#607D8B'
     },
     logButtonText:{
         color:'#ffffff',
-        fontSize:15
+        fontSize:18,
+        fontWeight:600,
     },
 
     signUpText:{

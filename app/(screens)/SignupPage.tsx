@@ -94,7 +94,7 @@ export default function SignupPage() {
 
                 <Dialog.Actions>
 
-                     <TouchableOpacity onPress={()=>{hideSignUpProcessFun()}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:10,paddingRight:10,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+                     <TouchableOpacity onPress={()=>{router.push('/(screens)/LoginPage')}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:10,paddingRight:10,paddingTop:5,paddingBottom:5,borderRadius:5}}>
 
                             <Text style={{color:'white'}}>
                                 Continue To Login
@@ -258,7 +258,7 @@ export default function SignupPage() {
 
                     <View style={styles.inputWrapper}>
                         <Text style={styles.inputWrapperHeader}>Password : </Text>
-                        <TextInput placeholder="Enter Your Password" style={styles.textInput} onChange={(e)=>setPassword(e.nativeEvent.text)} value={password}></TextInput>
+                        <TextInput secureTextEntry={true} placeholder="Enter Your Password" style={styles.textInput} onChange={(e)=>setPassword(e.nativeEvent.text)} value={password}></TextInput>
                     </View>
 
                     
@@ -273,10 +273,12 @@ export default function SignupPage() {
                 </View>
 
 
-                <Text style={styles.signUpText}>
-
-                    Already Have An Account ? <TouchableOpacity onPress={()=> router.push('/(screens)/LoginPage')}> <Text style={styles.signUpTextClick}> Login </Text>  </TouchableOpacity>
-                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 0,borderWidth:0,display:'flex' }}>
+                    <Text style={styles.signUpText}>Already Have An Account?</Text>
+                    <TouchableOpacity onPress={() => router.push('/(screens)/LoginPage')}>
+                        <Text style={styles.signUpTextClick}> Login</Text>
+                    </TouchableOpacity>
+                </View>
 
 
 
@@ -374,8 +376,8 @@ const styles = StyleSheet.create({
 
     signUpText:{
         fontSize:15,
-        marginTop:'auto',
-        marginBottom:20,
+       // marginTop:'auto',
+        //marginBottom:20,
         color:'#7F7B72'
     },
     signUpTextClick:{

@@ -28,7 +28,7 @@ const DiscussionSearchResult = () => {
 
     const [discussionData,setDiscussionData] = useState<DiscussionData[]>([])
     const searchParams = useSearchParams()
-    const [loadingResult,setLoadingResult] = useState(true)
+    const [loadingResult,setLoadingResult] = useState(false)
 
 
     const queryString = searchParams.get('searchQuery')
@@ -58,6 +58,7 @@ const DiscussionSearchResult = () => {
         const searchDiscussions = async(searchText:string)=>{
 
             try{
+                setLoadingResult(true)
 
                 const keywords = preprocessSearch(searchText).slice(0,10);
                 if (keywords.length === 0) return [];
@@ -76,23 +77,6 @@ const DiscussionSearchResult = () => {
                 const discussionDocSnap = await getDocs(q)
 
 
-                /*
-                if(discussionDocSnap){
-                    const rawData = discussionDocSnap.docs.map((doc)=>{
-                        return{
-                            DocumentId: doc.id,
-                            Author: doc.data().Author,
-                            Content: doc.data().Content,
-                            CreatedAt: doc.data().CreatedAt,
-                            Title: doc.data().Title,
-                            ReplyCount: replyCount,
-                        }
-                    })
-
-                    console.log("Fetched Article Data : ", rawData)
-                    setDiscussionData(rawData)
-                }
-                */
 
                 const discussions = await Promise.all(
                     discussionDocSnap.docs.map(async (doc) => {
@@ -108,6 +92,8 @@ const DiscussionSearchResult = () => {
                     })
                   );
                 console.log("Returned Data : ", discussions)
+
+                
                 setDiscussionData(discussions)
                 setTimeout(()=>{
             
@@ -128,17 +114,17 @@ const DiscussionSearchResult = () => {
   return (
 
 
-    <SafeAreaView style={{flex:1,borderWidth:1,flexDirection:'column',display:'flex',alignItems:'center'}}>
+    <SafeAreaView style={{flex:1,borderWidth:0,flexDirection:'column',display:'flex',alignItems:'center'}}>
 
         <View style={styles.headerContainer}>
 
             <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10,marginTop:'auto',marginBottom:'auto'}} onPress={()=> router.back()}>
 
-                <Ionicons name="arrow-back" size={30} color="black" />
+                <Ionicons name="arrow-back" size={30} color="#607D8B" />
 
             </TouchableOpacity>
 
-            <Text>
+            <Text numberOfLines={2} ellipsizeMode="tail" style={{fontSize:18,fontWeight:600,color:'#37474F',marginLeft:10}}>
                 Search Results For {queryString}
             </Text>
 

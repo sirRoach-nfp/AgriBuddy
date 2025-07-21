@@ -66,7 +66,7 @@ const ArticleHomeScreen = () => {
   return (
 
 
-    <SafeAreaView style={{flex:1,borderWidth:1,flexDirection:'column',display:'flex',alignItems:'center'}}>
+    <SafeAreaView style={{flex:1,borderWidth:0,flexDirection:'column',display:'flex',alignItems:'center'}}>
 
         <View style={styles.headerContainer}>
 

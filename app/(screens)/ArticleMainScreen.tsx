@@ -166,14 +166,14 @@ const styles = StyleSheet.create({
     },
     titleMain:{
         fontSize:35,
-        fontWeight:600,
+        fontWeight:700,
         width: '100%', 
         flexShrink: 1,
         
     },
     dateText:{
-        fontSize:14,
-        fontWeight:500
+        fontSize:17,
+        fontWeight:600
         
     }
 })
@@ -211,7 +211,7 @@ const stylesContent = StyleSheet.create({
         fontWeight:500
     },
     contentText:{
-        fontSize:16,
+        fontSize:17,
         textAlign:'left',
         letterSpacing:.5,
         

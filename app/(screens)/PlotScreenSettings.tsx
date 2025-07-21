@@ -40,7 +40,7 @@ const PlotScreenSettings = () => {
   const plotNameParam = searchParams.get('currentPlotName')
   const isCurrentCrop = searchParams.get('currentCrop')
   const PlotCoverParam = searchParams.get('PlotCover')
-  const [imageUri,setImageUri] = useState<File | String>()
+  const [imageUri,setImageUri] = useState<File | String>('')
   const [plotRefId,setPlotRefId] = useState("")
  
 
@@ -164,7 +164,15 @@ const PlotScreenSettings = () => {
   },[plotRefIdParam])
 
   const deletePlot = async (selectedPlotId: string) => {
+
+    console.log("Before check - isCurrentCrop:", isCurrentCrop);
     setShowDeletePlotConfirmation(false)
+    console.log("Is current Crop : ",isCurrentCrop)
+    if (isCurrentCrop !== 'null') {
+        setDeletePlotError(true);
+        return;
+      }
+    
     setLoadingForDeletePlot(true)
     SetShowDeletePlotProcess(true)
 
@@ -376,7 +384,7 @@ const PlotScreenSettings = () => {
         //upload to cloudinary
         let finalImageUrl = ""
     
-        if (typeof imageUri === "string" && imageUri.startsWith("http")) {
+        if (typeof imageUri === "string" && (imageUri.startsWith("http") || imageUri.length === 0)) {
             // It's already a Cloudinary or remote image URL
             finalImageUrl = imageUri;
           } else if (typeof imageUri === "string") {
@@ -498,6 +506,9 @@ const PlotScreenSettings = () => {
   const [showDeleteRecordDataConfirmationForFertilizerRecord,setShowDeleteRecordDataConfirmationForFertilizerRecord] = useState(false)
   const [showDeleteRecordDataProcessForFertilizerRecord,setShowDeleteRecordDataProcessForFertilizerRecord] = useState(false)
   const [loadingForDeleteRecordDataFertilizer,setLoadingForDeleteRecordDataFertilizer] = useState(false)
+
+
+  const [showDeletePlotError,setDeletePlotError] = useState(false)
 
 
 
@@ -863,6 +874,48 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
 
         </Portal>
     )
+
+
+    const renderDeletePlotError = () => (
+
+
+        <Portal>
+
+            <Dialog visible={showDeletePlotError} onDismiss={()=>{}}>
+
+
+                <Dialog.Title>
+                    <Text>
+                        Cannot Delete Plot
+                    </Text>
+                    
+                </Dialog.Title>
+
+
+                <Dialog.Content>
+                    <Text>This plot cannot be deleted because a crop is currently assigned to it. Please remove the crop before attempting to delete the plot.</Text>
+
+                </Dialog.Content>
+
+
+                <Dialog.Actions>
+
+
+                    <TouchableOpacity onPress={()=>{setDeletePlotError(false)}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+
+                    <Text style={{color:'white'}}>
+                        Continue
+                    </Text>
+
+                    </TouchableOpacity>
+
+
+                </Dialog.Actions>
+
+            </Dialog>
+        </Portal>
+
+    )
   return (
 
     <PaperProvider>
@@ -878,6 +931,7 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
                 {renderSaveEditProcess()}
                 {renderDeleteRecordDataConfirmationVFertilizer(SelectedCropForRemovalCropsVFertilizer)}
                 {renderProcessDeleteRecordDataVFertilizer()}
+                {renderDeletePlotError()}
 
                 <View style={styles.headerContainer}>
 
@@ -911,7 +965,7 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
                     <TextInput value={plotName} onChange={(e)=>setPlotName(e.nativeEvent.text)} placeholder="Title" style={styles.titleInput}></TextInput>
 
 
-                    <TouchableOpacity onPress={()=> setShowEditConfirmation(true)} style={{alignSelf:'flex-start',borderWidth:0,paddingVertical:5,paddingHorizontal:10,borderRadius:5,backgroundColor:'red',elevation:2}}><Text style={{color:"white"}}>Update Plot Information</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={()=> setShowEditConfirmation(true)} style={{alignSelf:'flex-start',borderWidth:0,paddingVertical:5,paddingHorizontal:10,borderRadius:5,backgroundColor:'#297340',elevation:2}}><Text style={{color:"white"}}>Update Plot Information</Text></TouchableOpacity>
                 </View>
 
 
@@ -975,6 +1029,8 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
 
   
             </ScrollView>
+
+            
             
         </SafeAreaView>
 

@@ -528,6 +528,7 @@ const styles = StyleSheet.create({
 
   scrollWrapperContainer:{
     borderWidth:1,
+    borderColor:'#37474F',
     flex:1,
     marginTop:20,
     borderTopLeftRadius:15,

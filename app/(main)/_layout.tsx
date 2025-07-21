@@ -14,7 +14,7 @@ import Entypo from '@expo/vector-icons/Entypo';
 import Octicons from '@expo/vector-icons/Octicons';
 
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 const _mainlayout = () => {
 
@@ -78,7 +78,7 @@ const _mainlayout = () => {
       
                 options={{
                     title: 'expenses',
-                    tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+                    tabBarIcon: ({ color }) => <FontAwesome5 name="coins" size={28} color={color} />,
                     headerShown:false,
                 }}
 

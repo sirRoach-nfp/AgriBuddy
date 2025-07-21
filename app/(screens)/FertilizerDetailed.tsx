@@ -11,7 +11,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSearchParams } from 'expo-router/build/hooks'
 import FertilizerDistributionPiechart from '@/components/AnalyticsComponents/FertilizerDistributionPiechart'
 import FertilizerUsageByCrop from '@/components/AnalyticsComponents/FertilizerUsageByCrop'
-
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 interface FertilizerLog{
     DateApplied:string,
@@ -184,10 +184,16 @@ const fetchFertilizerLogRecord = async(plotId:string) =>{
 
 
 
-        <Appbar.Header style={{width:'100%',flex:1,height:50}}>
-            <Appbar.BackAction onPress={()=> navigate.goBack()} />
-           
-        </Appbar.Header>
+        <View style={styles.headerContainer}>
+
+            <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10}} onPress={()=> router.back()}>
+
+                <Ionicons name="arrow-back" size={30} color="#607D8B" />
+
+            </TouchableOpacity>
+
+
+        </View>
 
         <View style={styles.segmentContainer}>
             <TouchableOpacity
@@ -232,7 +238,7 @@ const fetchFertilizerLogRecord = async(plotId:string) =>{
 
             <View style={stylesLogs.logsContainerHeader}>
 
-                <Text style={{fontSize:17,fontWeight:400}}>
+                <Text style={{fontSize:17,fontWeight:600, color:'#37474F',letterSpacing:.5}}>
                     Usage Logs 
                 </Text>
 
@@ -244,6 +250,7 @@ const fetchFertilizerLogRecord = async(plotId:string) =>{
                         fontSize: 16,
                         marginLeft: 'auto',
                         width: 150,
+                        paddingVertical:5
                     }}
                     onValueChange={(value) => {
                         setSelectedYear(value as string);
@@ -257,20 +264,20 @@ const fetchFertilizerLogRecord = async(plotId:string) =>{
                     }
                     <Picker.Item label="All" value="All" />
                 </Picker>
-                <TouchableOpacity style={{borderWidth:1,paddingHorizontal:20,marginRight:8,borderRadius:5,marginLeft:8}}><Text style={{fontSize:17}}>Filter</Text></TouchableOpacity>
+              
 
 
             </View>
 
 
 
-            <ScrollView contentContainerStyle={{alignItems:'center'}} style={{paddingTop:20,display:'flex',flexDirection:'column',width:'100%',flex:1,borderWidth:1,borderColor:'red'}}>
+            <ScrollView contentContainerStyle={{alignItems:'center'}} style={{paddingTop:20,display:'flex',flexDirection:'column',width:'100%',flex:1,borderWidth:0,borderColor:'red'}}>
                 
 
 
                 {filteredLogs && filteredLogs.length>0 && filteredLogs.map((log,index)=>(
                     <View style={{marginBottom:0,width:'100%',paddingHorizontal:10,borderWidth:0,display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
-                        <Text style={{fontSize:15}}>{formatDateToMonthDay(log.DateApplied)} - {log.fertilizerAmmount}kg  {log.fertilizerType} on {log.cropName}</Text>
+                        <Text style={{fontSize:16}}>{formatDateToMonthDay(log.DateApplied)} - {log.fertilizerAmmount}kg  {log.fertilizerType} on {log.cropName}</Text>
                         <TouchableOpacity onPress={
                             ()=>{
                                 router.push({
@@ -298,7 +305,7 @@ const fetchFertilizerLogRecord = async(plotId:string) =>{
 
         {selectedOption === 'analytics' && (
 
-                <ScrollView style={{display:'flex',flexDirection:'column',width:'100%',flex:1,borderWidth:1,borderColor:'blue'}}>
+                <ScrollView style={{display:'flex',flexDirection:'column',width:'100%',flex:1,borderWidth:0,borderColor:'blue'}}>
                     <FertilizerDistributionPiechart data={fertilizerLogs} yearDataFilter={yearDataForFilter}/>
                     <FertilizerUsageByCrop data={fertilizerLogs} cropNames={onCropsData}/>
 
@@ -328,7 +335,7 @@ const stylesLogs = StyleSheet.create({
         width:'100%',
         alignSelf:'flex-start',
         paddingVertical:10,
-        borderWidth:1,
+        //borderWidth:1,
         display:'flex',
         flexDirection:'column',
         flex:1
@@ -341,12 +348,26 @@ const stylesLogs = StyleSheet.create({
         alignItems:'center',
         //justifyContent:'space-between',
         paddingHorizontal:10,
-        borderWidth:1,
+        //borderWidth:1,
     
     }
 })
 
 const styles = StyleSheet.create({
+
+    headerContainer:{
+        width:'100%',
+        maxHeight:50,
+        //borderWidth:1,
+        display:'flex',
+        flexDirection:'row',
+        alignItems:'center',
+        paddingVertical:10,
+        height:50,
+        //backgroundColor:'#2E6F40',
+        //marginBottom:20,
+        //backgroundColor:'white'
+    },
     scrollContainer:{
         display:'flex',
         flexDirection:'column',
@@ -378,16 +399,17 @@ const styles = StyleSheet.create({
       },
       segmentText: {
         color: 'black',
-        fontSize: 16,
+        fontSize: 17,
+        fontWeight:600
       },
       activeText: {
         fontWeight: 'bold',
-        color: '#2E6F40',
+        color: '#37474F',
       },
       activeLine: {
         marginTop: 4,
         height: 2,
         width: '100%',
-        backgroundColor: '#2E6F40',
+        backgroundColor: '#37474F',
       },
 })

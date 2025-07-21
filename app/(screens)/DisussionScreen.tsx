@@ -150,6 +150,7 @@ const DisussionScreen = () => {
                 Content: doc.data().Content || "",
             }));
             
+            replies.sort((a,b) => b.CreatedAt.toDate().getTime() - a.CreatedAt.toDate().getTime())
             setComments(replies)
             console.log("ReFetched Replies:", replies);
 
@@ -540,7 +541,7 @@ const DisussionScreen = () => {
 
 
                     <View style={stylesDiscussionContent.bodyWrapper}>
-                        <Text style={{fontSize:15}}>{discussionData?.Content}</Text>
+                        <Text style={{fontSize:17,color:'#333333'}}>{discussionData?.Content}</Text>
                     </View>
 
 
@@ -556,8 +557,8 @@ const DisussionScreen = () => {
 
                 <View style={stylesReply.replyHeader}>
 
-                    <FontAwesome5 name="comment-alt" size={20} color="black" />
-                    <Text style={{fontWeight:500,marginLeft:10}}>Comments</Text>
+                    <FontAwesome5 name="comment-alt" size={25} color="#607D8B" />
+                    <Text style={{fontWeight:500,marginLeft:10,color:'#607D8B',fontSize:18}}>Comments</Text>
 
                 </View>
                 {comments && comments.length > 0 && (
@@ -565,7 +566,7 @@ const DisussionScreen = () => {
                         comments.map((comment,index)=>(
 
 
-                        <View style={stylesReply.replyWrapper}>
+                        <View style={stylesReply.replyWrapper } key={index}>
                             <View style={stylesReply.infoWrapper}>
                                 <Avatar.Text size={25} label={getAuthorInitials(comment?.Author as string)}/>
                                 <Text  style={stylesReply.userText}>{comment?.Author}</Text>
@@ -578,7 +579,7 @@ const DisussionScreen = () => {
                             </View>
         
                             <View style={stylesReply.replyContent}>
-                                <Text >{comment?.Content}</Text>
+                                <Text style={{fontSize:17,color:'#333333'}} >{comment?.Content}</Text>
                             </View>
                         </View>
 
@@ -616,10 +617,12 @@ const stylesReply = StyleSheet.create({
     replyHeader:{
         //borderWidth:1,
         width:'100%',
-        marginBottom:10,
+        marginBottom:5,
         display:'flex',
         flexDirection:'row',
         padding:5,
+        alignItems:'center',
+        
         backgroundColor:'white',
     },
     replyWrapper:{
@@ -789,8 +792,9 @@ const stylesDiscussionContent = StyleSheet.create({
         fontWeight:300
     },
     titleText:{
-        fontSize:18,
-        fontWeight:500
+        fontSize:20,
+        fontWeight:600,
+        color:'#37474F'
     },
 
 
