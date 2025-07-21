@@ -13,6 +13,13 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 SplashScreen.preventAutoHideAsync();
 import { CropProvider } from './Context/CropContext';
 import { UserProvider } from './Context/UserContext';
+
+
+
+
+
+
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({

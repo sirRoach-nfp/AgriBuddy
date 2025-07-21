@@ -5,6 +5,16 @@ import { Link, useRouter } from "expo-router"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { router } from "expo-router";
+
+
+
+import * as Linking from "expo-linking";
+
+export const linking = {
+  prefixes: [Linking.createURL("/")], // This handles deep links
+};
+
+
 export default function App(){
     const router = useRouter();
 
