@@ -132,7 +132,7 @@ const FertilizerUsageByCrop:React.FC<cropsDat> = ({cropNames,data}) => {
                 <BarChart
                     key={selectedCrops.join(',')}
                     data={filteredBarData}
-                    width={screenWidth}
+                    width={(screenWidth*0.94)}
                     height={280}
                     yAxisSuffix=" kg"
                     fromZero
@@ -144,7 +144,7 @@ const FertilizerUsageByCrop:React.FC<cropsDat> = ({cropNames,data}) => {
 
 
             ) : (
-                <View style={{height:280,width:'100%',borderWidth:0,display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center',backgroundColor:"#D2D2D2"}}>
+                <View style={{height:280,width:'100%',borderWidth:0,display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center',backgroundColor:"white"}}>
                     <Text style={{fontSize:15,fontWeight:600,color:'#909090'}}>No Data</Text>
                 </View>
             )}
@@ -174,21 +174,25 @@ export default FertilizerUsageByCrop
 
 const styles = StyleSheet.create({
     componentMainContainer:{
-        width:'100%',
-        paddingVertical:10,
-        borderColor:'green',
-        elevation:1,
-        //borderWidth:1,
+        width:'95%',
+        paddingVertical:0,
+        borderColor:'#E2E8F0',
+        marginBottom:10,
+        borderWidth:1,
+        backgroundColor:'white',
+        borderRadius:5,
     },
     componentHeaderWrapper:{
         width:'100%',
-        paddingVertical:10,
+        paddingVertical:20,
         borderColor:'red',
-        //borderWidth:1,
+        borderWidth:0,
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
-        justifyContent:'center'
+        justifyContent:'flex-start',
+        paddingHorizontal:15,
+        
     },
 
     componentHeaderText:{
@@ -200,14 +204,14 @@ const styles = StyleSheet.create({
 
     componentFilterWrapper:{
         width:'100%',
-        paddingVertical:5,
+        paddingVertical:15,
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
         justifyContent:'center',
-        //borderWidth:1,
+        borderWidth:0,
         borderColor:'yellow',
-      
+        
     },
     componentChartWrapper:{
         width:'100%'

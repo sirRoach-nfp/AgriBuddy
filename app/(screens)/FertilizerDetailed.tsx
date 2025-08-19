@@ -188,7 +188,7 @@ const fetchFertilizerLogRecord = async(plotId:string) =>{
 
             <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10}} onPress={()=> router.back()}>
 
-                <Ionicons name="arrow-back" size={30} color="#607D8B" />
+                <Ionicons name="arrow-back" size={25} color="#607D8B" />
 
             </TouchableOpacity>
 
@@ -236,67 +236,76 @@ const fetchFertilizerLogRecord = async(plotId:string) =>{
       
         <View style={stylesLogs.logsContainerMain} >
 
-            <View style={stylesLogs.logsContainerHeader}>
+            <View style={{borderWidth:1,width:'95%',flex:1,backgroundColor:'white',borderRadius:5,borderColor:'#e2e8f0'}}>
 
-                <Text style={{fontSize:17,fontWeight:600, color:'#37474F',letterSpacing:.5}}>
-                    Usage Logs 
-                </Text>
+                <View style={stylesLogs.logsContainerHeader}>
 
-                <Picker
-                    selectedValue={selectedYear}
-                    style={{
-                        padding: 0,
-                        borderRadius: 5,
-                        fontSize: 16,
-                        marginLeft: 'auto',
-                        width: 150,
-                        paddingVertical:5
-                    }}
-                    onValueChange={(value) => {
-                        setSelectedYear(value as string);
-                        filterLogsByYear(value as string);
-                    }}
-                    >
-                    {yearDataForFilter && yearDataForFilter.length > 0 &&
-                        yearDataForFilter.map((year, index) => (
-                        <Picker.Item key={index} label={year} value={year} />
-                        ))
-                    }
-                    <Picker.Item label="All" value="All" />
-                </Picker>
-              
+                                <Text style={{fontSize:17,fontWeight:600, color:'#37474F',letterSpacing:.5}}>
+                                    Usage Logs 
+                                </Text>
+                                <View style={{borderWidth:1,borderRadius:5,borderColor:'#E2E8f0'}}>
+                                    <Picker
+                                        selectedValue={selectedYear}
+                                        style={{
+                                            padding: 0,
+                                            borderRadius: 5,
+                                            fontSize: 16,
+                                            marginLeft: 'auto',
+                                            width: 150,
+                                            paddingVertical:5,
+                                            height:50
+                                        }}
+                                        onValueChange={(value) => {
+                                            setSelectedYear(value as string);
+                                            filterLogsByYear(value as string);
+                                        }}
+                                        >
+                                        {yearDataForFilter && yearDataForFilter.length > 0 &&
+                                            yearDataForFilter.map((year, index) => (
+                                            <Picker.Item key={index} label={year} value={year} />
+                                            ))
+                                        }
+                                        <Picker.Item label="All" value="All" />
+                                    </Picker>
+                                </View>
 
+
+                </View>
+
+
+
+                <ScrollView contentContainerStyle={{alignItems:'center'}} style={{paddingTop:20,display:'flex',flexDirection:'column',width:'100%',flex:1,borderWidth:0,borderColor:'red'}}>
+                    
+
+
+                    {filteredLogs && filteredLogs.length>0 && filteredLogs.map((log,index)=>(
+                        <View style={{borderColor:'#e2e8f0',borderRadius:5,marginBottom:0,width:'95%',paddingVertical:10,paddingHorizontal:10,borderWidth:1,display:'flex',flexDirection:'column',alignItems:'flex-start',justifyContent:'space-between'}}>
+                            <Text style={{fontSize:15,color:'#475569'}}>{formatDateToMonthDay(log.DateApplied)}</Text>
+                            <Text style={{fontSize:16,fontWeight:500, color:"#37474F"}}>{log.fertilizerAmmount}kg Of {log.fertilizerType}</Text>
+                            <Text style={{fontSize:16,color:'#64748B'}}>On {log.cropName}</Text>
+                            <TouchableOpacity style={{alignSelf:'flex-end'}} onPress={
+                                ()=>{
+                                    router.push({
+                                        pathname: '/(screens)/ExpandedFertilizerLog',
+                                        params: {
+                                        DateApplied: log.DateApplied,
+                                        cropName: log.cropName,
+                                        fertilizerAmmount: log.fertilizerAmmount,
+                                        selectedApplication: log.selectedApplication,
+                                        fertilizerType: log.fertilizerType
+                                        }
+                                    });
+                                }
+                            }><MaterialIcons name="read-more" size={30} color="#607D8B" /></TouchableOpacity>
+                        </View>
+                    ))}
+
+
+                </ScrollView>
 
             </View>
 
-
-
-            <ScrollView contentContainerStyle={{alignItems:'center'}} style={{paddingTop:20,display:'flex',flexDirection:'column',width:'100%',flex:1,borderWidth:0,borderColor:'red'}}>
-                
-
-
-                {filteredLogs && filteredLogs.length>0 && filteredLogs.map((log,index)=>(
-                    <View style={{marginBottom:0,width:'100%',paddingHorizontal:10,borderWidth:0,display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
-                        <Text style={{fontSize:16}}>{formatDateToMonthDay(log.DateApplied)} - {log.fertilizerAmmount}kg  {log.fertilizerType} on {log.cropName}</Text>
-                        <TouchableOpacity onPress={
-                            ()=>{
-                                router.push({
-                                    pathname: '/(screens)/ExpandedFertilizerLog',
-                                    params: {
-                                      DateApplied: log.DateApplied,
-                                      cropName: log.cropName,
-                                      fertilizerAmmount: log.fertilizerAmmount,
-                                      selectedApplication: log.selectedApplication,
-                                      fertilizerType: log.fertilizerType
-                                    }
-                                  });
-                            }
-                        }><MaterialIcons name="read-more" size={30} color="black" /></TouchableOpacity>
-                    </View>
-                ))}
-
-
-            </ScrollView>
+            
       
         </View> 
 
@@ -305,7 +314,7 @@ const fetchFertilizerLogRecord = async(plotId:string) =>{
 
         {selectedOption === 'analytics' && (
 
-                <ScrollView style={{display:'flex',flexDirection:'column',width:'100%',flex:1,borderWidth:0,borderColor:'blue'}}>
+                <ScrollView style={{display:'flex',flexDirection:'column',width:'100%',flex:1,borderWidth:0,borderColor:'blue'}} contentContainerStyle={{alignItems:'center'}}>
                     <FertilizerDistributionPiechart data={fertilizerLogs} yearDataFilter={yearDataForFilter}/>
                     <FertilizerUsageByCrop data={fertilizerLogs} cropNames={onCropsData}/>
 
@@ -334,11 +343,14 @@ const stylesLogs = StyleSheet.create({
     logsContainerMain:{
         width:'100%',
         alignSelf:'flex-start',
-        paddingVertical:10,
-        //borderWidth:1,
+        paddingVertical:20,
+        borderWidth:0,
         display:'flex',
         flexDirection:'column',
-        flex:1
+        flex:1,
+        justifyContent:'center',
+        alignItems:'center',
+       
        
     },
     logsContainerHeader:{
@@ -346,8 +358,9 @@ const stylesLogs = StyleSheet.create({
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
-        //justifyContent:'space-between',
+        justifyContent:'space-between',
         paddingHorizontal:10,
+        paddingVertical:10,
         //borderWidth:1,
     
     }
@@ -359,12 +372,14 @@ const styles = StyleSheet.create({
         width:'100%',
         maxHeight:50,
         //borderWidth:1,
+        borderBottomWidth:1,
+        borderColor:'#E2E8F0',
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
         paddingVertical:10,
         height:50,
-        //backgroundColor:'#2E6F40',
+        backgroundColor:'#ffffff',
         //marginBottom:20,
         //backgroundColor:'white'
     },
@@ -389,13 +404,16 @@ const styles = StyleSheet.create({
 
     segmentContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
-        //borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
+        padding:10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#E2E8F0',
+        backgroundColor:'#ffffff',
+        gap:20
       },
       segmentButton: {
         alignItems: 'center',
-        paddingVertical: 10,
+        paddingVertical: 0,
+        borderWidth:0,
       },
       segmentText: {
         color: 'black',

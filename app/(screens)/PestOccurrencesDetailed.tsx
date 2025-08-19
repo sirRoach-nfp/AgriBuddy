@@ -10,6 +10,8 @@ import { DataTable } from 'react-native-paper';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseconfig';
 import { useSearchParams } from 'expo-router/build/hooks';
+
+//icon
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import DatePicker from 'react-native-date-picker';
@@ -464,11 +466,20 @@ const PestOccurrencesDetailed = () => {
 
         <View style={styles.headerContainer}>
 
-            <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10}} onPress={()=> router.back()}>
+            <TouchableOpacity style={{marginLeft:10}} onPress={()=> router.back()}>
 
-                <Ionicons name="arrow-back" size={30} color="#607D8B" />
+                <Ionicons name="arrow-back" size={25} color="#607D8B" />
 
             </TouchableOpacity>
+
+
+            <View style={{borderWidth:0,display:'flex',flexDirection:'row',alignItems:'center',gap:5}}>
+                <View style={{width:50,height:50,backgroundColor:"#607D8B",borderRadius:'50%',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+                    <Ionicons name="bug" size={24} color="white" />
+                </View>
+
+                <Text style={{fontSize:20,fontWeight:600,color:'#37474F'}}>Pest Management</Text>
+            </View>
 
 
         </View>
@@ -646,11 +657,12 @@ const PestOccurrencesDetailed = () => {
                             width={Dimensions.get("window").width * 0.95}
                             height={220}
                             yAxisLabel=""
+                            
                             bezier
                             //yAxisSuffix=" occurrences"
                             chartConfig={{
-                                backgroundGradientFrom: "#dfe3ea", // Light grayish-blue to match #F2F3F5
-                                backgroundGradientTo: "#ffffff", // Smooth transition into pure white
+                                backgroundGradientFrom: "#ffffff",
+                                backgroundGradientTo: "#ffffff",
                                 decimalPlaces: 0,
                                 color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                             }}
@@ -724,8 +736,8 @@ const PestOccurrencesDetailed = () => {
                         yAxisLabel=""
                         yAxisSuffix=""
                         chartConfig={{
-                            backgroundGradientFrom: "#dfe3ea", // Light grayish-blue to match #F2F3F5
-                            backgroundGradientTo: "#ffffff", // Smooth transition into pure white
+                            backgroundGradientFrom: "#ffffff",
+                            backgroundGradientTo: "#ffffff",
                             decimalPlaces: 0,
                             color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                             labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
@@ -836,23 +848,28 @@ const styles = StyleSheet.create({
     
     headerContainer:{
         width:'100%',
-        maxHeight:50,
-        //borderWidth:1,
+        //maxHeight:50,
+        borderWidth:0,
+        borderBottomWidth:1,
+        borderColor:'#E2E8f0',
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
+        gap:10,
         paddingVertical:10,
-        height:50,
-        //backgroundColor:'#2E6F40',
+        //height:50,
+        backgroundColor:'#ffffff',
         //marginBottom:20,
         //backgroundColor:'white'
     },
     scrollContainer:{
         display:'flex',
         flexDirection:'column',
+ 
         width:'100%',
         //borderWidth:1,
         paddingTop:20,
+        gap:50,
         flex:1,
        
         
@@ -885,28 +902,30 @@ const stylePie = StyleSheet.create({
 const styleComparisonChart = StyleSheet.create({
 
     button: {
-        paddingVertical: 5,
+        paddingVertical: 7,
         paddingHorizontal: 20,
-        //borderWidth: 1,
+        borderWidth: 0,
         alignSelf: "flex-start", // Makes the button fit the child content
         borderRadius:5,
         marginTop:10,
         marginBottom:10,
+      
         marginLeft:10,
-        backgroundColor:"#2e6f40"
+        backgroundColor:"#607D8B"
     },
     buttonText:{
         fontSize:15,
-        fontWeight:400,
-        color:'#ffffff'
+    
+        color:'#ffffff',
+        fontWeight:500,
     },
     wrapper:{
         width:'95%',
-        //borderWidth:1,
-        marginBottom:10,
+        borderWidth:0,
+        //marginBottom:10,
         display:'flex',
         flexDirection:'column',
-        paddingTop:10,
+       marginBottom:20,
         //paddingBottom:10,
         //borderRadius:5,
         //backgroundColor:'#FAF3E0',
@@ -920,15 +939,19 @@ const styleComparisonChart = StyleSheet.create({
         display:'flex',
         flexDirection:'row',
         width:'100%',
-        borderColor:'blue',
-        //borderWidth:1,
-        padding:5,
+        borderColor:'#E2E8F0',
+        borderWidth:0,
+        padding:15,
+        backgroundColor:'#F8FAFC',
+        
+        borderBottomWidth:1
         //marginBottom:15
     },
 
 
     chartWrapper:{
         width:'100%',
+        paddingVertical:20,
         borderColor:'red',
         //borderWidth:1,
     },
@@ -968,7 +991,7 @@ const styleComparisonChart = StyleSheet.create({
     headerText:{
         fontSize:16,
         fontWeight:500,
-        color:'#253D2C'
+        color:'#37474F'
     }
 
 
@@ -980,16 +1003,16 @@ const styleSummaryCard = StyleSheet.create({
 
     Wrapper:{
         width:'95%',
-        //borderWidth:1,
+        borderWidth:0,
         display:'flex',
         flexDirection:'column',
-        marginBottom:15,
+        marginBottom:20,
         borderRadius:5,
         //backgroundColor:'#FAF3E0',
         backgroundColor:'white',
         elevation:2,
         //padding:10,
-        paddingTop:10,
+        
         paddingBottom:10
     },
     Header:{
@@ -997,13 +1020,13 @@ const styleSummaryCard = StyleSheet.create({
         flexDirection:'row',
         //borderWidth:1,
         width:'100%',
-        padding:5,
+        padding:10,
         alignItems:'center'
     },
     HeaderText:{
         fontSize:16,
         fontWeight:500,
-        color:'#253D2C'
+        color:'#37474F'
     },
     PickerWrapper:{
         marginLeft:'auto',

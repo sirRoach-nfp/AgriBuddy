@@ -95,7 +95,7 @@ const colorMap: Record<string, string> = {
  useEffect(()=>{
 
     const generatedData =generateFullPieData(data)
-    console.log("Generated data is : ",generatedData)
+    console.log("Generated data for pie chart is : ",generatedData)
     setPieData(generatedData)
  },[])
 
@@ -134,6 +134,8 @@ const colorMap: Record<string, string> = {
   };
 
 
+
+  const piePaddingLeftValue = ((screenWidth * 0.95) - 230) /2
 
   return (
     <View style={styles.componentMainWrapper}>
@@ -191,23 +193,57 @@ const colorMap: Record<string, string> = {
             {selectedOption === 'yearly' && (() => {
                 const data = getFilteredPieChartDataByYear(selectedYearFilter);
                 return data.length > 0 ? (
-                <PieChart
-                    style={{borderWidth:1}}
-                    data={data}
-                    width={screenWidth}
-                    height={220}
-                    chartConfig={{
-                    backgroundColor: "#fff",
-                    backgroundGradientFrom: "#fff",
-                    backgroundGradientTo: "#fff",
-                    color: () => "#000"
-                    
-                    }}
-                    accessor="amount"
-                    backgroundColor="transparent"
-                    paddingLeft="15"
-                    absolute
-                />
+
+                <>
+                  <PieChart
+                      style={{
+                        marginLeft: 0,
+                        alignSelf:'center',
+                        borderWidth:0  // reset any default offset
+                      }}
+                      data={data}
+                      width={220}
+                      height={220}
+                      chartConfig={{
+                      backgroundColor: "#fff",
+                      backgroundGradientFrom: "#fff",
+                      backgroundGradientTo: "#fff",
+                      color: () => "#000"
+                      
+                      }}
+                      accessor="amount"
+                      backgroundColor="transparent"
+                      paddingLeft={String(piePaddingLeftValue)}
+                      absolute={false}
+                      hasLegend={false}
+                  />
+
+
+                  <View style={{width:'100%',borderWidth:0,padding:5,display:'flex',flexDirection:'column'}}>
+                        {(data as any[]).map((item,index)=>(
+                          <View style={{flexDirection:'row',alignItems:'center',marginBottom:5}}>
+
+                            <View style={{
+                              width:15,
+                              height:15,
+                              backgroundColor:item.color,
+                              marginRight:8,
+                              borderRadius:'50%'
+                            }}> 
+
+
+                              
+                            </View>
+
+
+                            <Text style={{fontSize:14,color:"#333"}}>
+                                {item.amount} {item.name}
+                            </Text>
+
+                          </View>
+                        ))}
+                  </View>
+                </>
                 ) : (
                 <View style={{ alignItems: 'center', justifyContent: 'center', height: 220 }}>
                     <Text style={{ color: '#888', fontSize: 16 }}>No data available for this year.</Text>
@@ -218,21 +254,56 @@ const colorMap: Record<string, string> = {
             {selectedOption === 'monthly' && (() => {
                 const data = getFilteredPieChartData(selectedMonthFilter, selectedYearFilter);
                 return data.length > 0 ? (
-                <PieChart
-                    data={data}
-                    width={screenWidth - 32}
-                    height={220}
-                    chartConfig={{
-                    backgroundColor: "#fff",
-                    backgroundGradientFrom: "#fff",
-                    backgroundGradientTo: "#fff",
-                    color: () => "#000"
-                    }}
-                    accessor="amount"
-                    backgroundColor="transparent"
-                    paddingLeft="15"
-                    absolute
-                />
+                  <>
+                  <PieChart
+                      data={data}
+                      width={220}
+                      height={220}
+                      chartConfig={{
+                      backgroundColor: "#fff",
+                      backgroundGradientFrom: "#fff",
+                      backgroundGradientTo: "#fff",
+                      color: () => "#000"
+                      }}
+                      accessor="amount"
+                      backgroundColor="transparent"
+                      paddingLeft={String(piePaddingLeftValue)}
+                      absolute={false}
+                      hasLegend={false}
+                      style={{
+                        marginLeft: 0,
+                        alignSelf:'center',
+                        borderWidth:0  // reset any default offset
+                      }}
+                      center={[0, 0]}
+                  />
+
+                  <View style={{width:'100%',borderWidth:0,padding:5,display:'flex',flexDirection:'column'}}>
+                      {(data as any[]).map((item,index)=>(
+                        <View style={{flexDirection:'row',alignItems:'center',marginBottom:5}}>
+
+                          <View style={{
+                            width:15,
+                            height:15,
+                            backgroundColor:item.color,
+                            marginRight:8,
+                            borderRadius:'50%'
+                          }}> 
+
+
+                            
+                          </View>
+
+
+                          <Text style={{fontSize:14,color:"#333"}}>
+                              {item.amount} {item.name}
+                          </Text>
+
+                        </View>
+                      ))}
+                  </View>
+                
+                </>
                 ) : (
                 <View style={{ alignItems: 'center', justifyContent: 'center', height: 220 }}>
                     <Text style={{ color: '#888', fontSize: 16 }}>No data available for this month.</Text>
@@ -248,45 +319,60 @@ const colorMap: Record<string, string> = {
         {selectedOption === 'monthly' && (
             <>
               {/* Month Dropdown */}
-              <Picker
-                selectedValue={selectedMonthFilter}
-                onValueChange={setSelectedMonthFilter}
-                style={{ height: 80,width:150 }} // 👈 fix for native rendering
-              >
-                {months.map((month, index) => (
-                  <Picker.Item key={month} label={month} value={index} />
-                ))}
 
-              </Picker>
+              <View style={{borderWidth:1,borderRadius:5,borderColor:'#E2E8f0'}}>
+
+                <Picker
+                  selectedValue={selectedMonthFilter}
+                  onValueChange={setSelectedMonthFilter}
+                  style={{ height: 50,width:150 }} // 👈 fix for native rendering
+                >
+                  {months.map((month, index) => (
+                    <Picker.Item key={month} label={month} value={index} />
+                  ))}
+
+                </Picker>
+
+              </View>
+
 
               {/* Year Dropdown */}
-              <Picker
-                selectedValue={selectedYearFilter}
-                onValueChange={setSelectedYearFilter}
-                style={{ height: 80,width:150 }} // 👈 fix for native rendering
-              >
-                {yearDataFilter.map((year) => (
-                  <Picker.Item key={year} label={`${year}`} value={year} />
-                ))}
-   
-              </Picker>
+
+              <View style={{borderWidth:1,borderRadius:5,borderColor:'#E2E8f0'}}>
+
+                <Picker
+                  selectedValue={selectedYearFilter}
+                  onValueChange={setSelectedYearFilter}
+                  style={{ height: 50,width:150,borderWidth:2,borderColor:'red' }} // 👈 fix for native rendering
+                >
+                  {yearDataFilter.map((year) => (
+                    <Picker.Item key={year} label={`${year}`} value={year} />
+                  ))}
+    
+                </Picker>
+
+              </View>
+
             </>
           )}
 
             {selectedOption === 'yearly' && (
 
-                <Picker style={{padding:0,borderRadius:5,fontSize:16,width:150,height:80,borderWidth:1}}
-                onValueChange={(value) => {setSelectedYearFilter(value as string)}}
-                >   
+                <View style={{borderWidth:1,borderRadius:5,borderColor:'#E2E8f0'}}>
+                  
 
-                    {yearDataFilter && yearDataFilter.length>0 && yearDataFilter.map((year,index)=>(
-                    <Picker.Item label={year} value={year}  />
+                  <Picker style={{padding:0,borderRadius:5,fontSize:16,width:150,height:50,borderWidth:1}}
+                  onValueChange={(value) => {setSelectedYearFilter(value as string)}}
+                  >   
 
-                    ))}
-                
+                      {yearDataFilter && yearDataFilter.length>0 && yearDataFilter.map((year,index)=>(
+                      <Picker.Item label={year} value={year}  />
 
-                </Picker>
+                      ))}
+                  
 
+                  </Picker>
+                </View>
             )}
         </View>
 
@@ -315,27 +401,28 @@ export default FertilizerDistributionPiechart
 const styles = StyleSheet.create({
     //main
     componentMainWrapper:{
-        width:'100%',
-        paddingVertical:10,
-        //borderWidth:1,
-        //borderColor:'red',
+        width:'95%',
+        borderRadius:5,
+        borderWidth:1,
+        borderColor:'#E2E8F0',
         marginBottom:5,
         marginTop:5,
-        elevation:1
+        backgroundColor:'white'
+      
     },
     componentHeaderWrapper:{
         width:'100%',
-        paddingVertical:10,
+        padding:10,
         borderColor:'blue',
-        //borderWidth:1,
+        borderWidth:0,
         display:'flex',
         flexDirection:'column',
-        alignItems:'center',
+        alignItems:'flex-start',
         justifyContent:'center'
     },
 
     componentFilterWrapper:{
-        paddingVertical:5,
+        paddingVertical:15,
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
@@ -345,13 +432,14 @@ const styles = StyleSheet.create({
         gap:20
     },
     componentChartWrapper:{
-        width:'100%'
+        width:'100%',
+        borderWidth:0,
     },
 
 
     //text
     componentHeaderText:{
-        fontSize:17,
+        fontSize:20,
         fontWeight:600,
         marginBottom:10,
         color:'#37474F'
@@ -364,20 +452,20 @@ const styles = StyleSheet.create({
 
     segmentContainer: {
         flexDirection: 'row',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         //borderBottomWidth: 1,
         borderBottomColor: '#ccc',
-        //borderWidth:1,
-        width:'90%',
+        borderWidth:0,
+      
         gap:25
       },
       segmentButton: {
         alignItems: 'center',
-        paddingVertical: 5,
+        paddingVertical: 0,
       },
       segmentText: {
-        color: 'black',
-        fontSize: 14,
+        color: ' #64748B',
+        fontSize: 15,
       },
       activeText: {
         fontWeight: 'bold',

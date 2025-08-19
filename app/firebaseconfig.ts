@@ -7,7 +7,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyA6k2B3SzdVT4W6zTOJK0GxbgLcmF3SvMM",
   authDomain: "agribuddy-7aa71.firebaseapp.com",
   projectId: "agribuddy-7aa71",
-  storageBucket: "agribuddy-7aa71.appspot.com", // Fix storage URL typo
+  storageBucket: "agribuddy-7aa71.appspot.com",
   messagingSenderId: "456060451963",
   appId: "1:456060451963:web:7270de7cbf3a6c51f7f6de"
 };

@@ -16,7 +16,22 @@ import { router, useFocusEffect } from 'expo-router';
 import { useUserContext } from '../Context/UserContext';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { LinearGradient } from 'expo-linear-gradient';
+
+
+//icons import 
 import Octicons from '@expo/vector-icons/Octicons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import Entypo from '@expo/vector-icons/Entypo';
+
+//components import
+
+import AccountControlComponent from '@/components/AccountScreenComponents/AccountControlComponent';
+
+
+import {fonts} from '../utils/typography'
+import Feather from '@expo/vector-icons/Feather';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+
 interface CurrentCrops{
 
   CropAssocId:string | null
@@ -299,35 +314,85 @@ const account = () => {
     
       <SafeAreaView style={styles.mainContainer}  >
       
-        <View style={styles.profileHeader}  
 
-            >
-
-          
-            <View style={styles.profileIconWrapper}>
-              <Avatar.Text size={65} label={getAuthorInitials(user?.Username as string)}  />
-            </View>
-
-            <View style={styles.profileInfoWrapper}>
-                <Text numberOfLines={1} ellipsizeMode="tail" style={{ overflow: 'hidden', fontSize:18,fontWeight:700,color:'#253D2C' }}>{user?.Email}</Text>
-            </View>
-
-            <View style={styles.profileSettingWrapper}>
-
-              <TouchableOpacity onPress={logoutAccount} style={{alignSelf:'flex-start'}}>
-                <AntDesign name="logout" size={24} color="black" />
-              </TouchableOpacity>
-              
-            </View>
-
-        </View> 
 
         <ScrollView style={styles.scrollWrapperContainer} contentContainerStyle={{alignItems:'center'}}>
+
+          <View style={styles.profileHeader}>
+
+            
+              <View style={styles.profileIconWrapper}>
+                <MaterialCommunityIcons name="account" size={30} color="#607D8B" />
+              </View>
+
+              <View style={styles.profileInfoWrapper}>
+                  <Text style={{color:'#607D8B',fontWeight:'700',fontSize:18}}>Welcome Back!</Text>
+                  <Text numberOfLines={1} ellipsizeMode="tail" style={{color:'#64748B'}}>{user?.Email}</Text>
+              </View>
+
+              <View style={styles.profileSettingWrapper}>
+
+                <TouchableOpacity onPress={logoutAccount} style={{alignSelf:'flex-start'}}>
+                  <AntDesign name="logout" size={24} color="black" />
+                </TouchableOpacity>
+                
+              </View>
+
+          </View> 
+
+
+
+          <View style={sections.summarySection}>
+
+            <View style={innerComponent.summaryCard}>
+
+              <View style={innerComponent.summaryCard__iconBadge__plot}>
+                <Entypo name="location-pin" size={30} color="white" />
+              </View>
+              
+              <Text style={innerComponent.summaryCard__primary}>3</Text>
+              <Text style={innerComponent.summaryCard__secondary}>Total Plots</Text>
+            </View>
+
+            <View style={innerComponent.summaryCard}>
+              <View style={innerComponent.summaryCard__iconBadge__crop}>
+                <MaterialCommunityIcons name="sprout" size={30} color="white" />
+              </View>
+              
+              <Text style={innerComponent.summaryCard__primary}>3</Text>
+              <Text style={innerComponent.summaryCard__secondary}>Active Crops</Text>
+            </View>
+
+
+            <View style={innerComponent.summaryCard}>
+
+              <View style={innerComponent.summaryCard__iconBadge__humidity}>
+                <Feather name="droplet"  size={30} color="white" />
+              </View>
+              
+              <Text style={innerComponent.summaryCard__primary}>3</Text>
+              <Text style={innerComponent.summaryCard__secondary}>Humidity</Text>
+            </View>
+
+            <View style={innerComponent.summaryCard}>
+
+              <View style={innerComponent.summaryCard__iconBadge__temperature}>
+                <Feather name="sun" size={30} color="white" />
+              </View>
+              
+              <Text style={innerComponent.summaryCard__primary}>3</Text>
+              <Text style={innerComponent.summaryCard__secondary}>Temperature</Text>
+            </View>
+
+          </View>
+
 
             <View style={styles.plotContainerWrapper}>
 
               <View style={styles.plotHeaderWrapper}>
-                <View style={{width:30,height:30,borderWidth:0,borderRadius:50,backgroundColor:'#37474F'}}></View>
+                <View style={{width:30,height:30,borderWidth:0,borderRadius:50,backgroundColor:'#607D8B',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+                  <Entypo name="location-pin" size={20} color="white" />
+                </View>
                 <Text style={styles.plotHeaderText}>Your Farm Plots</Text> 
 
                 <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:'auto'}} onPress={showAddPlotConfirmation}><Ionicons name="add-outline" size={30} color="black" /></TouchableOpacity>
@@ -371,7 +436,10 @@ const account = () => {
 
 
                 <View style={styles.discussionHeaderWrapper}>
-                  <View style={{width:25,height:25,borderWidth:0,borderRadius:50,backgroundColor:'#37474F'}}></View>
+                  <View style={{width:25,height:25,borderWidth:0,borderRadius:50,backgroundColor:'#607D8B',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+                    <MaterialIcons name="mode-comment" size={15} color="white" />
+
+                  </View>
                   <Text style={styles.discussionHeaderText}>My Discussions</Text>
                 </View>
 
@@ -384,11 +452,17 @@ const account = () => {
                     {discussions && discussions.length > 0 && discussions.map((discussion,index)=>(
 
 
-                      <TouchableOpacity onPress={()=> navigateToPost(discussion.discussionId)} style={{borderRadius:5,elevation:0,display:'flex',flexDirection:'row', alignItems:'center',borderWidth:0,paddingVertical:10,paddingHorizontal:10}}>
+                      <TouchableOpacity onPress={()=> navigateToPost(discussion.discussionId)} style={{
+                        borderRadius:5,elevation:0,display:'flex',flexDirection:'column', 
+                        alignItems:'flex-start',borderWidth:1,paddingVertical:10,paddingHorizontal:10,borderColor:'#E2E8F0',gap:5}}>
 
                         
-                        <Octicons name="comment-discussion" size={20} color="#37474F" />
-                        <Text style={{marginLeft:5,fontSize:17,fontWeight:500,color:'#37474F'}}>{discussion.discussionTitle}</Text>
+                   
+                        <Text style={{fontSize:17,fontWeight:500,color:'#37474F'}}>{discussion.discussionTitle}</Text>
+                        <View style={{width:'100%',display:'flex',flexDirection:'row',borderWidth:0,gap:10}}>
+                          <Text style={{color:'#94A3B8'}}>8 Replies</Text>
+                          <Text style={{color:'#94A3B8'}}>5 Hours Ago</Text>
+                        </View>
                       </TouchableOpacity>
 
 
@@ -399,9 +473,18 @@ const account = () => {
 
                 ) : (
 
-                  <View style={{ gap:10,width:"100%",height:200,borderWidth:0,display:'flex',flexDirection:"column",alignItems:'center',justifyContent:'center'}}> 
+                  <View style={{borderWidth:1,
+                                borderColor:'#E2E8F0',
+                                padding:10, 
+                                gap:10,
+                                width:"100%",
+                                height:200,
+                                display:'flex',
+                                flexDirection:"column"
+                                ,alignItems:'center',
+                                justifyContent:'center'}}> 
                     <Octicons name="comment-discussion" size={30} color="#37474F" />
-                    <Text style={{color:'#333333', fontSize:17,fontWeight:400}}>You're currently not tracking any crop</Text>
+                    <Text style={{color:'#333333', fontSize:17,fontWeight:400}}>You have not posted any discussion yet</Text>
       
                   </View>
                 )}
@@ -411,7 +494,12 @@ const account = () => {
 
             </View>
 
+
+          <AccountControlComponent/>
+
         </ScrollView>
+
+        
 
 
 
@@ -436,7 +524,12 @@ const styles = StyleSheet.create({
     display:'flex',
     flexDirection:'column',
     width:'100%',
-    gap:3
+
+
+    borderWidth:1,
+    borderColor:'#E2E8F0',
+    padding:10,
+
     //borderWidth:1,
    
   },
@@ -451,23 +544,26 @@ const styles = StyleSheet.create({
 
   discussionContainerWrapper:{
     width:'95%',
-    //borderWidth:1,
+    backgroundColor:'white',
     display:'flex',
     flexDirection:'column',
-    paddingVertical:25,
-    gap:10
+  
+  
     
   },
 
   discussionHeaderWrapper:{
     width:'100%',
-    paddingVertical:10,
-    //borderWidth:1,
+    paddingHorizontal:10,
+    paddingVertical:15,
+    borderWidth:1,
     display:'flex',
     flexDirection:'row',
     alignItems:'center',
-    borderColor:'#666666',
-    borderBottomWidth:1
+    backgroundColor:'#F8FAFC',
+    
+    borderColor:'#E2E8F0',
+    borderBottomWidth:0,
   },
 
 
@@ -478,14 +574,16 @@ const styles = StyleSheet.create({
     flexDirection:'column',
     display:"flex",
     paddingTop:10,
-    backgroundColor:'#F2F3F5'
+    backgroundColor:'#ffffff'
     
   },
   profileHeader:{
     width:'100%',
     height:100,
-    //borderWidth:1,
-    //backgroundColor:'#4C9142',
+    borderWidth:0,
+    backgroundColor:'#ffffff',
+    borderColor:'#E2E8F0',
+    borderBottomWidth:1,
     display:'flex',
     flexDirection:'row',
     alignItems:'center',
@@ -499,8 +597,7 @@ const styles = StyleSheet.create({
     display:'flex',
     flexDirection:'column',
     height:70,
-    marginLeft:20,
-    marginRight:20,
+
     //alignItems:'center',
     justifyContent:'center',
 
@@ -516,11 +613,11 @@ const styles = StyleSheet.create({
   },
 
   profileIconWrapper:{
-    //borderWidth:1,
+    borderWidth:0,
     borderRadius:5,
     width:70,
     height:70,
-    marginLeft:10,
+ 
     display:'flex',
     alignItems:'center',
     justifyContent:'center'
@@ -530,10 +627,11 @@ const styles = StyleSheet.create({
     borderWidth:1,
     borderColor:'#37474F',
     flex:1,
-    marginTop:20,
-    borderTopLeftRadius:15,
-    borderTopRightRadius:15,
-    backgroundColor:'#ffffff'
+    gap:10,
+    display:'flex',
+    flexDirection:'column',
+    
+    backgroundColor:'#F4F5F7',
   },
 
 
@@ -541,30 +639,34 @@ const styles = StyleSheet.create({
 
   plotContainerWrapper:{
     width:'95%',
-    borderColor:'green',
-    //borderWidth:1,
+    marginBottom:25,
+    backgroundColor:'white',
     display:'flex',
     flexDirection:'column',
-    paddingVertical:25
+    
   },
 
   plotHeaderWrapper:{
     width:'100%',
     flexDirection:'row',
     display:'flex',
-    //borderWidth:1,
+    borderWidth:1,
     alignItems:'center',
-    marginBottom:10,
-    paddingBottom:10,
-    paddingTop:10,
-    borderColor:'#666666',
-    borderBottomWidth:1
+    padding:10,
+   
+    backgroundColor:'#F8FAFC',
+    
+    borderColor:'#E2E8F0',
+    borderBottomWidth:0,
   },
 
   plotContentWrapper:{
     display:'flex',
     flexDirection:'column',
-
+    borderWidth:1,
+    borderColor:'#E2E8F0',
+    padding:10,
+    minHeight:30,
   },
 
   plotHeaderText:{
@@ -575,4 +677,87 @@ const styles = StyleSheet.create({
     letterSpacing:.5,
     marginLeft:10
   }
+})
+
+const sections = StyleSheet.create({
+  summarySection:{
+    width:'95%',
+    display:'flex',
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'center',
+    flexWrap:'wrap',
+
+    borderWidth:0,
+    paddingTop:5,
+    paddingBottom:5,
+    gap:5
+  }
+})
+
+
+const innerComponent = StyleSheet.create({
+
+
+  // summary card
+
+  summaryCard:{
+    width:'49%',
+    borderRadius:5,
+    padding:20,
+    borderWidth:1,
+    borderColor:'#E2E8F0',
+   
+    display:'flex',
+    flexDirection:'column',
+    justifyContent:'center',
+    alignItems:'center',
+    gap:'2',
+
+
+  },
+
+  summaryCard__iconBadge__plot:{
+ 
+    padding:5,
+    borderRadius:'50%',
+    backgroundColor:'#607D8B',
+  },
+
+    summaryCard__iconBadge__crop:{
+ 
+    padding:5,
+    borderRadius:'50%',
+    backgroundColor:'#0FB37E',
+
+  },
+
+    summaryCard__iconBadge__humidity:{
+ 
+    padding:5,
+    borderRadius:'50%',
+    backgroundColor:'#4081F5',
+  },
+
+    summaryCard__iconBadge__temperature:{
+ 
+    padding:5,
+    borderRadius:'50%',
+    backgroundColor:'#F9731C',
+  },
+
+  summaryCard__primary:{
+    fontSize:22,
+    fontWeight:600,
+    color: "#607D8B",
+  },
+  
+  summaryCard__secondary:{
+    fontSize:13,
+    fontWeight:400,
+    color: "#607D8B",
+  }
+
+
+
 })

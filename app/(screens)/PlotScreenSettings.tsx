@@ -933,7 +933,7 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
                 {renderProcessDeleteRecordDataVFertilizer()}
                 {renderDeletePlotError()}
 
-                <View style={styles.headerContainer}>
+            <View style={styles.headerContainer}>
 
                     <TouchableOpacity onPress={()=> router.back()} style={{marginLeft:10}}>
                         <Feather name="x" size={24} color="black"  />
@@ -943,7 +943,7 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
                     <MaterialCommunityIcons name="delete-empty" size={30} color="red" />
                 </TouchableOpacity>
 
-                </View>
+            </View>
             <ScrollView style={styles.scrollContentContainer} contentContainerStyle={{alignItems:'center'}}>
 
                 <View style={styles.contentContainer}>
@@ -960,6 +960,7 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
                     <TouchableOpacity onPress={pickImage} style={styles.pickerIcon}>
                         <MaterialCommunityIcons name="image-plus" size={30} color="#fff" />
                     </TouchableOpacity>
+
                     </View>
 
                     <TextInput value={plotName} onChange={(e)=>setPlotName(e.nativeEvent.text)} placeholder="Title" style={styles.titleInput}></TextInput>
@@ -1045,14 +1046,15 @@ export default PlotScreenSettings
 const stylesDataRemove = StyleSheet.create({
     wrapper:{
         width:'100%',
-        //borderWidth:1,
+        borderWidth:1,
         paddingVertical:10,
-        paddingHorizontal:5,
+        paddingHorizontal:10,
         display:"flex",
         flexDirection:'column',
-        backgroundColor:'#F2F3F5',
+       backgroundColor:'white',
+       borderColor:'#E2E8f0',
         borderRadius:5,
-        elevation:1,
+        elevation:0,
         marginBottom:5,
     },
     wrapperHeader:{
@@ -1098,13 +1100,13 @@ const styles = StyleSheet.create({
 
     headerContainer:{
         width:'100%',
-        maxHeight:50,
-        //borderWidth:1,
-        
+        borderColor:'#e2e8f0',
+        borderBottomWidth:1,
+        backgroundColor:'white',
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
-        paddingVertical:10,
+        paddingVertical:15,
         
     },
     scrollContentContainer:{
@@ -1121,19 +1123,21 @@ const styles = StyleSheet.create({
         display:'flex',
         flexDirection:'column',
         alignItems:'center',
-        //backgroundColor:'#F2F3F5',
+          backgroundColor:'#F4F5F7',
     },
     contentContainer:{
         marginTop:10,
         width:"100%",
-        paddingHorizontal:10,
+        gap:15,
+        paddingHorizontal:0,
         paddingVertical:10,
-        //borderWidth:1,
+       
         display:'flex',
         flexDirection:'column',
-        backgroundColor:'#F2F3F5',
+     
+         borderColor:'#E2E8f0',
         borderRadius:5,
-        elevation:1,
+        elevation:0,
         marginBottom:5,
 
     },
@@ -1141,7 +1145,7 @@ const styles = StyleSheet.create({
         fontSize:25,
         fontWeight:500,
         borderWidth:0,
-        marginBottom:20,
+       
         borderBottomWidth:1
       
     },

@@ -3,9 +3,17 @@ import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router';
 
+//icon import
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Feather from '@expo/vector-icons/Feather';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+
+
+import { format, subMonths } from "date-fns";
+
+
+
 import CropPlanCard from '@/components/genComponents/CropPlanCard';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseconfig';
@@ -28,6 +36,10 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { ContributionChartValue } from 'react-native-chart-kit/dist/contribution-graph/ContributionGraph';
 import { RectProps } from 'react-native-svg';
 
+
+
+
+import {fonts} from '../utils/typography'
 interface PlotData{
     PlotId : string,
     PlotName: string,
@@ -104,7 +116,7 @@ const PlotManagementScreen = () => {
     const [chartData,setChartData] = useState<any>(null);
     const [diseaseChartData,setDiseaseChartData] = useState<any>(null)
     const [fertilizerChartMonthlyTotal,setFertilizerChartMonthlyTotal] = useState<any>([])
-
+    const [fertilizerChartLabels,setFertilizerChartLabels] = useState<any[]>([])
     const [fertilizerLogs,setFertilizerLogs]= useState<FertilizerLog[]>([])
     /*
     const pestLogs = [
@@ -283,6 +295,39 @@ const PlotManagementScreen = () => {
 
         }
 
+
+        // all related to fertlizer record fetching //
+
+        function getLast6MonthsTotals(fertilizerLogs: any[]) {
+        const now = new Date();
+        const monthLabels: string[] = [];
+        const monthTotals: number[] = [];
+
+        // Create last 6 months labels
+        for (let i = 5; i >= 0; i--) {
+            const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const label = date.toLocaleString("default", { month: "short", year: "numeric" });
+            monthLabels.push(label);
+            monthTotals.push(0);
+        }
+
+        // Sum totals for logs within last 6 months
+        const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+
+        fertilizerLogs.forEach((entry: any) => {
+            const entryDate = new Date(entry.DateApplied);
+            if (entryDate >= sixMonthsAgo && entryDate <= now) {
+            const label = entryDate.toLocaleString("default", { month: "short", year: "numeric" });
+            const index = monthLabels.indexOf(label);
+            if (index !== -1) {
+                monthTotals[index] += Number(entry.fertilizerAmmount) || 0;
+            }
+            }
+        });
+
+        return { monthLabels, monthTotals };
+        }
+
         const fetchFertilizerLogRecord = async(plotId:string) =>{
 
             console.log("Fetching Fertilizer Log Record.....")
@@ -305,12 +350,14 @@ const PlotManagementScreen = () => {
 
                     const fertilizerLog = existingLogs[logIndex].FertilizerApplications;
 
-                    const monthlyTotals = getMonthlyTotals(fertilizerLog);
-                    console.log("Processed Monthly Totals For Fertilizer Logs : ", monthlyTotals)
+                    const {monthLabels,monthTotals} = getLast6MonthsTotals(fertilizerLog);
+                    console.log("Processed Monthly Totals For Fertilizer Logs : ", monthTotals)
 
 
-                    setFertilizerChartMonthlyTotal(monthlyTotals)
+                    setFertilizerChartMonthlyTotal(monthTotals)
                     setFertilizerLogs(fertilizerLog)
+                    setFertilizerChartLabels(monthLabels)
+                
                 }
 
             }catch(err){console.log(err)}
@@ -332,56 +379,6 @@ const PlotManagementScreen = () => {
 
 
       useEffect(()=>{
-
-
-        /*
-
-        const getWeeklyPestCounts = (logs:any,pestDataName:string[]) => {
-            console.log("Getting weekly pest counts...")
-            const pests = pestDataName;
-            console.log("Pest names array : ",pests)
-            const weeks = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"];
-
-
-            if (!pestListData || pestListData.length === 0) {
-                console.warn("No pests available, skipping chart update.");
-                return;
-            }
-          
-            // Initialize weekly occurrence count
-            const weeklyData = pests.reduce((acc:any, pest) => {
-              acc[pest] = new Array(5).fill(0); // 5 weeks, initialized to 0
-              return acc;
-            }, {});
-
-            const pestColors: { [key: string]: string } = {};
-            pests.forEach((pest) => {
-                pestColors[pest] = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-            });
-          
-            logs.forEach((log: any) => {
-                const logDate = log.Date || log.date; // Ensure correct date key
-                const pest = log.Pestname || log.pestname; // Ensure correct pest name key
-            
-                if (!logDate || !pest) return; 
-            
-                const weekIndex = Math.floor((new Date(logDate).getDate() - 1) / 7);
-                if (weeklyData[pest] && weekIndex >= 0 && weekIndex < 5) {
-                    weeklyData[pest][weekIndex] += 1;
-                }
-            });
-          
-            return {
-                labels: weeks,
-                datasets: pests.map((pest) => ({
-                    label: pest,
-                    data: weeklyData[pest],
-                    color: () => pestColors[pest], // Assign color to the dataset
-                })),
-                pestColors, // Return colors for legend
-            };
-          };
-            */
 
 
 
@@ -549,72 +546,116 @@ const PlotManagementScreen = () => {
 
         <View style={styles.headerContainer}>
 
-            <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10}} onPress={()=> router.back()}>
+            <TouchableOpacity style={{marginLeft:10,borderWidth:0,padding:5}} onPress={()=> router.back()}>
 
-                <Ionicons name="arrow-back" size={30} color="#607D8B" />
+                <Ionicons name="arrow-back" size={20} color="#607D8B" />
 
             </TouchableOpacity>
+            
+
+            <View style={styles.headerContainer__metaDataWrapper}>
+
+                <Image source={{uri:plotData.PlotThumbnail}} style={styles.headerContainer__metaDataWrapper__thumbnail}/>
+
+                <View style={{display:'flex',flexDirection:'column',justifyContent:'center'}}>
+                    <Text style={fonts.headerSecondary}>Plot Name</Text>
+                    <Text style={{color:'#64748B'}}>0.3 hectares • Clay loam</Text>
+                </View>
+
+            </View>
+
+
+            <TouchableOpacity onPress={()=>navigateToPlotSetting(plotId as string,plotData?.PlotName,plotData.currentCrops.CropAssocId,plotData.PlotThumbnail)}>
+
+                <Ionicons name="options" size={24} color="#607D8B" />
+
+            </TouchableOpacity>
+
+            
 
 
         </View>
 
-        <ScrollView style={{borderWidth:0,width:'100%',flex:1}}>
+        <ScrollView style={{borderWidth:1,width:'100%',flex:1,display:'flex',flexDirection:'column',gap:10,paddingVertical:10,paddingBottom:30}} contentContainerStyle={{alignItems:'center'}}>
+
+
+
+
+                <View></View>
+
+
+
 
                 <View style={styles.plotInfoContainer}>
-                    <View style={styles.thumbnail}>
 
-                        {plotData.PlotThumbnail.length > 0 ? (
-                            <Image source={{uri:plotData.PlotThumbnail}} style={{width:'100%',height:'100%',objectFit:'cover'}}  />
-                        ) : (
+                    
+                    {plotData.PlotThumbnail.length > 0 ? (
+                        <View style={styles.thumbnail}>
+                            <Image source={{uri:plotData.currentCrops.CropCover as string}} style={{width:90,height:90,objectFit:'cover',borderRadius:45}}  />
+                        </View>
 
-                            <Foundation name="photo" size={24} color="#607D8B" />
-                        )}
+                       
                         
+                    ) : (
+
+
+                    <View style={[styles.thumbnail,{backgroundColor:'#FEF3C5'}]}>
+                     
+                        <Feather name="sun" size={24} color="#CA8123" />
                     </View>
+
+
+
+                        
+                    )}
+
+
+
+
+
+
                     <View style={styles.infoWrapper}>
                         <View style={styles.infoHeaderwrapper}>
-                            <Text  style={styles.plotName}>{plotData.PlotName}</Text>
+
+                            {plotData.currentCrops.CropAssocId ? (
+                                <>
+                                    <Text  style={styles.plotName}>Growing {plotData.currentCrops.CropName}</Text>
+  
+                                </>
+                            ) : (
+                                <>
+                                
+                                <Text  style={styles.plotName}>Plot is Resting</Text>
+                                <Text style={{fontSize:14,color:'#64748B'}}>This plot is currently not growing any crops</Text>
+                                
+                                </>
+                            )}
+                            
                     
 
                         </View>
-                        
-                        <View style={[styles.badge, plotData.currentCrops.CropAssocId ? {backgroundColor:"#2E6F40"} : {} ]}>
 
 
-                            {plotData.currentCrops.CropAssocId ? (
-                                <View style={{alignSelf:'flex-start',borderWidth:0,paddingHorizontal:20,borderRadius:5,backgroundColor:'#2E6F40'}}>
+                        {plotData.currentCrops.CropAssocId ? (
+                                <View style={{borderWidth:0,borderRadius:5,paddingVertical:8,paddingHorizontal:16,backgroundColor:'#D0FAE4'}}>
                                     
                                     
-                                    <Text style={[styles.status, {color:'#ffffff'}]} >
-                                        Growing
+                                    <Text style={[styles.status, {color:'#22996F'}]} >
+                                        Active
                                     </Text>                            
                                     
                                 </View>
+                        ) : (
+
+                            <TouchableOpacity style={{borderRadius:5,paddingVertical:8,paddingHorizontal:16,backgroundColor:'#607D8B',display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center',gap:5}}>
+                                <FontAwesome6 name="add" size={16} color="white" />
+                               <Text style={{color:'white',fontWeight:600,fontSize:14}}>Plant New Crop</Text>
+                            </TouchableOpacity>
+                        )}
 
 
-                            ) : (
-
-                                <View style={{alignSelf:'flex-start',borderWidth:0,paddingHorizontal:20,borderRadius:5,backgroundColor:'#E9A800'}}> 
-
-                                    <Text style={[styles.status, {color:'#ffffff'}]} >
-                                        Resting
-                                    </Text>
-
-                                </View>
-
-                            )}
-
-                        </View>
                     </View>
 
-                    <View style={{borderWidth:0,width:30,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-                        <TouchableOpacity onPress={()=>navigateToPlotSetting(plotId as string,plotData?.PlotName,plotData.currentCrops.CropAssocId,plotData.PlotThumbnail)}>
-
-                            <Ionicons name="options" size={24} color="#607D8B" />
-
-                        </TouchableOpacity>
-                        
-                    </View>
                 </View>
 
 
@@ -623,43 +664,12 @@ const PlotManagementScreen = () => {
 
 
 
-                {plotData?.currentCrops.CropAssocId !== null ? (
-                    
-
-                    <View style={stylesCrop.wrapper}>
-                        <View style= {stylesCrop.cropThumbnailWrapper}>
-                            <Image style={{width:'100%',height:'100%',objectFit:'contain',borderRadius:10}} source={{uri:plotData.currentCrops.CropCover as string}}/>
-                        </View>
-                        <View style={stylesCrop.textContainer}>
-                            <Text style={stylesCrop.cropNameText}>
-                                {plotData.currentCrops.CropName}
-                            </Text>
-
-                            <Text style={stylesCrop.datePlantedText}>
-                                Current Crop in the plot
-                            </Text>
-                        </View>
-
-                    </View>
-
-                ) : (
-
-                    <View style={stylesNoRotation.wrapper}>
-                        
-                        <View style={stylesNoRotation.textContainer}>
-                            <Text style={stylesNoRotation.text}>
-                            Not Growing A Crop
-                            </Text>
-                        </View>
-          
-                    </View>
-
-                )}
 
 
 
 
-            <View style={{borderWidth:0,marginTop:0,width:'100%',marginLeft:'auto',marginRight:'auto',backgroundColor:'white',paddingVertical:10,elevation:1}}>
+
+            <View style={{marginBottom:15,borderWidth:0,marginTop:0,width:'95%',marginLeft:'auto',marginRight:'auto',backgroundColor:'white',elevation:1}}>
 
                 <View style={styles.chartsHeaderWrapper}>
 
@@ -688,14 +698,14 @@ const PlotManagementScreen = () => {
                             labels: chartData?.labels, // Weeks
                             datasets: chartData?.datasets, // Pest occurrence per week
                         }}
-                        width={Dimensions.get("window").width} // from react-native
+                        width={Dimensions.get("window").width * 0.95} // from react-native
                         height={220}
                         //yAxisLabel="$"
                         //yAxisSuffix="k"
                         yAxisInterval={1} // optional, defaults to 1
                         chartConfig={{
-                        backgroundGradientFrom: "#f1f1f1",
-                        backgroundGradientTo: "#f1f1f1",
+                        backgroundGradientFrom: "#ffffff",
+                        backgroundGradientTo: "#ffffff",
                         decimalPlaces: 2, // optional, defaults to 2dp
                         color: (opacity = 1) => `rgba(75, 192, 192, ${opacity})`,
                         labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
@@ -743,7 +753,7 @@ const PlotManagementScreen = () => {
 
 
             ) : (
-                <View style={{width:'100%',borderWidth:0,marginTop:15,backgroundColor:'#D2D2D2',height:220,borderRadius:5,display:'flex',alignItems:'center',justifyContent:'center'}}> 
+                <View style={{width:'100%',borderWidth:0,marginTop:15,backgroundColor:'#ffffff',height:220,borderRadius:5,display:'flex',alignItems:'center',justifyContent:'center'}}> 
                     <Text style={{fontSize:15,fontWeight:600,color:'#909090'}}>No Available Data To Display</Text>
                 </View>
             )}
@@ -754,7 +764,7 @@ const PlotManagementScreen = () => {
 
 
 
-        <View style={{borderWidth:0,marginTop:0,width:'100%',marginLeft:'auto',marginRight:'auto',backgroundColor:'white',paddingVertical:10,elevation:1}}>
+        <View style={{borderWidth:0,marginBottom:15,width:'95%',marginLeft:'auto',marginRight:'auto',backgroundColor:'white',elevation:1}}>
 
              <View style={styles.chartsHeaderWrapper}>
 
@@ -834,7 +844,7 @@ const PlotManagementScreen = () => {
 
 
             ) : (
-            <View style={{width:'100%',borderWidth:0,marginTop:15,backgroundColor:'#D2D2D2',height:220,borderRadius:5,display:'flex',alignItems:'center',justifyContent:'center'}}> 
+            <View style={{width:'100%',borderWidth:0,marginTop:15,backgroundColor:'#ffffff',height:220,borderRadius:5,display:'flex',alignItems:'center',justifyContent:'center'}}> 
                 <Text style={{fontSize:15,fontWeight:600,color:'#909090'}}>No Available Data To Display</Text>
             </View>
             )}
@@ -846,7 +856,7 @@ const PlotManagementScreen = () => {
 
 
 
-            <View style={{width:'100%',borderWidth:0,marginTop:5,backgroundColor:'white',paddingVertical:10,elevation:1}}>
+            <View style={{width:'95%',borderWidth:0,marginBottom:15,backgroundColor:'white', elevation:1}}>
 
                     <View style={styles.chartsHeaderWrapper}>
 
@@ -867,25 +877,18 @@ const PlotManagementScreen = () => {
                     {fertilizerChartMonthlyTotal && fertilizerChartMonthlyTotal.length>0 ? (
                         <>
                             <BarChart
-                            style={{ marginVertical: 8, borderRadius: 0,borderWidth:0,marginLeft: -25,}}
+                            style={{ marginVertical: 8, borderRadius: 0,borderWidth:0,marginLeft:0,}}
                             data={{
-                                labels: [
-                                "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-                                ],
-                                datasets: [
-                                {
-                                    data: fertilizerChartMonthlyTotal
-                                }
-                                ]
+                                labels:fertilizerChartLabels,
+                                datasets:[{data:fertilizerChartMonthlyTotal}] ,
                             }}
-                            width={screenWidth+10}
+                            width={screenWidth * 0.95}
                             height={220}
                             yAxisLabel=""
                             yAxisSuffix="kg"
                             chartConfig={{
-                                backgroundGradientFrom: "#f1f1f1",
-                                backgroundGradientTo: "#f1f1f1",
+                                backgroundGradientFrom: "#ffffff",
+                                backgroundGradientTo: "#ffffff",
                                 decimalPlaces: 0,
                                 color: (opacity = 1) => `rgba(75, 192, 192, ${opacity})`,
                                 labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
@@ -932,25 +935,43 @@ export default PlotManagementScreen
 const styles = StyleSheet.create({
     headerContainer:{
         width:'100%',
-        maxHeight:50,
-        //borderWidth:1,
+       // maxHeight:50,
+        borderWidth:1,
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
         paddingVertical:10,
-        height:50,
+       // height:50,
         //backgroundColor:'#2E6F40',
         //marginBottom:20,
         backgroundColor:'white'
     },
+
+    headerContainer__metaDataWrapper:{
+        display:'flex',
+        flexDirection:'row',
+        borderWidth:0,
+        gap:5,
+        marginLeft:5,
+    },
+
+    headerContainer__metaDataWrapper__thumbnail:{
+        width:50,
+        height:50,
+        borderWidth:0,
+        borderRadius:10,
+        backgroundPosition:'center',
+        objectFit:'cover'
+    },
     legendWrapper:{
         width:'100%',
-        //borderWidth:1,
+        borderWidth:0,
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
         justifyContent:'center',
-        flexWrap:'wrap'
+        flexWrap:'wrap',
+        paddingVertical:15
     },
     chartsHeaderWrapperIcon:{
         width:20,
@@ -963,12 +984,15 @@ const styles = StyleSheet.create({
     },
     chartsHeaderWrapper:{
         width:'100%',
-        //borderWidth:1,
+        borderWidth:0,
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
-        paddingHorizontal:2,
-        backgroundColor:'white'
+        paddingHorizontal:5,
+        paddingVertical:10,
+        backgroundColor:'#F8FAFC',
+        borderBottomWidth:1,
+        borderColor:'#E2E8f0'
     },
     chartsHeaderViewMore:{
         marginLeft:'auto',
@@ -993,25 +1017,26 @@ const styles = StyleSheet.create({
         backgroundColor:'#F2F3F5'
     },
     plotInfoContainer:{
-        width:'100%',
-        //borderWidth:1,
+        width:'95%',
+        borderWidth:1,
         display:'flex',
-        flexDirection:'row',
+        flexDirection:'column',
         //marginBottom:20,
         backgroundColor:'white',
-        borderRadius:0,
-        paddingTop:10,
-        paddingBottom:10,
-        paddingLeft:10,
-        paddingRight:10,
-        height:110,
-        elevation:0
+        borderRadius:5,
+        padding:20,
+        //height:110,
+        alignItems:'center',
+        elevation:0,
+        gap:10,
+        marginBottom:15,
+        borderColor:'#E2E8F0'
     },
     thumbnail:{
-        width:140,
+        width:90,
         height:90,
-        //borderWidth:1,
-        borderRadius:5,
+        borderWidth:0,
+        borderRadius:'50%',
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
@@ -1019,10 +1044,11 @@ const styles = StyleSheet.create({
         backgroundColor:'#D2D2D2'
     },
     infoWrapper:{
-        marginLeft:10,
+        gap:12,
         display:"flex",
         flex:1,
         flexDirection:'column',
+        alignItems:'center',
         //borderWidth:1,
         marginBottom:'auto',
         height:'100%'
@@ -1041,8 +1067,9 @@ const styles = StyleSheet.create({
 
     infoHeaderwrapper:{
         display:'flex',
-        flexDirection:'row',
+        flexDirection:'column',
         alignItems:'center',
+        gap:5,
 
     },
 
@@ -1050,8 +1077,8 @@ const styles = StyleSheet.create({
     //text
 
     plotName:{
-        fontSize:18,
-        fontWeight:600,
+        fontSize:19,
+        fontWeight:700,
         color:"#37474F"
     },
     status:{

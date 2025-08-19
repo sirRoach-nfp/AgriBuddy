@@ -47,7 +47,7 @@ const PlotMinCard = ({plotAssocId,plotName,CurrentCrops,plotThumbnail}:props) =>
             {plotThumbnail.length>0 ?(
                 <Image source={{uri:plotThumbnail}} style={styles.img} resizeMode="cover"/>
             ) : (
-                <Foundation name="photo" size={24} color="black" />
+                <Foundation name="photo" size={24} color="white" />
             )}
             
       </View>
@@ -88,31 +88,37 @@ const styles = StyleSheet.create({
 
     container:{
         width:'100%',
-        //borderWidth:1,
+        borderWidth:1,
+        borderColor:'#E2E8F0',
         marginBottom:10,
         display:'flex',
-        flexDirection:'row',
+        flexDirection:'column',
         alignItems:'center',
-        height:60
+        minHeight:150,
+        borderRadius:10
     },
 
     thumbnail:{
-        width:100,
-        height:60,
+        width:'100%',
+        height:160,
         //borderWidth:1,
         backgroundColor:'#D2D2D2',
         display:'flex',
         alignItems:'center',
         justifyContent:'center',
-        borderRadius:5
+            borderTopStartRadius:10,
+        borderTopEndRadius:10,
+        objectFit:'cover',
+        backgroundPosition:'center'
     },
     infoWrapper:{
-        marginLeft:10,
+        width:'100%',
         display:"flex",
         flexDirection:'column',
-        //borderWidth:1,
+        gap:8,
         marginBottom:'auto',
-        height:'100%'
+        flex:1,
+        padding:10
     },
     badgeResting:{
         width:100,
@@ -146,12 +152,14 @@ const styles = StyleSheet.create({
     img:{
         width:'100%',
         height:'100%',
-        borderWidth:0    ,borderRadius:5
+        borderWidth:0,
+        borderTopStartRadius:10,
+        borderTopEndRadius:10
     },
     //text 
     plotName:{
-        fontSize:16,
-        fontWeight:500,
+        fontSize:17,
+        fontWeight:600,
          color:'#253D2C',
         
     },
