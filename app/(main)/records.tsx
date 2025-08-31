@@ -1,4 +1,4 @@
-import { ActivityIndicator, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, FlatList, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import RecordMinCard from '@/components/genComponents/recordMinCard'
@@ -10,6 +10,16 @@ import PostCard from '@/components/DiscussionBoardComponents/PostCard';
 import { router, useFocusEffect } from 'expo-router'
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebaseconfig';
+
+
+// icons
+import Ionicons from '@expo/vector-icons/Ionicons';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+
+//controllers
+
+import { fetchDiscussionsController } from '../controllers/PostControllers/fetchFeed';
+
 type Record = {
   cropName: string,
   cropId: string,
@@ -27,7 +37,9 @@ interface DiscussionData {
   Content:string,
   CreatedAt:any,
   Title:string,
-  ReplyCount:any
+  ReplyCount:any,
+  AuthorName:any,
+  Tag:string,
 }
 
 
@@ -35,8 +47,9 @@ const records = () => {
 
   const [recordData,setRecordData] = useState<RecordData>({})
   const [discussionData,setDiscussionData] = useState<DiscussionData[]>([])
+  const [lastDoc,setLastDoc] = useState<any|null>(null)
   const [loadingResult,setLoadingResult] = useState(true)
-
+  const [loadingMore,setLoadingMore] = useState(false);
 
 
   const getReplyCount = async (discussionID:string) => {
@@ -46,84 +59,37 @@ const records = () => {
 };
 
 
+
+  const [selectedTag,setSelectedTag] = useState<String>("All")
+
+
+  //initial fetch
+
+
   useFocusEffect(
-    useCallback(()=>{
-
-      const fetchDiscussions = async() => {
-        try{
-  
-          const discussionRef = collection(db,'Discussions')
-          const snapshot = await getDocs(discussionRef)
-  
-          const discussions = await Promise.all(
-            snapshot.docs.map(async (doc) => {
-              const replyCount = await getReplyCount(doc.id); // Await reply count
-              return {
-                DocumentId: doc.id,
-                Author: doc.data().Author,
-                Content: doc.data().Content,
-                CreatedAt: doc.data().CreatedAt,
-                Title: doc.data().Title,
-                ReplyCount: replyCount,
-              };
-            })
-          );
-
-
-          
-
-          console.log(discussions)
-          discussions.sort((a, b) => {
-            return b.CreatedAt.toDate().getTime() - a.CreatedAt.toDate().getTime();
-          });
-          setDiscussionData(discussions)
-          setLoadingResult(false)
-        }catch(err){
-          console.error(err)
-        }
-      }
-  
-  
-      fetchDiscussions()
-
-
-
-    },[])
+    useCallback(()=> {
+      const fetchInitial = async () => {
+        setLoadingResult(true);
+        const {discussions,lastDoc} = await fetchDiscussionsController(20,null,selectedTag);
+        setDiscussionData(discussions);
+        setLastDoc(lastDoc);
+        setLoadingResult(false);
+      };
+      fetchInitial();
+    },[selectedTag])
   )
-
-  /*
-  useEffect(()=>{
-
-
-
-    const fetchDiscussions = async() => {
-      try{
-
-        const discussionRef = collection(db,'Discussions')
-        const snapshot = await getDocs(discussionRef)
-
-        const discussions = snapshot.docs.map(doc => ({
-          DocumentId:doc.id,
-          Author:doc.data().Author,
-          Content:doc.data().Content,
-          CreatedAt:doc.data().CreatedAt,
-          Title:doc.data().Title,
-          ReplyCount:getReplyCount(doc.id)
-        }))
-
-        console.log(discussions)
-        setDiscussionData(discussions)
-      }catch(err){
-        console.error(err)
-      }
-    }
+  //load more
+  const loadMore = async () => {
+    if(loadingMore || !lastDoc) return;
+    setLoadingMore(true);
 
 
-    fetchDiscussions()
-    setRecordData(recordsDat)
-  },[])
+    const {discussions,lastDoc:newLastDoc} = await fetchDiscussionsController(20,lastDoc,selectedTag);
+    setDiscussionData((prev)=>[...prev,...discussions]);
+    setLastDoc(newLastDoc);
+    setLoadingMore(false)
+  }
 
-  */
   const [searchQuery,setSearchQuery] = useState("")
   const redirectToSearchResult = ()=>{
       const queryString = `?searchQuery=${encodeURIComponent(searchQuery)}`
@@ -131,6 +97,14 @@ const records = () => {
       router.push(`/(screens)/DiscussionSearchResult${queryString}` as any)
   }
 
+
+  //helpers
+
+  const handleSegmentChange = (value:String) => {
+    setSelectedTag(value)
+    setDiscussionData([]),
+    setLastDoc(null)
+  }
 
   return (
     <SafeAreaView style={styles.mainContainer}>
@@ -145,9 +119,15 @@ const records = () => {
                 borderRadius: 10,
                 borderWidth: 0,
                 flex: 1,
-                marginLeft:5,
-                elevation: 0, // removes Android shadow
+                
+                elevation: 0, 
+                height:50// removes Android shadow
               }}
+
+            inputStyle={{
+              alignSelf:'center',
+              paddingVertical:0
+            }}
             placeholder="Search"
             onChangeText={setSearchQuery}
             value={searchQuery}
@@ -159,9 +139,9 @@ const records = () => {
           />
 
 
-        <TouchableOpacity onPress={()=>{router.push('/(screens)/PostScreen')}} style={{alignSelf:'flex-start',marginRight:20,marginLeft:10,borderWidth:0,marginTop:'auto',marginBottom:'auto'}}>
-
-            <Octicons name="diff-added" size={30} color="#607D8B"  />
+        <TouchableOpacity onPress={()=>{router.push('/(screens)/PostScreen')}} style={{display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center',borderRadius:5,width:50,height:45,backgroundColor:'#607D8B',marginLeft:10,borderWidth:0,marginTop:'auto',marginBottom:'auto'}}>
+            <FontAwesome6 name="add" size={25} color="white" />
+            
 
         </TouchableOpacity>
 
@@ -169,39 +149,102 @@ const records = () => {
 
       </View>
 
-
-
-
-
-
-      {loadingResult === true ? (
-          <View style={{borderWidth:0,flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-
-              <ActivityIndicator size={75 }color="#607D8B"  />
+      <View style={styles.segmentContainer}>
+          <View style={styles.segmentContainer__infoSection}>
+            <Ionicons name="people" size={25} color="#607D8B" />
+            <Text style={styles.segmentContainer__infoSection__primary}>Community Discussion</Text>
           </View>
-      ) : (
 
-        <ScrollView style={styles.contentContainer} contentContainerStyle={{alignItems:'center'}}>
+          <View style={styles.segmentContainer__buttonSection}>
+            
+            <TouchableOpacity style={[selectedTag === "All" ? styles.segmentContainer__buttonSection__buttonActive : styles.segmentContainer__buttonSection__buttonDef]}
 
-          {discussionData && discussionData.length >0 &&
-            discussionData?.map((data,index)=>(
+              onPress={()=>handleSegmentChange("All")}
+              
+            >
+              <Text style={[selectedTag === "All" ? styles.segmentContainer__buttonSection__button__textActive :styles.segmentContainer__buttonSection__button__text]}>All</Text>
+            </TouchableOpacity>
 
-                <PostCard Author={data.Author} CreatedAt={data.CreatedAt} Content={data.Content} Id={data.DocumentId} key={index} Title={data.Title} ReplyCount={data.ReplyCount}/>
-            ))
+
+
+            <TouchableOpacity style={[selectedTag === "General" ? styles.segmentContainer__buttonSection__buttonActive : styles.segmentContainer__buttonSection__buttonDef]}
+
+              onPress={()=>handleSegmentChange("General")}
+              
+            >
+              <Text style={[selectedTag === "General" ? styles.segmentContainer__buttonSection__button__textActive :styles.segmentContainer__buttonSection__button__text]}>General</Text>
+            </TouchableOpacity>
+
+
+
+            <TouchableOpacity style={[selectedTag === "Crops" ? styles.segmentContainer__buttonSection__buttonActive : styles.segmentContainer__buttonSection__buttonDef]}
+
+              onPress={()=>handleSegmentChange("Crops")}
+              
+            >
+              <Text style={[selectedTag === "Crops" ? styles.segmentContainer__buttonSection__button__textActive :styles.segmentContainer__buttonSection__button__text]}>Crops</Text>
+            </TouchableOpacity>
+
+
+
+            <TouchableOpacity style={[selectedTag === "Help" ? styles.segmentContainer__buttonSection__buttonActive : styles.segmentContainer__buttonSection__buttonDef]}
+              onPress={()=>handleSegmentChange("Help")}
+            >
+              <Text style={[selectedTag === "Help" ? styles.segmentContainer__buttonSection__button__textActive :styles.segmentContainer__buttonSection__button__text]}>Help</Text>
+            </TouchableOpacity>
+
+
+            <TouchableOpacity style={[selectedTag === "Tips" ? styles.segmentContainer__buttonSection__buttonActive : styles.segmentContainer__buttonSection__buttonDef]}
+              onPress={()=>handleSegmentChange("Tips")}
+            >
+              <Text style={[selectedTag === "Tips" ? styles.segmentContainer__buttonSection__button__textActive :styles.segmentContainer__buttonSection__button__text]}>Tips</Text>
+            </TouchableOpacity>
+
+
+          </View>
+      </View>
+
+
+
+    {loadingResult ? (
+          <View style={{borderWidth:0,flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+              <ActivityIndicator size={75 }color="#607D8B"  />
+          </View>) : (
+
+          <FlatList 
+            style={{borderWidth:0,width:'100%',paddingHorizontal:10,paddingTop:10}}
+            data = {discussionData}
+            keyExtractor={(item) => item.DocumentId}
+            renderItem={({item})=> (
+              <PostCard AuthorName={item.AuthorName} 
+                        Author={item.Author} 
+                        CreatedAt={item.CreatedAt} 
+                        Content={item.Content} 
+                        Id={item.DocumentId} 
+                        Title={item.Title} 
+                        ReplyCount={item.ReplyCount}
+                        Tag = {item.Tag}
+              />
+            )}
+
+            onEndReached={loadMore}
+            onEndReachedThreshold={0.7}
+            ListFooterComponent={
+              loadingMore ?  <ActivityIndicator size="large" color="#607D8B" /> : null
+            }
+            ListEmptyComponent={
+              <Text style={{textAlign: 'center', marginTop: 20, color: '#888'}}>
+                No discussions yet. Be the first to post!
+              </Text>
+            }
+
+          >
           
-          
-          
-          }
-        </ScrollView>
-
-
-      )}
+          </FlatList>
+          )}
 
 
 
-
-
-      
     </SafeAreaView>
   )
 }
@@ -214,7 +257,8 @@ const styles = StyleSheet.create({
     display:'flex',
     flexDirection:'column',
     //borderWidth:1,
-    alignItems:'center'
+    alignItems:'center',
+    backgroundColor:'#F4F5F7'
   },
   contentContainer:{
     //borderWidth:1,
@@ -228,16 +272,84 @@ const styles = StyleSheet.create({
   tabHeader:{
     width:'100%',
     maxHeight:100,
-    //borderWidth:1,
+    borderWidth:0,
     display:'flex',
     flexDirection:'row',
     alignItems:'center',
     justifyContent:'center',
     marginTop:30,
-    paddingVertical:5
-    
-
+    paddingVertical:5,
+    paddingHorizontal:10,
+    backgroundColor:'white',
+    borderBottomWidth:1,
+    borderColor:'#E2E8F0'
   },
 
+
+  segmentContainer:{
+    width:'100%',
+    paddingVertical:10,
+    paddingHorizontal:10,
+    display:'flex',
+    flexDirection:'column',
+    borderBottomColor: '#E2E8F0',
+    borderBottomWidth:1,
+    backgroundColor:'#ffffff',
+    
+  },
+
+  segmentContainer__infoSection:{
+    width:'100%',
+    display:'flex',
+    flexDirection:'row',
+    alignItems:'center',
+    gap:10
+  },
+
+  segmentContainer__infoSection__primary:{
+    fontSize:17,
+    fontWeight:500,
+    color:'#37474F'
+  },
+
+  segmentContainer__buttonSection:{
+    width:'100%',
+    display:'flex',
+    flexDirection:'row',
+    alignItems:'center',
+    paddingVertical:10,
+    flexWrap:'wrap',
+    gap:5,
+    borderWidth:0,
+  },
+
+  segmentContainer__buttonSection__buttonDef:{
+    borderWidth:1,
+    borderRadius:5,
+    paddingVertical:10,
+    paddingHorizontal:15,
+    borderColor:"#E2E8F0"
+  },
+
+    segmentContainer__buttonSection__buttonActive:{
+    borderWidth:1,
+    borderRadius:5,
+    paddingVertical:10,
+    paddingHorizontal:15,
+    backgroundColor:'#607D8B',
+    borderColor:"#607D8B"
+  },
+
+  segmentContainer__buttonSection__button__text:{
+    fontSize:14,
+    fontWeight:500,
+    color:'#37474F'
+  },
+
+  segmentContainer__buttonSection__button__textActive:{
+    fontSize:14,
+    fontWeight:500,
+    color:'#ffffff'
+  }
 
 })

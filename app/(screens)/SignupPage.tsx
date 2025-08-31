@@ -176,6 +176,7 @@ export default function SignupPage() {
 
 
             const newUserObject = {
+                UserId : userId,
                 Email : email,
                 Username : userName,
                 CropRotationPlanRefId : cropRotationPlanRefId,

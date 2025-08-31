@@ -11,7 +11,9 @@ interface Props {
     Content:any,
     Id:any,
     Title:string,
-    ReplyCount:any
+    ReplyCount:any,
+    AuthorName:any,
+    Tag:string,
 
 
 }
@@ -43,7 +45,7 @@ const navigateToPost = (RefId:string) =>{
 }
 
 
-const PostCard = ({Author,CreatedAt,Content,Id,Title,ReplyCount}:Props) => {
+const PostCard = ({Author,CreatedAt,Content,Id,Title,ReplyCount,AuthorName,Tag}:Props) => {
   return (
     <TouchableOpacity style={styles.wrapperMain} onPress={()=>navigateToPost(Id)}>
       <View style={styles.infoContainer}>
@@ -51,9 +53,20 @@ const PostCard = ({Author,CreatedAt,Content,Id,Title,ReplyCount}:Props) => {
         <View style={styles.titleContainer}>
 
 
-            <Avatar.Text size={24} label={getAuthorInitials(Author)}  style={styles.badgeContainer}/>
-            <Text style={styles.titleTextUsername}>{Author}</Text>
-            <Text style={styles.titleTextDate}>{formatDate(CreatedAt)}</Text>
+            <Avatar.Text size={40} label={getAuthorInitials(AuthorName)}  style={styles.badgeContainer}/>
+            <View style={{borderWidth:0,display:'flex',flexDirection:'column',gap:5,flex:1}}>
+                <View style={{borderWidth:0,display:'flex',flexDirection:'row',alignItems:'center',gap:10}}>
+                    <Text style={styles.titleTextUsername}>{AuthorName}</Text>
+                    
+                    <View style={{borderColor:'#64748B',borderWidth:1,alignSelf:'baseline',paddingVertical:2,paddingHorizontal:10,borderRadius:10,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+                        <Text style={{fontSize:14,fontWeight:500,color:'#64748B'}}>{Tag}</Text>
+                    </View>
+                </View>
+                
+                <Text style={styles.titleTextDate}>{formatDate(CreatedAt)}</Text>
+            </View>
+
+
         </View>
 
         <View style={styles.contentContainer}>
@@ -78,8 +91,8 @@ export default PostCard
 const styles = StyleSheet.create({
 
     badgeContainer:{
-        width:30,
-        height:30,
+        width:40,
+        height:40,
         borderRadius:'50%',
         //borderWidth:1,
         marginRight:10
@@ -114,13 +127,13 @@ const styles = StyleSheet.create({
         marginLeft:10
     },
     titleContainer:{
-        //borderWidth:1,
+        borderWidth:0,
         width:'100%',
-        paddingVertical:5,
+  
         display:'flex',
         flexDirection:'row',
-        alignItems:'center'
-
+        alignItems:'center',
+        minHeight:50
     },
     contentContainer:{
         //borderWidth:1,
@@ -142,8 +155,9 @@ const styles = StyleSheet.create({
     //text
 
     titleTextUsername:{
-        fontWeight:700,
+        fontWeight:600,
         fontSize:15,
+        color:'#37474F'
         
     },
     contentText:{
@@ -151,7 +165,8 @@ const styles = StyleSheet.create({
         fontWeight:400
     },
     titleTextDate:{
-        fontSize:15,
-        marginLeft:10        
+        fontSize:12,
+        fontWeight:500,
+        color:'#94A3B8'
     }
 })

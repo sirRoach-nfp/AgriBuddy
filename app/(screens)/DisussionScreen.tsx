@@ -1,7 +1,7 @@
 import { StyleSheet, Text, Touchable, TouchableOpacity, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { ScrollView } from 'react-native-gesture-handler'
+import { FlatList, ScrollView } from 'react-native-gesture-handler'
 import { Avatar, Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper';
 import { useSearchParams } from 'expo-router/build/hooks';
 import { arrayRemove, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
@@ -17,12 +17,14 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 //import ImageViewing from "react-native-image-viewing";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+
 interface DiscussionData {
     Author:string,
     Title:string,
     Content:string,
     ImageSnapshots:string[],
-    CreatedAt:any
+    CreatedAt:any,
+    Tag:string
 }
 
 
@@ -462,14 +464,14 @@ const DisussionScreen = () => {
 
             <View style={styles.headerContainer}>
 
-                <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10}} onPress={()=> router.back()}>
+                <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10,borderWidth:0,padding:5}} onPress={()=> router.back()}>
 
-                    <Ionicons name="arrow-back" size={30} color="black" />
+                    <Ionicons name="arrow-back" size={25} color="#607D8B" />
 
                 </TouchableOpacity>
                 
 
-                {user?.Username === discussionData?.Author && (
+                {user?.UserId === discussionData?.Author && (
 
                     <TouchableOpacity onPress={()=> setShowDeletePostConfirmation(true)} style={{alignSelf:'flex-start',marginRight:10, marginLeft:'auto'}}>
                         <MaterialCommunityIcons name="delete-empty" size={30} color="red" />
@@ -490,7 +492,7 @@ const DisussionScreen = () => {
                 <View style={stylesDiscussionContent.mainContainer}>
 
                     <View style={stylesDiscussionContent.header}>
-                        <Avatar.Text size={40} label={getAuthorInitials(discussionData?.Author as string)}  style={stylesDiscussionContent.badgeContainer}/>
+                        <Avatar.Text size={50} label={getAuthorInitials(discussionData?.Author as string)}  style={stylesDiscussionContent.badgeContainer}/>
 
                         <View style={stylesDiscussionContent.headerInfoContainer}>
                             <Text style={stylesDiscussionContent.headerUsernameText}>{discussionData?.Author}</Text>
@@ -541,7 +543,12 @@ const DisussionScreen = () => {
 
 
                     <View style={stylesDiscussionContent.bodyWrapper}>
-                        <Text style={{fontSize:17,color:'#333333'}}>{discussionData?.Content}</Text>
+                        <Text style={{fontSize:16,color:'#475569'}}>{discussionData?.Content}</Text>
+                        <View style={{borderColor:'#D5F6E5',marginVertical:10,borderWidth:1,alignSelf:'flex-start',backgroundColor:'#D5F6E5',paddingVertical:2,paddingHorizontal:10,borderRadius:20,display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+                            <Text style={{fontSize:16,color:'#518A69'}}>{discussionData?.Tag}</Text>
+
+                          
+                        </View>
                     </View>
 
 
@@ -553,41 +560,59 @@ const DisussionScreen = () => {
 
                 
            
+                
+                
+                <View style={stylesReply.mainContainer}>
+                    <View style={stylesReply.replyHeader}>
+
+                        <FontAwesome5 name="comment-alt" size={20} color="#607D8B" />
+                        <Text style={{fontWeight:500,marginLeft:10,color:'#607D8B',fontSize:16}}>Comments</Text>
+
+                    </View>
+
+                        {comments && comments.length > 0 && (
+
+                            comments.map((comment,index)=>(
 
 
-                <View style={stylesReply.replyHeader}>
+                            <View style={stylesReply.replyWrapper } key={index}>
 
-                    <FontAwesome5 name="comment-alt" size={25} color="#607D8B" />
-                    <Text style={{fontWeight:500,marginLeft:10,color:'#607D8B',fontSize:18}}>Comments</Text>
+                                <View style={stylesReply.avatarIconWrapper}>
+                                    <Avatar.Text size={35} label={getAuthorInitials(comment?.Author as string)}/>
+                                </View>
+
+                                
+
+                                <View style={stylesReply.infoWrapper}>
+
+                                    <View style={stylesReply.infoWrapper__metadataWrapper}> 
+                                        <Text  style={stylesReply.userText}>{comment?.Author}</Text>
+                                        <Text style={stylesReply.dateText}>{formatDate(comment?.CreatedAt)}</Text>
+                                        {user?.Username === comment?.Author && 
+                                            <TouchableOpacity style={{alignSelf:'flex-start',borderWidth:0,marginLeft:'auto',marginRight:20}} onPress={()=> {setSelectedCommentIndex(index); setSelectedCommentId(comment?.id as string); setShowDeleteConfirmation(true)}}>
+                                                    <AntDesign name="delete" size={20} color="#E63946" />
+                                            </TouchableOpacity>
+                                        }
+                                    </View>
+                                    <View style={stylesReply.replyContent}>
+                                        <Text style={{fontSize:15,color:'#475569'}} >{comment?.Content}</Text>
+                                    </View>
+
+                                </View>
+            
+
+                            </View>
+
+
+                                ))
+
+
+                        )}
+
 
                 </View>
-                {comments && comments.length > 0 && (
+                
 
-                        comments.map((comment,index)=>(
-
-
-                        <View style={stylesReply.replyWrapper } key={index}>
-                            <View style={stylesReply.infoWrapper}>
-                                <Avatar.Text size={25} label={getAuthorInitials(comment?.Author as string)}/>
-                                <Text  style={stylesReply.userText}>{comment?.Author}</Text>
-                                <Text style={stylesReply.dateText}>{formatDate(comment?.CreatedAt)}</Text>
-                                {user?.Username === comment?.Author && 
-                                    <TouchableOpacity style={{alignSelf:'flex-start',borderWidth:0,marginLeft:'auto',marginRight:10}} onPress={()=> {setSelectedCommentIndex(index); setSelectedCommentId(comment?.id as string); setShowDeleteConfirmation(true)}}>
-                                            <AntDesign name="delete" size={20} color="#E63946" />
-                                    </TouchableOpacity>
-                                }
-                            </View>
-        
-                            <View style={stylesReply.replyContent}>
-                                <Text style={{fontSize:17,color:'#333333'}} >{comment?.Content}</Text>
-                            </View>
-                        </View>
-
-
-                        ))
-
-
-                )}
 
                 
 
@@ -614,26 +639,43 @@ const DisussionScreen = () => {
 
 export default DisussionScreen
 const stylesReply = StyleSheet.create({
+
+    mainContainer:{
+        width:'100%',
+        //borderWidth:1,
+    },
+
+    avatarIconWrapper:{
+        //borderWidth:1,
+    },
+
+    
     replyHeader:{
         //borderWidth:1,
         width:'100%',
-        marginBottom:5,
+        //marginBottom:5,
         display:'flex',
         flexDirection:'row',
         padding:5,
+        paddingVertical:15,
         alignItems:'center',
-        
+        borderBottomWidth:1,
+        borderColor:'#E2E8f0',
         backgroundColor:'white',
     },
     replyWrapper:{
         width:'100%',
         //borderWidth:1,
-        borderColor:'red',
+        borderBottomWidth:1,
+        borderColor:'#E2E8F0',
+       paddingRight:10,
         display:'flex',
-        flexDirection:'column',
-        alignItems:'center',
-        paddingVertical:5,
-        marginBottom:10,
+        flexDirection:'row',
+        paddingHorizontal:5,
+        gap:10,
+        paddingVertical:20,
+      
+        marginBottom:0,
         backgroundColor:'white'
     },
 
@@ -641,10 +683,16 @@ const stylesReply = StyleSheet.create({
     infoWrapper:{
         width:'95%',
         display:'flex',
-        flexDirection:'row',
+        flexDirection:'column',
         //borderWidth:1,
-        paddingVertical:3,
-        alignItems:'center'
+        
+        paddingRight:5,
+      
+    },
+    infoWrapper__metadataWrapper:{
+        display:'flex',
+        flexDirection:'row',
+        borderWidth:0,
     },
 
 
@@ -655,14 +703,16 @@ const stylesReply = StyleSheet.create({
     },
 
     userText:{
-        fontWeight:'bold',
-        fontSize:13,
-        marginLeft:10,
+        fontWeight:'500',
+        fontSize:14,
+        marginLeft:0,
         marginRight:10,
+        color:' #37474F'
     
     },
     dateText:{
         fontSize:13,
+        color:'#94A3B8'
     }
 })
 
@@ -671,13 +721,13 @@ const styles = StyleSheet.create({
 
 
     mainWrapper:{
-        //borderWidth:1,
+        borderWidth:1,
         flex:1,
         color:'red',
         display:'flex',
         flexDirection:'column',
         alignItems:'center',
-        backgroundColor:'#F2F3F5'
+        backgroundColor:'#F4F5F7'
     },
 
 
@@ -694,16 +744,17 @@ const styles = StyleSheet.create({
     },
     headerContainer:{
         width:'100%',
-        maxHeight:50,
-        //borderWidth:1,
+        //maxHeight:50,
+        borderBottomWidth:1,
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
         paddingVertical:10,
-        height:50,
+        //height:50,
         //backgroundColor:'#2E6F40',
         //marginBottom:20,
-        backgroundColor:'white'
+        backgroundColor:'white',
+        borderColor:'#E2E8f0'
     },
 })
 
@@ -711,11 +762,15 @@ const styles = StyleSheet.create({
 const stylesDiscussionContent = StyleSheet.create({
 
     badgeContainer:{
-        width:40,
-        height:40,
+        width:55,
+        height:55,
         borderRadius:'50%',
-        //borderWidth:1,
-        marginRight:0
+        borderWidth:0,
+        marginRight:0,
+        display:'flex',
+        flexDirection:'column',
+        alignItems:'center',
+        justifyContent:'center'
     },
 
     mainContainer:{
@@ -724,10 +779,11 @@ const stylesDiscussionContent = StyleSheet.create({
         //borderColor:'red',
         display:'flex',
         flexDirection:'column',
-        marginBottom:20,
+        marginBottom:10,
         backgroundColor:'white',
         paddingHorizontal:5,
-        paddingTop:20
+        paddingTop:20,
+        paddingBottom:30
         
     },
     header:{
@@ -736,7 +792,7 @@ const stylesDiscussionContent = StyleSheet.create({
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
-   
+        marginBottom:10,
     
     },
 
@@ -748,8 +804,8 @@ const stylesDiscussionContent = StyleSheet.create({
         marginLeft:10
     },
     TitleWrapper:{
-        marginTop:10,
-        marginBottom:20,
+        marginTop:0,
+        marginBottom:0,
         //borderWidth:1,
         width:'100%',
         //backgroundColor:'red',
@@ -757,17 +813,20 @@ const stylesDiscussionContent = StyleSheet.create({
         //height:50
     },
     bodyWrapper:{
-        //borderWidth:1,
+    
         width:'100%',
         //backgroundColor:'green',
-        paddingVertical:10
+        paddingTop:20,
+        paddingBottom:20,
+        borderBottomWidth:1,
+        borderColor:'#E2E8f0'
     },
     imageScrollWrapper:{
         width:'100%',
         //borderWidth:1,
         //height:10,
         //backgroundColor:'blue',
-        marginTop:10,
+        marginVertical:10,
         display:'flex',
         flexDirection:'row',
        
@@ -792,7 +851,7 @@ const stylesDiscussionContent = StyleSheet.create({
         fontWeight:300
     },
     titleText:{
-        fontSize:20,
+        fontSize:19,
         fontWeight:600,
         color:'#37474F'
     },

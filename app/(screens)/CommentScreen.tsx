@@ -9,6 +9,11 @@ import { Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-nat
 import { db } from '../firebaseconfig';
 import { useUserContext } from '../Context/UserContext';
 import { router } from 'expo-router';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+
+
+
+
 const CommentScreen = () => {
 
   const searchParams = useSearchParams();
@@ -48,8 +53,6 @@ const CommentScreen = () => {
         console.error(err)
     }
   }
-
-
     const renderProcess = () => (
   
           <Portal>
@@ -108,6 +111,13 @@ const CommentScreen = () => {
 
 
   const [comment,setComment] = useState("")
+
+
+
+  // input validator
+  const isValid = comment.trim().length <= 1000 && comment.trim().length >= 10;
+
+
   return (
 
     <PaperProvider>
@@ -121,12 +131,15 @@ const CommentScreen = () => {
             <View style={styles.headerContainer}>
 
 
-                <Feather name="x" size={24} color="black" style={{marginLeft:10}} />
+                <TouchableOpacity onPress={()=> router.back()} style={{marginLeft:10,borderWidth:0,padding:3}}>
+                    <Feather name="x" size={24} color="black"  />
+                </TouchableOpacity>
 
                 <Text style={stylesHeader.HeaderText}>Add Comment</Text>
 
-                <TouchableOpacity style={stylesHeader.buttonWrapper} onPress={()=>{addComment(user?.Username as string)}}>
-                    <Text style={stylesHeader.buttonText}>Post</Text>
+                <TouchableOpacity disabled={!isValid} style={[!isValid ? styles.postButton__disabled : styles.postButton__active]} onPress={()=>{addComment(user?.Username as string)}}>
+                   <FontAwesome name="send" size={15} color="#ECF4F7" />
+                   <Text style={stylesHeader.buttonText}>Post</Text>
                 </TouchableOpacity>
 
             </View>
@@ -134,8 +147,87 @@ const CommentScreen = () => {
 
             <ScrollView style={styles.contentScrollContainer} contentContainerStyle={{alignItems:'center'}}>
 
+                
+                <View style={{width:'95%',
+                    borderWidth:1,
+                    height:350,
+                    display:'flex',
+                    flexDirection:'column',
+                    borderRadius:10,
+                    backgroundColor:'white',
+                    borderColor:'#E2E8F0'
+                    }}>
+                    <TextInput maxLength={1000} onChange={(e)=>setComment(e.nativeEvent.text)} placeholder="Your Comment....." numberOfLines={20} multiline={true} textAlignVertical="top" style={styles.TextInput}></TextInput>
+                    
+                    <View style={{width:'100%',
+                        borderTopWidth:1,
+                        borderColor:'#E2E8F0',
+                        paddingVertical:15,
+                        display:'flex',
+                        flexDirection:'row',
+                        alignItems:'center',
+                        justifyContent:'flex-end',
+                        paddingHorizontal:10,
+                        backgroundColor:'#F9FAFC',
+                        borderBottomEndRadius:10,
+                        borderBottomStartRadius:10,
+                        }}>
+                        <Text style={{color:'#6B7280'}}>{comment.length}/1000</Text>
+                    </View>
 
-                <TextInput onChange={(e)=>setComment(e.nativeEvent.text)} placeholder="Your Comment....." numberOfLines={20} multiline={true} textAlignVertical="top" style={styles.TextInput}></TextInput>
+                </View>
+
+
+                <View style={noteStyles.noteWrapper}>
+                    <Text style={noteStyles.header}>Community Guidelines</Text>
+    
+                    <View style={noteStyles.textWrapper}>
+                        <Text style={noteStyles.textWrapper__bullet}>
+                        •
+                        </Text>
+                        <Text style={noteStyles.textWrapper__text}>
+                        Comment should be a minimum of 10 characters
+                        </Text>
+    
+                    </View>
+    
+                    <View style={noteStyles.textWrapper}>
+                        <Text style={noteStyles.textWrapper__bullet}>
+                        •
+                        </Text>
+    
+                        <Text style={noteStyles.textWrapper__text}>
+                        Be respectful and constructive with your comments
+                        </Text>
+    
+                    </View>
+    
+                    <View style={noteStyles.textWrapper}>
+    
+                        <Text style={noteStyles.textWrapper__bullet}>
+                        •
+                        </Text>
+    
+                        <Text style={noteStyles.textWrapper__text}>
+                        Share relevant farming experiences and knowledge
+                        </Text>
+    
+                    </View>
+    
+                    <View style={noteStyles.textWrapper}>
+    
+                        <Text style={noteStyles.textWrapper__bullet}>
+                        •
+                        </Text>
+    
+                        <Text style={noteStyles.textWrapper__text}>
+                        Avoid spam, offensive language, or inappropriate content
+                        </Text>
+    
+                    </View>
+                </View>
+                
+                
                 
 
 
@@ -146,8 +238,10 @@ const CommentScreen = () => {
 
         
 
+            <View style={{borderColor:'#E2E8F0',borderRadius:20,borderWidth:1,marginVertical:5,paddingVertical:7,paddingHorizontal:10,backgroundColor:'#ffffff'}}>
+                <Text style={{color: "#374151"}}>Commenting as {user?.Username}</Text>
+            </View>
             
-            <Text>{user?.Username}</Text>
 
 
         </SafeAreaView>
@@ -160,13 +254,56 @@ const CommentScreen = () => {
 export default CommentScreen
 
 const styles = StyleSheet.create({
+
+    postButton__disabled:{
+
+
+        display:'flex',
+        flexDirection:'row',
+        justifyContent:'center',
+        alignItems:'center',
+        paddingVertical:10,
+        paddingHorizontal:30,
+        borderWidth:0,
+        borderRadius:20,
+        marginLeft:'auto',
+        marginRight:10,
+        gap:10,
+        backgroundColor:'#AFBDC8'
+
+
+    },
+
+
+
+    postButton__active:{
+
+
+
+        display:'flex',
+        flexDirection:'row',
+        justifyContent:'center',
+        alignItems:'center',
+        paddingVertical:10,
+        paddingHorizontal:30,
+        borderWidth:0,
+        borderRadius:20,
+        marginLeft:'auto',
+        marginRight:10,
+        gap:10,
+        backgroundColor:'#607D8B'
+
+    },
+
+
     mainWrapper:{
         //borderWidth:1,
         flex:1,
         color:'red',
         display:'flex',
         flexDirection:'column',
-        alignItems:'center'
+        alignItems:'center',
+        backgroundColor:'#F4F5F7'
     },
 
 
@@ -179,19 +316,24 @@ const styles = StyleSheet.create({
     },
     headerContainer:{
         width:'100%',
-        maxHeight:50,
-        //borderWidth:1,
+        borderColor:'#E2E8F0',
+        borderBottomWidth:1,
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
-        paddingVertical:10,
-        height:50,
-        //backgroundColor:'#2E6F40'
+        paddingVertical:15,
+     
+        backgroundColor:'#ffffff'
     },
 
 
     TextInput:{
-        width:'95%'
+        width:'100%',
+        borderWidth:0,
+        flex:1,
+        fontSize:16,
+        padding:15,
+        height:'100%'
     },
 
 
@@ -216,8 +358,53 @@ const stylesHeader = StyleSheet.create({
         marginBottom:'auto'
     },
     buttonText:{
-        fontSize:16,
-        fontWeight:400,
+        fontSize:15,
+        fontWeight:500,
+        color:'#ECF4F7'
 
     }
+})
+
+const noteStyles = StyleSheet.create({
+  noteWrapper:{
+    width:'95%',
+    padding:15,
+    backgroundColor:'#EFF6FF',
+    borderRadius:5,
+    borderColor:'#E2E8F0',
+    borderWidth:1,
+    marginTop:10,
+    marginBottom:35,
+  },
+
+  header:{
+    fontSize:17,
+    fontWeight:600,
+    color:'#3A4765',
+    marginBottom:20,
+  },
+
+  textWrapper:{
+    display:'flex',
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'flex-start',
+    gap:5,
+    borderWidth:0,
+    marginBottom:5,
+  },
+
+  textWrapper__bullet:{
+    fontSize: 18,
+    fontWeight:700,
+    color:'#3A4765',
+  },
+
+  textWrapper__text:{
+    fontSize:16,
+    fontWeight:400,
+    color:'#3A4765',
+  }
+
+
 })
