@@ -1,114 +1,380 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ScrollView } from 'react-native-gesture-handler'
 import Ionicons from '@expo/vector-icons/Ionicons'
+import { useUserContext } from '../Context/UserContext'
+import { useSearchParams } from 'expo-router/build/hooks'
+import { fetchSpecificRecord } from '../controllers/ExpenseControllers/fetchSpecificRecord'
+
+//icon
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper'
+import { router } from 'expo-router'
+import { deleteExpenseRecord } from '../controllers/ExpenseControllers/deleteExpenseRecord'
 
 
+interface cartItem{
+    id:string,
+    itemName : string,
+    itemQuantity : number,
+    itemPrice : number,
+}
 
+
+interface expenseLogData{
+    title:string,
+    date:Date,
+    description:string,
+    expenseId:string,
+    total:number,
+    items:cartItem[]
+}
 
 
 const ExpandedExpenseReport = () => {
+    const {user} = useUserContext();
+ 
+
+
+    const searchParams = useSearchParams();
+    const recordId = searchParams.get('ExpenseRefId')
+    const [logData,setLogData] = useState<expenseLogData>()
+
+
+    //modal controllers
+
+    const [showDeletePostProcess,setShowDeleteProcess] = useState(false)
+    const [showDeleteConfirmation,setShowDeleteConfirmation] = useState(false)
+    const [loadingDelete,setLoadingDelete] = useState(false)
+    const [deletePostLoading,setDeletePostLoading] = useState(false)
+    const [showError,setShowError] = useState<boolean>(false)
+    const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+
+    useEffect(()=>{
+
+        const fetchExpenseData = async()=>{
+            try{
+
+                if(recordId){
+
+                    const fetchedLogData = await fetchSpecificRecord(user,recordId)
+                    setLogData(fetchedLogData)
+                }
+               
+            }catch(err){console.log(err)}
+        }
+
+        fetchExpenseData()
+
+    },[recordId])
+
     
 
 
+    const deleteRecord = async()=>{
 
-  
+        setShowDeleteConfirmation(false);
+        setShowDeleteProcess(true);
+        setLoadingDelete(true);
+
+        try{
+         
+
+
+         await sleep(5)
+
+        if(recordId){
+        deleteExpenseRecord(user?.ExpensesRefId as string,recordId)
+        }
+         
+        
+        setLoadingDelete(false)
+        
+
+        }catch(err){
+            setLoadingDelete(false)
+            setShowDeleteProcess(false)
+            setShowError(true)
+        }
+    }
+
+
+        //modals------------------------------------------------------
+    const renderDeleteConfirmation = () => (
+
+
+   
+        <Portal>
+
+            <Dialog visible={showDeleteConfirmation} onDismiss={()=>{setShowDeleteConfirmation(false)}}>
+
+
+                <Dialog.Title>
+                    Delete Expense Record?
+                </Dialog.Title>
+
+
+                <Dialog.Content>
+                    <Text>
+                        This action will permanently remove this expense and all its items from your records. You won’t be able to undo this.
+                    </Text>
+                </Dialog.Content>
+
+
+                <Dialog.Actions>
+                    <TouchableOpacity onPress={()=>{deleteRecord()}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+        
+                        <Text style={{color:'white'}}>
+                            Continue
+                        </Text>
+
+                    </TouchableOpacity>
+                </Dialog.Actions>
+
+            </Dialog>
+        </Portal>
+    )
+
+
+    const renderProcessDeletePost = () => (
+    
+        <Portal>
+            <Dialog visible={showDeletePostProcess} onDismiss={()=>{}}>
+
+                {deletePostLoading ? (
+                    <Dialog.Title>
+                        Deleting Expense...
+                    </Dialog.Title>
+                ) :(
+                    <Dialog.Title>
+                        Expense Deleted
+                    </Dialog.Title>
+                )}
+
+
+
+                {deletePostLoading ? (
+                    <Dialog.Content>
+                        <Text>Please wait while we remove this record. This may take a few seconds.</Text>
+                    </Dialog.Content>
+                ) : (
+                    <Dialog.Content>
+                    <Text>The expense record has been successfully removed from your records!</Text>
+                    </Dialog.Content>
+                )}
+
+
+
+                {deletePostLoading ? (
+                    <ProgressBar indeterminate color={MD3Colors.error50} style={{marginBottom:20,width:'80%',marginLeft:'auto',marginRight:'auto',borderRadius:'50%'}} />
+                ) : (
+                    <Dialog.Actions>
+
+                        <TouchableOpacity onPress={()=>{router.push('/(main)/expenses')}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+
+                            <Text style={{color:'white'}}>
+                                Continue
+                            </Text>
+
+                        </TouchableOpacity>
+
+                    </Dialog.Actions>
+                )}
+
+
+            </Dialog>
+
+
+
+
+        </Portal>
+    )
+
+
+    const renderError = ()=>(
+    
+        <Portal>
+            <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
+    
+                <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
+    
+                <Dialog.Title>
+                    <Text style={{color:'#37474F'}}>
+                        Something went wrong
+                    </Text>
+                    
+                </Dialog.Title>
+                
+                <Dialog.Content>
+                    <Text style={{color:'#475569'}}>An unexpected error occured. Please try again later</Text>
+                </Dialog.Content>
+    
+    
+    
+                <Dialog.Actions>
+    
+                <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+    
+                    <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                        OK
+                    </Text>
+    
+                </TouchableOpacity>
+    
+                </Dialog.Actions>
+    
+            </Dialog>
+    
+        </Portal>
+    
+        )
+
   
     return (
-    <SafeAreaView style={{display:'flex',flexDirection:'column',flex:1,borderWidth:1,borderColor:'red',alignItems:'center'}}>
 
-        <ScrollView style={{width:'95%', borderWidth:0,borderColor:'blue',display:'flex',flexDirection:'column'}} contentContainerStyle={{alignItems:'center'}}>
-            
-            <View style={{width:'100%',maxHeight:50,height:50,
-            display:'flex',flexDirection:'row',
-            alignItems:'center',gap:10,marginBottom:10,borderWidth:0,
 
-            }}>
+    <PaperProvider>
+        {renderDeleteConfirmation()}
+        {renderProcessDeletePost()}
+        {renderError()}
+        <SafeAreaView style={{display:'flex',flexDirection:'column',flex:1,borderWidth:1,borderColor:'red',alignItems:'center'}}>
 
-                <Ionicons name="arrow-back" size={25} color="#607D8B" />
+            <ScrollView style={{width:'95%', borderWidth:0,borderColor:'blue',display:'flex',flexDirection:'column'}} contentContainerStyle={{alignItems:'center'}}>
                 
-            </View>
+                <View style={{width:'100%',maxHeight:50,height:50,
+                display:'flex',flexDirection:'row',
+                alignItems:'center',gap:10,marginBottom:10,borderWidth:1,justifyContent:'space-between'
+
+                }}>
+
+                    <TouchableOpacity onPress={()=> router.back()} style={{borderWidth:0,padding:5}}>
+                        <Ionicons name="arrow-back" size={25} color="#607D8B" />
+                    </TouchableOpacity>
+                    
+
+                    <TouchableOpacity style={{borderWidth:0,padding:5}} onPress={()=>setShowDeleteConfirmation(true)}>
+                        <MaterialIcons name="delete" size={24} color="#9E1C1E" />
+                    </TouchableOpacity>
+                    
+                </View>
+
+                
+                <View style={[subContainers.UpperSubContainer,{gap:5}]}>
+                    <Text style={textStyles.headerTitle}>
+                        {logData?.title}
+                    </Text>
+
+    
+                    <View style={{width:'100%',display:'flex',flexDirection:'row',alignItems:"center",borderWidth:0,justifyContent:'center'}}>
+                        <Text style={[textStyles.formFieldDesc,{fontWeight:500}]}>
+                            {logData?.date?.toLocaleDateString()}
+                        </Text>
+                    </View>
+
+
+
+
+
+                </View>
+
+
+
+                <View style={subContainers.DefaultInfoSubContainer}>
+                    <View style={subContainers.DefaultInfoHeaderWrapper}>
+                        <Text style={textStyles.defCardHeaderStyle}>Description</Text>
+                    </View>
+
+                    <View style={subContainers.DefaultContentWrapper}>
+                        <Text style={textStyles.defCardContentStyle}>
+                            {logData?.description}
+                        </Text>
+                    </View>
+                </View>
+
+
+
+
+                <View style={[subContainers.DefaultInfoSubContainer,{marginBottom:5}]}>
+                    <View style={subContainers.DefaultInfoHeaderWrapper}>
+                        <Text style={textStyles.defCardHeaderStyle}>Items and Expenses</Text>
+                    </View>
+
+                    <View style={[subContainers.DefaultContentWrapper,{display:'flex',flexDirection:'column',gap:5}]}>
+
+                        {Array.isArray(logData?.items) && logData.items.length > 0 &&
+                        logData.items.map((item, index) => (
+                            <View
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                borderWidth: 0,
+                                paddingVertical: 5,
+                                borderColor: 'red',
+                                width: '100%',
+                            }}
+                            key={index}
+                            >
+                            <View
+                                style={{
+                                flex: 1,
+                                borderWidth: 0,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 5,
+                                }}
+                            >
+                                <Text
+                                style={[
+                                    textStyles.defCardHeaderStyle,
+                                    { wordWrap: 'wrap', fontSize: 15, fontWeight: '700', color: '#64748B' },
+                                ]}
+                                >
+                                {item.itemName}
+                                </Text>
+                                <Text style={{ fontSize: 14, color: '#64748B' }}>
+                                Quantity: {item.itemQuantity}
+                                </Text>
+                            </View>
+
+                            <View
+                                style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignContent: 'flex-start',
+                                borderWidth: 0,
+                                paddingHorizontal: 10,
+                                }}
+                            >
+                                <Text style={{ fontSize: 15, color: '#64748B', fontWeight: '600' }}>
+                                {item.itemPrice}
+                                </Text>
+                            </View>
+                            </View>
+                        ))}
+
+        
+
+                        <View style={{display:'flex',flexDirection:'row',borderTopWidth:1,paddingVertical:5,borderColor:'#E2E8F0',width:'100%',justifyContent:'space-between',alignItems:'center'}}>
+                            <Text style={[textStyles.headerTitle,{fontSize:17}]}>Total Amount</Text>
+                            <Text style={[textStyles.headerTitle,{fontSize:17,color:'#64748B'}]}>₱ {logData?.total}</Text>
+                        </View>
+
+
+
+                    </View>
+                </View>
+
 
             
-            <View style={[subContainers.UpperSubContainer,{gap:5}]}>
-                <Text style={textStyles.headerTitle}>
-                    Title Placeholder
-                </Text>
 
- 
-                <View style={{width:'100%',display:'flex',flexDirection:'row',alignItems:"center",borderWidth:0,justifyContent:'center'}}>
-                    <Text style={[textStyles.formFieldDesc,{fontWeight:500}]}>
-                        Date Placeholder
-                    </Text>
-                </View>
+            </ScrollView>
 
 
 
-
-
-            </View>
-
-
-
-            <View style={subContainers.DefaultInfoSubContainer}>
-                <View style={subContainers.DefaultInfoHeaderWrapper}>
-                    <Text style={textStyles.defCardHeaderStyle}>Description</Text>
-                </View>
-
-                <View style={subContainers.DefaultContentWrapper}>
-                    <Text style={textStyles.defCardContentStyle}
-                      >Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                         enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-                          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt
-                           in culpa qui officia deserunt mollit anim id est laborum
-                    </Text>
-                </View>
-            </View>
-
-
-
-
-            <View style={[subContainers.DefaultInfoSubContainer,{marginBottom:5}]}>
-                <View style={subContainers.DefaultInfoHeaderWrapper}>
-                    <Text style={textStyles.defCardHeaderStyle}>Items and Expenses</Text>
-                </View>
-
-                <View style={[subContainers.DefaultContentWrapper,{display:'flex',flexDirection:'column',gap:5}]}>
-
-
-                    <View style={{display:'flex',flexDirection:'row',borderWidth:0,paddingVertical:5,borderColor:'red',width:'100%'}}>
-                        <View style={{flex:1,borderWidth:0,display:'flex',flexDirection:'column',gap:5}}>
-                            <Text style={[textStyles.defCardHeaderStyle,{wordWrap:'wrap',fontSize:15,fontWeight:700,color:'#64748B'}]}>Item name</Text>
-                            <Text style={{fontSize:14,color:'#64748B'}}>Quantity</Text>
-                        </View>
-
-                        <View style={{display:'flex',flexDirection:'column',alignContent:'flex-start',borderWidth:0,paddingHorizontal:10}}>
-                            <Text style={{fontSize:15,color:'#64748B',fontWeight:600}}>Price</Text>
-                        </View>
-                    </View>
-
-
-      
-
-                    <View style={{display:'flex',flexDirection:'row',borderTopWidth:1,paddingVertical:5,borderColor:'#E2E8F0',width:'100%',justifyContent:'space-between',alignItems:'center'}}>
-                        <Text style={[textStyles.headerTitle,{fontSize:17}]}>Total Amount</Text>
-                        <Text style={[textStyles.headerTitle,{fontSize:17,color:'#64748B'}]}>₱ 10000</Text>
-                    </View>
-
-
-
-                </View>
-            </View>
-
-
-           
-
-        </ScrollView>
-
-
-
-    </SafeAreaView>
+        </SafeAreaView>
+    </PaperProvider>
   )
 }
 

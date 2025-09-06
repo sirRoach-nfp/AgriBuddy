@@ -127,9 +127,6 @@ const PostScreen = () => {
 
         </Dialog>
 
-
-
-
     </Portal>
 
     )
@@ -175,15 +172,6 @@ const PostScreen = () => {
 
                     </Dialog.Actions>
                 )}
-
-
-
-
-
-
-
-
-
 
             </Dialog>
 
@@ -254,112 +242,6 @@ const PostScreen = () => {
        
 
 
-        /*
-        try{
-
-            const uploadedImageUrls = [];
-
-            
-            if(imageUri.length > 0){
-
-                for (const uri of imageUri) {
-
-
-                    const formData = new FormData();
-
-                    formData.append("file", {
-                        uri: uri,
-                        type: "image/jpeg",
-                        name: "upload.jpg",
-                      } as any);
-
-
-                    formData.append("upload_preset", "dishlyunsignedpreset");
-                    
-
-
-                    console.log("Uploading selected image..")
-                    const uploadResponse = await fetch(
-                        "https://api.cloudinary.com/v1_1/dvl7mqi2r/image/upload",
-                        {
-                            method: "POST",
-                            body: formData,
-                        }
-                    );
-                    console.log("image uploaded...")
-    
-                    const data = await uploadResponse.json();
-                    if (data.secure_url) {
-                        uploadedImageUrls.push(data.secure_url); // Store uploaded image URL
-                    } else {
-                        console.error("Upload failed:", data);
-                    }
-                }
-                console.log("Image done uploading to Cloudinary")
-                console.log("Uploaded Images:", uploadedImageUrls);
-
-            }
-
-            
-            const newDiscussion = {
-                Title:title,
-                Content:body,
-                ImageSnapshots:uploadedImageUrls,
-                ReplyCount:0,
-                Author:user?.Username,
-                CreatedAt:Timestamp.now(),
-                Keyword: extractKeywords(title)
-            }
-            
-
-
-                    // Add the discussion post to Firestore
-            const discussionRef = await addDoc(collection(db, "Discussions"), newDiscussion);
-            console.log("New discussion added with ID:", discussionRef.id);
-
-            // Replies subcollection
-            const repliesCollectionRef = collection(db, "Discussions", discussionRef.id, "Replies");
-
-            console.log("Replies subcollection ready:", repliesCollectionRef.path);
-            
-
-            // add record 
-
-
-
-            const discussionRecordRef = doc(db,"DiscussionRecords",user?.DiscussionRecordRefId as string);
-
-
-            await updateDoc(discussionRecordRef,{
-                Discussions:arrayUnion({
-                    discussionId:discussionRef.id,
-                    discussionTitle:title
-                })
-            })
-
-            console.log("Uploaded success")
-
-
-
-
-            
-
-            console.log("Skipped image upload empty image array")
-
-            setPostLoading(false);
-            setTitle(""),
-            setBody(""),
-            setImageUri([])
-            
-
-
-
-
-
-
-        }catch(err){console.log(err)}
-
-        */
     }
 
 

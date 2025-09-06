@@ -1,17 +1,43 @@
-import { StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native'
-import React from 'react'
+import { FlatList, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native'
+import React, { useCallback, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ScrollView } from 'react-native-gesture-handler'
-import { router } from 'expo-router'
+import { router, useFocusEffect } from 'expo-router'
 
 //components import
 import ExpensesReportCard from '@/components/ExpensesComponents/ExpensesReportCard'
-const expenses = () => {
+import {fetchExpensesController } from '../controllers/ExpenseControllers/fetchExpenses'
+import { useUserContext } from '../Context/UserContext'
 
+
+
+
+
+
+
+
+
+
+
+
+
+interface expenseLogStructure{
+    date:Date,
+    expenseId:string,
+    title:string,
+    total: number,
+    amountItems:number
+}
+
+
+
+const expenses = () => {
+  const {user} = useUserContext()
   const {width} = useWindowDimensions()
   const isSmallScreen = width < 480
 
-
+  //data 
+  const [expenseRecordsLog,setExpenseRecordLog] = useState<expenseLogStructure[]>([])
 
 
   const navigateToCreateRecord = () => {
@@ -20,48 +46,69 @@ const expenses = () => {
   }
 
 
+    useFocusEffect(
+      useCallback(()=> {
+
+        const fetchExpenseRecords = async()=>{
+          try{
+            const expenseRecords = await fetchExpensesController(user)
+            setExpenseRecordLog(expenseRecords)
+          }catch(err){
+
+          }
+          
+        }
+
+        fetchExpenseRecords()
+        
+        
+      },[])
+    )
+
+
   return (
     <SafeAreaView style={{flex:1,display:'flex',flexDirection:'column'}}>
 
       
 
+    <View style={styles.headerMainWrapper}>
 
+      <View style={HeaderStyles.innerHeaderWrapper}>
+          <Text style={HeaderStyles.headerTextStyles}>
+            Expense Tracker
+          </Text>
 
-      <ScrollView style={styles.mainContentWrapper}>
+          <Text style={HeaderStyles.subtitleTextStyle}>
+            Track and manage your expenses
+          </Text>
+      </View>
 
+      <TouchableOpacity  onPress={navigateToCreateRecord} style={[ButtonStyles.CreateNewButton,{backgroundColor:'#607D8B'}]} >
+          <Text style={ButtonStyles.buttonTextCreate}>Create New Expense Record</Text>
+      </TouchableOpacity>
 
-        <View style={styles.headerMainWrapper}>
+    
 
-          <View style={HeaderStyles.innerHeaderWrapper}>
-              <Text style={HeaderStyles.headerTextStyles}>
-                Expense Tracker
-              </Text>
-
-              <Text style={HeaderStyles.subtitleTextStyle}>
-                Track and manage your expenses
-              </Text>
-          </View>
-
-          <View style={[ControllerWrapper.controllerWrapper,{flexDirection:isSmallScreen?'column': 'row'}]}>
-
-            <TouchableOpacity  onPress={navigateToCreateRecord} style={[ButtonStyles.CreateNewButton,{backgroundColor:'#607D8B'}]} >
-              <Text style={ButtonStyles.buttonTextCreate}>Create New Expense Record</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={[ButtonStyles.CreateNewButton,{borderWidth:2,borderColor:'#607D8B'}]}>
-              <Text style={ButtonStyles.buttonTextAnalytics}>View Analytics</Text>
-            </TouchableOpacity>
-            
-          </View>
-
-        
-
-        </View>
+    </View>
 
 
 
-        <ExpensesReportCard/>
-      </ScrollView>
+      <FlatList
+        style={{borderWidth:0,width:'100%',paddingHorizontal:5,paddingTop:20}}
+        data={expenseRecordsLog}
+        keyExtractor={(item) => item.expenseId}
+        renderItem={({item})=>(
+          <ExpensesReportCard title={item.title} date={item.date} total={item.total} amountItems={item.amountItems} expenseId={item.expenseId}/>
+
+        )}
+      >
+
+      </FlatList>
+
+
+
+      
+     
 
 
 
@@ -88,9 +135,11 @@ const styles = StyleSheet.create({
     display:'flex',
     flexDirection:'column',
     alignContent:'flex-start',
-    //borderWidth:1,
+    borderWidth:0,
+    alignSelf:'flex-start',
+    paddingTop:10,
+    paddingHorizontal:5,
     //borderColor:"black",
-    marginBottom:20
   }
 
 
@@ -148,9 +197,10 @@ const ControllerWrapper = StyleSheet.create({
     width:'100%',
     display:'flex',
     //flexDirection:'row',
-    //borderWidth:1,
+    borderWidth:1,
     //borderColor:'green',
-    alignContent:'flex-start',
+   
+    
     gap:10
   }
 })
@@ -160,11 +210,12 @@ const ButtonStyles = StyleSheet.create({
     //borderWidth:1,
     //borderColor:'red',
     padding:10,
-    flex:1,
+
     display:'flex',
     alignItems:'center',
     justifyContent:'center',
     borderRadius:5,
+    height:50,
     
   },
 

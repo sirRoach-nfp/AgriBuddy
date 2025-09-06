@@ -15,6 +15,11 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 
+//controller
+import { uploadExpenseController } from '../controllers/ExpenseControllers/uploadExpenses'
+import { Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper'
+import { router } from 'expo-router'
+import { useUserContext } from '../Context/UserContext'
 
 
 
@@ -29,7 +34,7 @@ interface ItemObject{
 
 const ExpensesRecords = () => {
 
-
+   const {user} = useUserContext();
 
 
    const [date,setNewDate] = useState(new Date());
@@ -37,6 +42,16 @@ const ExpensesRecords = () => {
    const [title,setTitle] = useState<String>()
    const [description,setDescription] = useState<String>()
    const [total,setTotal] = useState<Number>(0)
+
+   //modal controller
+   const [showConfirmation,setShowConfirmation] = useState<boolean>(false)
+   const [showProcess,setShowProcess] = useState<boolean>(false);
+   const [showError,setShowError] = useState<boolean>(false)
+
+   //loaders
+   const [postLoading,setPostLoading] = useState<boolean>(false);
+
+
    //controllers
    const [showDatePicker,setShowDatePicker] = useState<boolean>(false)
 
@@ -51,7 +66,7 @@ const ExpensesRecords = () => {
     */
 
 
-
+    const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 
 
@@ -99,24 +114,44 @@ const ExpensesRecords = () => {
     //form submission
 
 
-    const uploadExpenseRecordToStorage = () => {
+    const uploadExpenseRecordToStorage = async () => {
+        // close confirm, open "processing"
+        setShowConfirmation(false);
+        setShowProcess(true);
+        setPostLoading(true);
 
+            try {
+                if (!title || !date || !description || !itemCart) {
+                throw new Error("Missing fields");
+                }
 
+                // Let the UI commit the modal BEFORE doing work
+                await sleep(0);
 
-        const recordObject = {
-            title:title,
-            date:date,
-            description:description,
-            items:itemCart
+                // do the real upload, but ensure the loader stays up at least 5s
+                await Promise.all([
+                // make sure this returns a Promise
+                uploadExpenseController(user,title,date,description,itemCart,total),
+                sleep(5000),
+                ]);
 
-        }
+                // switch modal content to "success"
+                setPostLoading(false);
 
-        console.log(recordObject)
-    }
+                
+
+            } catch (err) {
+                // on error: close modal and loader
+                setPostLoading(false);
+                setShowProcess(false);
+            }
+    };
 
 
 
     //helpers
+
+    const isReadyToUpload = Boolean(title && description && itemCart);
 
     useEffect(()=>{
 
@@ -126,10 +161,111 @@ const ExpensesRecords = () => {
     },[itemCart])
    
 
+
+  //modals
+
+  
+    const renderPostConfirmation = ()=>(
+
+        <Portal>
+            <Dialog visible={showConfirmation} onDismiss={()=>setShowConfirmation(false)}>
+
+
+                <Dialog.Title>
+                    <Text style={{color:'#37474F'}}>
+                        Upload Expense?
+                    </Text>
+                    
+                </Dialog.Title>
+                
+                <Dialog.Content>
+                    <Text style={{color:'#475569'}}>Double-check the details. Do you want to upload this expense record now?</Text>
+                </Dialog.Content>
+
+
+
+                <Dialog.Actions>
+
+                <TouchableOpacity onPress={uploadExpenseRecordToStorage} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+
+                    <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                        Post
+                    </Text>
+
+                </TouchableOpacity>
+
+                </Dialog.Actions>
+
+            </Dialog>
+
+
+
+
+        </Portal>
+
+    )
+
+
+     const renderProcess = () => (
+
+        <Portal>
+            <Dialog visible={showProcess} onDismiss={()=>{}}>
+
+
+                <Dialog.Title>
+                    Uploading Expense...
+                </Dialog.Title>
+
+
+                {postLoading ? (
+                    <Dialog.Content>
+                        <Text>This may take a few seconds. Don’t close the app</Text>
+                    </Dialog.Content>
+                ) : (
+                    <Dialog.Content>
+                    <Text>The record is now saved to your expenses!</Text>
+                    </Dialog.Content>
+                )}
+
+
+
+                {postLoading ? (
+                    <ProgressBar indeterminate color={MD3Colors.error50} style={{marginBottom:20,width:'80%',marginLeft:'auto',marginRight:'auto',borderRadius:'50%'}} />
+                ) : (
+                    <Dialog.Actions>
+
+                        <TouchableOpacity onPress={()=>{router.back()}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+
+                            <Text style={{color:'white'}}>
+                                Continue
+                            </Text>
+
+                        </TouchableOpacity>
+
+                    </Dialog.Actions>
+                )}
+
+            </Dialog>
+
+
+
+
+        </Portal>
+    )
+    useEffect(() => {
+    console.log("showProcess changed to:", showProcess);
+    }, [showProcess]);
+
   return (
+
+    <PaperProvider>
+    {renderPostConfirmation()}
+    {renderProcess()}
+
+    
     <SafeAreaView  style={{flex:1,display:'flex',flexDirection:'column'}}>
 
-
+        
         <ScrollView style={{flex:1,borderWidth:1,display:'flex',flexDirection:'column',gap:20,borderColor:'red'}} contentContainerStyle={{alignItems:'center'}}>
             <View style={{width:'100%',maxHeight:50,height:50,
            display:'flex',flexDirection:'row',
@@ -340,8 +476,8 @@ const ExpensesRecords = () => {
                             {backgroundColor:itemCart.length > 0 ? '#4F6B7A': '#CBD5E1'}
                         ]}
 
-                        disabled={itemCart.length > 0 ? false : true}
-                        onPress={uploadExpenseRecordToStorage}
+                        disabled={isReadyToUpload ? false : true}
+                        onPress={()=> setShowConfirmation(true)}
                         >
                             <Text style={{
                                 color:'white',
@@ -370,6 +506,8 @@ const ExpensesRecords = () => {
 
         </ScrollView> 
     </SafeAreaView>
+    
+    </PaperProvider>
   )
 }
 

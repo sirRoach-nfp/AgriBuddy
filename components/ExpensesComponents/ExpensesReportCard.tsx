@@ -10,42 +10,50 @@ import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import {router} from 'expo-router'
 
-const ExpensesReportCard = () => {
 
 
-    const navigateToDetailedScreen = () => {
 
-    router.push('/(screens)/ExpandedExpenseReport')
+interface Props{
+    date:Date,
+    expenseId:string,
+    title:string,
+    total: number,
+    amountItems:number
+}
+
+
+const ExpensesReportCard = ({title,date,total,amountItems,expenseId}:Props) => {
+
+
+    const navigateToDetailedScreen = (RefId:string) => {
+        const queryString= `?ExpenseRefId=${encodeURIComponent(RefId)}`
+        router.push(`/(screens)/ExpandedExpenseReport${queryString}` as any)
     }
 
 
 
   return (
-    <TouchableOpacity style={styles.mainWrapper} onPress={navigateToDetailedScreen}>
+    <TouchableOpacity style={styles.mainWrapper} onPress={()=>navigateToDetailedScreen(expenseId)}>
       <View style={styles.highlight}>
       </View>
 
       <View style={styles.infoWrapper}>
-        <Text style={textStyle.titleText}>Title Placeholder</Text>
+        <Text style={textStyle.titleText}>{title}</Text>
 
         <View style={styles.subInfoInnerWrapper}>
             <AntDesign name="calendar" size={20} color="#607D8B" />
-            <Text style={textStyle.subText}>Date Placeholder</Text>
-        </View>
-        <View style={styles.subInfoInnerWrapper}>
-            <Entypo name="location-pin" size={20} color="#607D8B" />
-            <Text  style={textStyle.subText}>Plot placeholder</Text>
+            <Text style={textStyle.subText}>{}</Text>
         </View>
         <View style={styles.subInfoInnerWrapper}>
             <Feather name="package" size={20} color="#607D8B" />
-            <Text  style={textStyle.subText}>Amount placeholder</Text>
+            <Text  style={textStyle.subText}>Items: {amountItems}</Text>
         </View>
 
         <View style={styles.priceTotalInnerWrapper}>
-            <FontAwesome6 name="peso-sign" size={25} color="#607D8B" />
+            <FontAwesome6 name="peso-sign" size={20} color="#607D8B" />
 
             <Text style={textStyle.totalText}>
-                20000
+                {total}
             </Text>
             
         </View>
@@ -60,12 +68,15 @@ const styles = StyleSheet.create({
 
     mainWrapper:{
         width:'100%',
-        minHeight:150,
+       
         backgroundColor:'#FFFFFF',
         display:'flex',
         flexDirection:'row',
         //alignItems:'center',
         alignContent:'flex-start',
+        borderColor:'#E2E8F0',
+        borderWidth:1,
+        marginBottom:5,
         //gap:10
         
     },
@@ -104,7 +115,7 @@ const styles = StyleSheet.create({
 
     priceTotalInnerWrapper:{
         width:'100%',
-        //borderWidth:1,
+        borderWidth:0,
         //borderColor:'red',
         display:'flex',
         flexDirection:'row',
@@ -137,7 +148,7 @@ const textStyle = StyleSheet.create({
     },
     totalText:{
         fontSize:17,
-        fontWeight:600,
+        fontWeight:700,
         color:'#4B5563',
         fontFamily:'ui-sans-serif',
     }

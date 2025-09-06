@@ -10,6 +10,7 @@ interface UserData {
   CurrentCropsRefId: string;
   DiscussionRecordRefId:string,
   Username: string;
+  ExpensesRefId:string,
 }
 
 
