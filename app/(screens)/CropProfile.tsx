@@ -32,6 +32,13 @@ import { faFileArrowDown,faLeaf } from '@fortawesome/free-solid-svg-icons'
 import { useUserContext } from '../Context/UserContext'
 import { router } from 'expo-router'
 
+
+//icons
+
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Entypo from '@expo/vector-icons/Entypo';
 interface guideStep{
     header: string;
     content: string;
@@ -71,28 +78,115 @@ interface diseaseType{
   }
 
 
+interface seasonData{
+    startMonth:number,
+    endMonth:number,
+}
+
 
 const CropProfile = () => {
 
 
     const [showConfirmationVisible,setShowConfirmationVisible] = useState(false)
 
+    const [cropBestSeason,setCropBestSeason] = useState<seasonData>({
+        startMonth:1,
+        endMonth:4,
+    })
+
+    const currentMonth = new Date().getMonth()+1
+    
+
+    //helper
+    const isCropSuitable = (season:seasonData, currentMonth:number): boolean => {
+        const {startMonth,endMonth} = season;
+
+        if(startMonth <= endMonth){
+            return currentMonth >= startMonth && currentMonth <= endMonth;
+        }
+        else{
+            return currentMonth >= startMonth || currentMonth <= endMonth;
+        }
+    }
+
+    const getSeasonMonthRange = (startMonth: number, endMonth: number): string => {
+        const monthNames = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+        const startName = monthNames[startMonth - 1]; // -1 since array is 0-based
+        const endName = monthNames[endMonth - 1];
+
+        return `${startName} – ${endName}`;
+    };
+
+
+
+
+    const isSuitable = isCropSuitable(cropBestSeason,currentMonth)
 
 
     const renderAddCropConfirmationDialog = (cropId:string,commonName:string) => (
         <Portal>
         <Dialog visible={showConfirmationVisible} onDismiss={()=>{}}>
-          <Dialog.Title>Add to your current crops?</Dialog.Title>
+          
+            <Dialog.Icon
+                icon={isSuitable ? "check-circle-outline" : "alert-circle-outline"}
+                size={40}
+                color={isSuitable ? "#17A34A" : "#FFA000"}
+            />
+
+            <Dialog.Title style={{color:'#475569'}}>Crop Suitability</Dialog.Title>
+          
+          
           <Dialog.Content>
-            <Text>Are you sure your want to add this crop to your list?</Text>
+            {isSuitable ?(
+
+                <>
+                <Text style={{fontSize:15,fontWeight:600,color:'#17A34A'}}>
+                    Great choice! This crop is suitable for the current season.
+                </Text>
+                <Text style={{marginTop:10,marginBottom:10,color:"#767273"}}>
+                    {"\u2022"} Recommended planting season matches the current season{"\n"}
+                    {"\u2022"} For best results, use the specified compatible soil types
+                </Text>
+                </>
+            ):(
+                <>
+
+                    <Text style={{fontSize:15,fontWeight:600,color:'#FFA000'}}>
+                        The selected crop is NOT suitable for the current season.
+                    </Text>
+
+                    <Text style={{marginTop:10,marginBottom:10,color:"#767273"}}>
+                        {"\u2022"} Recommended planting season: {getSeasonMonthRange(cropBestSeason.startMonth,cropBestSeason.endMonth)}{"\n"}
+                        {"\u2022"} Soil caution: Using soil types other than the specified may lead to poor yield or crop failure.
+                    </Text>
+                
+                </>
+            )}
+
+
+
+            {isSuitable ? (
+                <Text style={{color:'#475569',fontSize:15,fontWeight:600}}>Would you like to proceed with planting?</Text>
+            ) :(
+                <Text style={{color:'#475569',fontSize:15,fontWeight:600}}>Do you still want to proceed?</Text>
+            )}
+
+            
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={()=>setShowConfirmationVisible(false)}>Cancel</Button>
-            <Button onPress={() => AddToCurrent(cropId,commonName)}>Confirm</Button>
+            <Button onPress={()=>setShowConfirmationVisible(false)} style={{borderWidth:1,borderColor:'#7b7b7b',width:'49%',borderRadius:5}}>Cancel</Button>
+            <Button onPress={() => AddToCurrent(cropId,commonName)} style={[{borderWidth:1,width:'49%',borderRadius:5},
+                isSuitable ?{backgroundColor:'#17A34A',borderColor:'#17A34A'} :{backgroundColor:'#FFA000',borderColor:'#FFA000'}]}>Proceed</Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>
       )
+
+    
 
 
 
@@ -216,177 +310,237 @@ const CropProfile = () => {
             
             
             <>
+
+
+            <ScrollView style={styles.bodyWrapper} contentContainerStyle={{alignItems:'center'}}>
             
-            <View style={styles.thumbnail}>
-                    <Image 
-                        source={{ uri: cropData?.thumbnail }} 
-                        style={{ width: '100%', height: '100%' }} 
-                        resizeMode="cover" 
-                    />
+                <View style={styles.thumbnail}>
+                        <Image 
+                            source={{ uri: cropData?.thumbnail }} 
+                            style={{ width: '100%', height: '100%' }} 
+                            resizeMode="cover" 
+                        />
 
-                    <TouchableOpacity 
-                        onPress={() => router.back()}
-                        style={{
-                        position: 'absolute',
-                        top: 10, // adjust for safe area
-                        left: 10,
-                        backgroundColor: 'rgba(0, 0, 0, 0.5)', // semi-transparent dark background
-                        borderRadius: 20,
-                        padding: 8,
-                        }}
-                    >
-                        <Ionicons name="arrow-back" size={24} color="white" />
-                    </TouchableOpacity>
-                </View>
-
-
-                <View style={styles.content}> 
-                    <View style={styles.headerWrapper}>
-                        <View style={styles.seasonIndi}></View>
-
-                        <Text style={styles.cropName}>{cropData?.commonName}</Text>
-                        <Text style={styles.scientificName}>({cropData?.scientificName})</Text>
-                        <Text style={styles.familyName}>From The Family {cropData?.family}</Text>
-                        
+                        <TouchableOpacity 
+                            onPress={() => router.back()}
+                            style={{
+                            position: 'absolute',
+                            top: 10, // adjust for safe area
+                            left: 10,
+                            backgroundColor: 'rgba(0, 0, 0, 0.5)', // semi-transparent dark background
+                            borderRadius: 20,
+                            padding: 8,
+                            }}
+                        >
+                            <Ionicons name="arrow-back" size={24} color="white" />
+                        </TouchableOpacity>
                     </View>
 
-                    <ScrollView style={styles.bodyWrapper} contentContainerStyle={{alignItems:'center'}}>
 
-
-                        <View style={subContainer.containerWrappper}>
-                            <Text style={styles.subContainerHeader}>Suitable Soil</Text>
-
-
-
-                            <View style={subContainer.badgeContainer}>
-
-                                    <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Loamy") && { backgroundColor: '#CFFFDC' }]}>
-                                        
-                                        <Image source={soilImages['loamy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
-                                        <Text  style={styles.badgesText}>Loamy</Text>
-
-                                    </View>
-
-                                    <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Sandy") && { backgroundColor: '#CFFFDC' }]}>
-                                        <Image source={soilImages['sandy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
-                                        <Text style={styles.badgesText}>Sandy</Text>
-                                    </View>
-
-                                    <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Clayey") && { backgroundColor: '#CFFFDC' }]}>
-                                        <Image source={soilImages['clay']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
-                                        <Text style={styles.badgesText}>Clayey</Text>
-                                    </View>
-
-                                    <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Silty") && { backgroundColor: '#CFFFDC' }]}>
-                                        
-                                        <Image source={soilImages['loamy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
-                                        <Text  style={styles.badgesText}>Silty</Text>
-
-                                    </View>
-
-                                    <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Peaty") && { backgroundColor: '#CFFFDC' }]}>
-                                        <Image source={soilImages['sandy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
-                                        <Text style={styles.badgesText}>Peaty</Text>
-                                    </View>
-
-                                    <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Sandy loam") && { backgroundColor: '#CFFFDC' }]}>
-                                        <Image source={soilImages['clay']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
-                                        <Text style={styles.badgesText}>Sandy Loam</Text>
-                                    </View>
-
-                                    <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Clay Loam") && { backgroundColor: '#CFFFDC' }]}>
-                                        
-                                        <Image source={soilImages['loamy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
-                                        <Text  style={styles.badgesText}>Clay Loam</Text>
-
-                                    </View>
-
-                                    <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Silty Loam") && { backgroundColor: '#CFFFDC' }]}>
-                                        <Image source={soilImages['sandy']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
-                                        <Text style={styles.badgesText}>Silty Loam</Text>
-                                    </View>
-
-                                    <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Sandy Clay Loam") && { backgroundColor: '#CFFFDC' }]}>
-                                        <Image source={soilImages['clay']} style={{width:65,height:65,marginBottom:5, borderRadius:20}}/>
-                                        <Text style={styles.badgesText}>Sandy Clay Loam</Text>
-                                    </View>
-
-
-
-                                </View>
-
-
-                                <View style={subContainer.phIndi}>
-                                    <Text style={styles.phText}>
-                                        Optimal Soil PH is {cropData?.soilPh}
-                                    </Text>
-                                </View>
-
-
-
-
-
+                    <View style={styles.content}> 
+                        <View style={styles.headerWrapper}>
+                 
+                            <Text style={styles.cropName}>{cropData?.commonName}</Text>
+                            <Text style={styles.scientificName}>({cropData?.scientificName})</Text>
+                            <Text style={styles.familyName}>From The Family {cropData?.family}</Text>
+                            
                         </View>
 
+                            <View style={subContainer.containerWrappperPest}>
+                               
+                                <View style={subContainer.containerWrapperHeader}>
+                                    <MaterialIcons name="pest-control" size={24} color="#842C2B" />
+                                    <Text style={styles.subContainerHeaderPest}>Common Diseases</Text>
+                                </View>
 
 
+                                <View style={subContainer.badgeContainer}>
+                                    
 
-
-
-
-                        <View style={subContainer.containerWrappperPest}>
-                            <Text style={styles.subContainerHeaderPest}>Common Pests</Text>
-
-
-
-                            <View style={subContainer.badgeContainer}>
-                                    {cropData?.commonPests.map((pest,index)=>(
+                                    {cropData?.commonDiseases.map((disease,index)=>(
                                         <View style={subContainer.badgeWrapper} key={index}>
-                
-                                            <Image source={{ uri: pest.pestCoverImage}} style={{width:65,height:65,marginBottom:5, borderRadius:10}}/>
-                                            <Text ellipsizeMode="tail" numberOfLines={1}   style={styles.badgesText}>{pest.pestName}</Text>
+
+                                            <View style={subContainer.badgeWrapper__imageWrapper}>
+                                                <Image source={{ uri: disease.diseaseCoverImage}} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
+                                            </View>
+                                            <View style={subContainer.badgeWrapper__infoWrapper}>
+                                                  <Text  style={styles.badgesText} numberOfLines={1} ellipsizeMode="tail">{disease.diseaseName}</Text>
+                                            </View>
+                                            
+                                           
                 
                                         </View>
 
 
                                     ))}
 
+
+
+
+                                </View>
+
+
                             </View>
 
+                            <View style={subContainer.containerWrappper}>
 
-
-
-
-
-
-
-
-
-                        </View>
-
-
-
-
-
-
-                        <View style={subContainer.containerWrappperPest}>
-                            <Text style={styles.subContainerHeaderPest}>Common Diseases</Text>
-
-
-
-                            <View style={subContainer.badgeContainer}>
+                                <View style={subContainer.containerWrapperHeader}>
+                                    <FontAwesome6 name="mound" size={24} color="#37474F" />
+                                    <Text style={styles.subContainerHeader}>Suitable Soil</Text>
+                                </View>
                                 
 
-                                {cropData?.commonDiseases.map((disease,index)=>(
-                                    <View style={subContainer.badgeWrapper} key={index}>
-            
-                                        <Image source={{ uri: disease.diseaseCoverImage}} style={{width:65,height:65,marginBottom:5, borderRadius:10}}/>
-                                        <Text  style={styles.badgesText} numberOfLines={1} ellipsizeMode="tail">{disease.diseaseName}</Text>
-            
+
+
+                                <View style={subContainer.badgeContainer}>
+
+                                        <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Loamy") && { borderColor: '#17A34A',borderWidth:2 }]}>
+                                            
+                                            
+                                            <View style={subContainer.badgeWrapper__imageWrapper}>
+                                                <Image source={soilImages['loamy']} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
+                                            </View>
+                                            <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Loamy") && {backgroundColor:'#F0FDF4'}]}>
+                                                <Text  style={styles.badgesText}>Loamy</Text>
+                                            </View>
+                                            
+
+                                        </View>
+
+                                        <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Sandy") && { borderColor: '#17A34A',borderWidth:2 }]}>
+                                            
+
+                                            <View style={subContainer.badgeWrapper__imageWrapper}>
+                                                <Image source={soilImages['sandy']} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
+                                            </View>
+                                            <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Sandy") && {backgroundColor:'#F0FDF4'}]}>
+                                                <Text style={styles.badgesText}>Sandy</Text>
+                                            </View>
+
+                                            
+                                        </View>
+
+
+                                        <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Clayey") && { borderColor: '#17A34A',borderWidth:2 }]}>
+
+                                            <View style={subContainer.badgeWrapper__imageWrapper}>
+                                                <Image source={soilImages['clay']} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
+                                            </View>
+                                            
+                                            <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Clayey") && {backgroundColor:'#F0FDF4'}]}>
+                                                <Text style={styles.badgesText}>Clayey</Text>
+                                            </View>
+                                            
+                                        </View>
+
+
+                                        <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Silty") && { borderColor: '#17A34A',borderWidth:2 }]}>
+                                            
+
+                                            <View style={subContainer.badgeWrapper__imageWrapper}>
+                                                <Image source={soilImages['loamy']} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
+                                            </View>
+                                            
+                                            <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Silty") && {backgroundColor:'#F0FDF4'}]}>
+                                                <Text  style={styles.badgesText}>Silty</Text>
+                                            </View>
+                                            
+
+                                        </View>
+
+                                        <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Peaty") && { borderColor: '#17A34A',borderWidth:2 }]}>
+                                            
+                                            <View style={subContainer.badgeWrapper__imageWrapper}>
+                                                <Image source={soilImages['sandy']} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
+                                            </View>
+
+                                            <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Peaty") && {backgroundColor:'#F0FDF4'}]}>
+                                                <Text style={styles.badgesText}>Peaty</Text>
+                                            </View>
+
+                                        </View>
+
+                                        <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Sandy loam") && { borderColor: '#17A34A',borderWidth:2 }]}>
+
+                                            <View style={subContainer.badgeWrapper__imageWrapper}>
+                                                <Image source={soilImages['clay']} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
+                                            </View>
+
+                                            <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Sandy loam") && {backgroundColor:'#F0FDF4'}]}>
+                                                <Text style={styles.badgesText}>Sandy Loam</Text>
+                                            </View>
+                                            
+                                            
+                                        </View>
+
+
+                                        <View style={[
+                                        subContainer.badgeWrapper,
+                                        cropData?.soilType.includes("Clay Loam") && { borderColor: '#17A34A', borderWidth: 2 }
+                                        ]}>
+                                            <View style={subContainer.badgeWrapper__imageWrapper}>
+                                                <Image 
+                                                source={soilImages['loamy']} 
+                                                style={{ width: '100%', height: '100%', borderTopLeftRadius: 3, borderTopRightRadius: 3 }}
+                                                />
+                                            </View>
+                                            <View style={[
+                                                subContainer.badgeWrapper__infoWrapper, 
+                                                cropData?.soilType.includes("Clay Loam") && { backgroundColor: '#F0FDF4' }
+                                            ]}>
+                                                <Text style={styles.badgesText}>Clay Loam</Text>
+                                            </View>
+                                        </View>
+
+
+                                        <View style={[
+                                        subContainer.badgeWrapper,
+                                        cropData?.soilType.includes("Silty Loam") && { borderColor: '#17A34A', borderWidth: 2 }
+                                        ]}>
+                                            <View style={subContainer.badgeWrapper__imageWrapper}>
+                                                <Image 
+                                                source={soilImages['sandy']} 
+                                                style={{ width: '100%', height: '100%', borderTopLeftRadius: 3, borderTopRightRadius: 3 }}
+                                                />
+                                            </View>
+                                            <View style={[
+                                                subContainer.badgeWrapper__infoWrapper, 
+                                                cropData?.soilType.includes("Silty Loam") && { backgroundColor: '#F0FDF4' }
+                                            ]}>
+                                                <Text style={styles.badgesText}>Silty Loam</Text>
+                                            </View>
+                                        </View>
+
+
+                                        <View style={[
+                                        subContainer.badgeWrapper,
+                                        cropData?.soilType.includes("Sandy Clay Loam") && { borderColor: '#17A34A', borderWidth: 2 }
+                                        ]}>
+                                            <View style={subContainer.badgeWrapper__imageWrapper}>
+                                                <Image 
+                                                source={soilImages['clay']} 
+                                                style={{ width: '100%', height: '100%', borderTopLeftRadius: 3, borderTopRightRadius: 3 }}
+                                                />
+                                            </View>
+                                            <View style={[
+                                                subContainer.badgeWrapper__infoWrapper, 
+                                                cropData?.soilType.includes("Sandy Clay Loam") && { backgroundColor: '#F0FDF4' }
+                                            ]}>
+                                                <Text style={styles.badgesText}>Sandy Clay Loam</Text>
+                                            </View>
+                                        </View>
+
+
+
                                     </View>
 
 
-                                ))}
+                                    <View style={subContainer.phIndi}>
+                                        <Text style={styles.phText}>
+                                            Optimal Soil PH is {cropData?.soilPh}
+                                        </Text>
+                                    </View>
+
 
 
 
@@ -394,26 +548,73 @@ const CropProfile = () => {
                             </View>
 
 
+
+
+
+
+
+                            <View style={subContainer.containerWrappperPest}>
+
+
+                                <View style={subContainer.containerWrapperHeader}>
+                                    <MaterialIcons name="pest-control" size={24} color="#842C2B" />
+                                    <Text style={styles.subContainerHeaderPest}>Common Pests</Text>
+                                </View>
+                                
+
+
+
+                                <View style={subContainer.badgeContainer}>
+                                        {cropData?.commonPests.map((pest,index)=>(
+                                            <View style={subContainer.badgeWrapper} key={index}>
+                                                
+                                                <View style={subContainer.badgeWrapper__imageWrapper}>
+                                                    <Image source={{ uri: pest.pestCoverImage}} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
+                                                </View>
+                                                <View style={subContainer.badgeWrapper__infoWrapper}>
+                                                    <Text ellipsizeMode="tail" numberOfLines={1}   style={styles.badgesText}>{pest.pestName}</Text>
+                                                </View>
+
+                                                
+                                                
                     
+                                            </View>
+
+
+                                        ))}
+
+                                </View>
 
 
 
 
 
-                        </View>
-
-                        <Button onPressIn={()=>{setShowConfirmationVisible(true)}} style={{marginTop:20,marginBottom:20,borderRadius:5}} icon={() => <FontAwesomeIcon icon={faLeaf} size={20} color="#FFFFFF" />} mode="contained-tonal" onPress={() => console.log('Pressed')} buttonColor="#2E6F40" textColor="#FFFFFF"
-                        >
-                            Start Planting
-                        </Button>
 
 
 
 
+                            </View>
 
-                    </ScrollView>
-                </View>
-            
+
+
+
+
+
+
+
+                            <Button onPressIn={()=>{setShowConfirmationVisible(true)}} style={{marginTop:20,marginBottom:20,borderRadius:5}} icon={() => <FontAwesomeIcon icon={faLeaf} size={20} color="#FFFFFF" />} mode="contained-tonal" onPress={() => console.log('Pressed')} buttonColor="#2E6F40" textColor="#FFFFFF"
+                            >
+                                Start Planting
+                            </Button>
+
+
+
+
+
+                        
+                    </View>
+
+            </ScrollView>
             </>
             
             
@@ -454,11 +655,11 @@ const styles = StyleSheet.create({
 
     //pestheadertext
     subContainerHeaderPest:{
-        color:'#A94442',
-        fontWeight:500,
+        color:'#842C2B',
+        fontWeight:700,
         fontSize:18,
-        marginBottom:20,
-        marginLeft:10
+     
+    
         
     },
 
@@ -473,10 +674,11 @@ const styles = StyleSheet.create({
 
     subContainerHeader:{
         color:"#37474F",
-        fontWeight:500,
-        fontSize:18,
-        marginBottom:5,
-        marginLeft:10
+        fontWeight:700,
+        fontSize:19,
+        
+        
+        //marginLeft:10
     },
 
     badgesText:{
@@ -489,6 +691,7 @@ const styles = StyleSheet.create({
         display:'flex',
         flex:1,
         flexDirection:'column',
+        backgroundColor:'#F9FAFC'
         //borderWidth:1
     },
     thumbnail:{
@@ -512,8 +715,8 @@ const styles = StyleSheet.create({
         width:'100%',
         //height:100,
         //borderWidth:1,
-        borderTopLeftRadius:20,
-        borderTopRightRadius:20,
+        borderTopLeftRadius:0,
+        borderTopRightRadius:0,
         backgroundColor:'#FFFFFF',
         paddingTop:15,
         paddingBottom:15,
@@ -535,7 +738,7 @@ const styles = StyleSheet.create({
     cropName:{
         marginLeft:15,
         fontWeight:600,
-        fontSize:30,
+        fontSize:35,
       
         color:"#37474F"
         
@@ -545,14 +748,14 @@ const styles = StyleSheet.create({
         marginLeft:15,
         fontWeight:400,
         fontStyle:'italic',
-        fontSize:18,
-        marginBottom:10,
+        fontSize:17,
+        marginBottom:0,
         color:"#37474F"
     },
     familyName:{
         marginLeft:15,
         fontWeight:300,
-        fontSize:18,
+        fontSize:17,
         fontStyle:'italic',
         color:'#333333',
     },
@@ -567,7 +770,7 @@ const styles = StyleSheet.create({
         width:'100%',
         flex:1,
         borderColor:'green',
-        //borderWidth:1,
+        borderWidth:1,
         borderStyle:'dotted',
         display:'flex',
         flexDirection:'column',
@@ -580,31 +783,42 @@ const styles = StyleSheet.create({
 
 const subContainer = StyleSheet.create({
 
+    containerWrapperHeader:{
+        width:'100%',
+        //borderWidth:1,
+        paddingVertical:5,
+        display:'flex',
+        flexDirection:'row',
+        alignItems:'center',
+        gap:5,
+    },
+
+
     //pest
 
     containerWrappperPest: {
         paddingTop:10,
-        width:'95%',
-        ///borderWidth:1,
+        width:'100%',
+        //borderWidth:1,
         position:'relative',
         marginBottom:20,
-        backgroundColor:'#ffffff',
+        paddingHorizontal:5,
         borderRadius:5,
-        elevation:2
+       
     },
 
 
     //soil
     containerWrappper: {
-        width:'95%',
+        width:'100%',
         //borderWidth:1,
         position:'relative',
         marginBottom:20,
         paddingVertical:10,
         paddingHorizontal:5,
-        backgroundColor:'#ffffff',
+       
         borderRadius:5,
-        elevation:2
+    
     },
     badgeContainer:{
         width:'100%',
@@ -614,18 +828,20 @@ const subContainer = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         paddingVertical:10,
-        justifyContent: 'center',
-       // gap: 20,
-        paddingHorizontal: 10,
+        
+        gap: 5,
+        paddingHorizontal: 0,
     },
     badgeWrapper:{
-        height:100,
-        width:150,
-        //borderWidth:1,
+        height:130,
+        width:'48%',
+        borderWidth:1,
+        borderColor:'#E2E8F0',
         display:'flex',
         flexDirection:'column',
         alignItems:'center',
-        justifyContent:'center'
+        justifyContent:'center',
+        borderRadius:5
         
     },
     phIndi:{
@@ -634,6 +850,29 @@ const subContainer = StyleSheet.create({
         paddingBottom:5,
         borderRadius:5,
         backgroundColor:'#CFFFDC'
+    },
+
+    badgeWrapper__infoWrapper:{
+        width:'100%',
+        borderWidth:0,
+        height:'30%',
+        marginTop:'auto',
+        display:'flex',
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'center',
+        backgroundColor:'#FFFFFF',
+        borderBottomEndRadius:5,
+        borderBottomLeftRadius:5,
+
+    },
+
+    badgeWrapper__imageWrapper:{
+        flex:1,
+        width:'100%',
+        borderWidth:0,
+        borderTopEndRadius:5,
+        borderTopStartRadius:5,
     }
 
 
