@@ -6,9 +6,20 @@ import { router } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import Ionicons from '@expo/vector-icons/Ionicons'
+import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore'
+import { auth, db } from '@/app/firebaseconfig'
+import { updateProfile } from 'firebase/auth'
+import { useUserContext } from '@/app/Context/UserContext'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
+
+import { UserData } from '@/app/Context/UserContext'
 const usernameControlScreen = () => {
 
+
+  //user context
+
+  const {user,storeUserData} = useUserContext()
   const [newUsername,setNewUsername] = useState("")
   const [confirmNewUsername,setConfirmNewUsername] = useState("")
 
@@ -26,6 +37,12 @@ const usernameControlScreen = () => {
   //modal controls
   const[showConfirmation,setShowConfirmation] = useState(false)
   const [showProcessDialog,setShowProcessDialog] = useState(false)
+  const [showError,setShowError] = useState<boolean>(false)
+
+  
+  const [passwordWarningVisible,setPasswordWarningVisible] = useState(false)
+  const [passwordWarning,setPasswordWarning] = useState("")
+
 
   //states
 
@@ -152,25 +169,148 @@ const usernameControlScreen = () => {
 
 
 
+  const renderPasswordWarning = (errorCode:string) => (
 
-  const updateUsername = () =>{
+      
 
-    
 
-    try{
+      <Portal>
+          <Dialog visible={passwordWarningVisible} onDismiss={()=>setPasswordWarningVisible(false)}>
+
+              <Dialog.Content>
+                  <Text>{errorCode}</Text>
+              </Dialog.Content>
+
+          </Dialog>
+      </Portal>
+  )
+
+
+
+
+
+  const renderError = ()=>(
+      
+          <Portal>
+              <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
+      
+                  <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
+      
+                  <Dialog.Title>
+                      <Text style={{color:'#37474F'}}>
+                          Something went wrong
+                      </Text>
+                      
+                  </Dialog.Title>
+                  
+                  <Dialog.Content>
+                      <Text style={{color:'#475569'}}>An unexpected error occured. Please try again later</Text>
+                  </Dialog.Content>
+      
+      
+      
+                  <Dialog.Actions>
+      
+                  <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+      
+                      <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                          OK
+                      </Text>
+      
+                  </TouchableOpacity>
+      
+                  </Dialog.Actions>
+      
+              </Dialog>
+      
+          </Portal>
+      
+          )
+  
+
+
+
+
+  const updateUsername = async() =>{
+
       setShowConfirmation(false)
+
+      if(newUsername !== confirmNewUsername){
+        setPasswordWarning("Your username doesn't matched")
+        return
+      }
+
+
       setShowProcessDialog(true)
       setProcess(true)
+
+
+
+    try{
+
+      /*
       setTimeout(() => {
         console.log("Timeout hold");
         setProcess(false); // move it inside the timeout
       }, 5000);
+      */
+
+
+
+      const q = query(
+        collection(db,"users"),
+        where("username","==",newUsername)
+      )
+
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        // Username already taken
+        setPasswordWarning("Username already exists");
+        setPasswordWarningVisible(true);
+        setProcess(false)
+        return;
+      }
+
+      const currentUser = auth.currentUser;
+      console.log("Current User : ",currentUser)
+      if(!currentUser){
+        setPasswordWarning("No user logged in");
+        setPasswordWarningVisible(true);
+        setProcess(false)
+        return {success:false}
+      }
+
+
+
+      const userDocRef = doc(db,"Users",currentUser.uid);
+      await updateDoc(userDocRef,{Username:newUsername})
+
+      await updateProfile(currentUser,{displayName:newUsername})
+
+
+      const updatedUserData: UserData = { 
+        ...(user as UserData), 
+        Username: newUsername 
+      };
+
+      console.log("Stale User Data : ",user)
+      await AsyncStorage.setItem("userData",JSON.stringify(updatedUserData));
+      storeUserData(updatedUserData)
+      console.log("Updated User Data : ",user)
+      setProcess(false)
+
+
       console.log("Timeout complete")
       
     }catch(err){
       //set showprocess dialog to false
       //set process to false
       //show error modal dialog 
+      console.log(err)
+      setProcess(false)
+      setShowProcessDialog(false)
+      setShowError(true)
       
     }
 
@@ -187,6 +327,7 @@ const usernameControlScreen = () => {
         
         {renderConfirmation()}
         {renderProcess()}
+        {renderPasswordWarning(passwordWarning)}
         <View style={styles.header}>
 
             <TouchableOpacity onPress={()=> router.back()} style={{marginLeft:10}}>

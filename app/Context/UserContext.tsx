@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-interface UserData {
+export interface UserData {
   UserId:string;
   CropRotationPlanRefId: string;
   Email: string;

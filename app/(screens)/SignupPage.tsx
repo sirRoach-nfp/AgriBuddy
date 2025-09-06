@@ -173,7 +173,7 @@ export default function SignupPage() {
             const PlotsRefId = "PlotsRefId" +`${userName}` + Date.now().toString()
             const RecordsRefId = "RecordsRefId" +`${userName}` + Date.now().toString()
             const DiscussionRecordRefId = "DiscussionRecordRefId" +`${userName}` + Date.now().toString()
-
+            const ExpenseRecordRefId = "ExpenseRecordRefId"+`${userName}` + Date.now().toString()
 
             const newUserObject = {
                 UserId : userId,
@@ -183,7 +183,8 @@ export default function SignupPage() {
                 CurrentCropsRefId : CurrentCropsRefId,
                 PlotsRefId : PlotsRefId,
                 RecordsRefId:RecordsRefId,
-                DiscussionRecordRefId: DiscussionRecordRefId
+                DiscussionRecordRefId: DiscussionRecordRefId,
+                ExpensesRefId:ExpenseRecordRefId,
             }
 
             await setDoc(doc(db,"Users",userId),newUserObject)
@@ -194,7 +195,7 @@ export default function SignupPage() {
             await setDoc(doc(db,"CurrentCrops",CurrentCropsRefId),{CurrentCrops:[]})
             await setDoc(doc(db,"CropRotationPlan",cropRotationPlanRefId),{Plans:[]})
             await setDoc(doc(db,"DiscussionRecords",DiscussionRecordRefId),{Discussions:[]})
-            
+            await setDoc(doc(db,"ExpensesCollection ",ExpenseRecordRefId),{ExpenseLog:[]})
 
 
             Alert.alert("Account Created Successfully")

@@ -1,14 +1,19 @@
 import {StyleSheet, Text, TouchableOpacity, View,ScrollView,TextInput, Button, Touchable } from 'react-native'
 import React, { useState } from 'react'
-import { PaperProvider } from 'react-native-paper'
+import { Dialog, PaperProvider, Portal } from 'react-native-paper'
 import Feather from '@expo/vector-icons/Feather'
 import { router } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import { useUserContext } from '@/app/Context/UserContext'
+import { sendPasswordResetEmail } from 'firebase/auth'
+import { sendPaswordRequestToEmail } from '@/app/controllers/AccountAuth/Auth'
 
 const passwordControlScreen = () => {
+
+  const {user} = useUserContext()
 
   const [currentPassword,setCurrentPassword] = useState("")
   const [newPassword,setNewPassword] = useState("")
@@ -30,11 +35,112 @@ const passwordControlScreen = () => {
 
 
 
+  //modal controller
+
+
+  const[showSuccess,setShowSuccess] = useState(false)
+  const [showError,setShowError] = useState<boolean>(false)
+
+  //modal
+
+    const renderSuccess = () => (
+      <Portal>
+        
+        <Dialog visible={showSuccess} >
+  
+          <Dialog.Title>
+            <Text style={{color:'#37474F'}}>
+              Password Reset Link Sent!
+            </Text>
+          </Dialog.Title>
+  
+          <Dialog.Content>
+            <Text style={{color:'#475569'}}>
+              We’ve sent a password reset link to your email. Please check your inbox (and spam folder just in case) and follow the instructions to reset your password.
+            </Text>
+          </Dialog.Content>
+  
+  
+          <Dialog.Actions>
+  
+  
+  
+  
+            <TouchableOpacity onPress={() => setShowSuccess(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+  
+                <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                    Continue
+                </Text>
+  
+            </TouchableOpacity>
+
+  
+          </Dialog.Actions>
+  
+        </Dialog>
+  
+      </Portal>
+    )
+
+  
+  const renderError = ()=>(
+      
+          <Portal>
+              <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
+      
+                  <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
+      
+                  <Dialog.Title>
+                      <Text style={{color:'#37474F'}}>
+                          Something went wrong
+                      </Text>
+                      
+                  </Dialog.Title>
+                  
+                  <Dialog.Content>
+                      <Text style={{color:'#475569'}}>An unexpected error occured. Please try again later</Text>
+                  </Dialog.Content>
+      
+      
+      
+                  <Dialog.Actions>
+      
+                  <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+      
+                      <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                          OK
+                      </Text>
+      
+                  </TouchableOpacity>
+      
+                  </Dialog.Actions>
+      
+              </Dialog>
+      
+          </Portal>
+      
+  )
+
+  const changePassword = async() =>{
+
+    try{  
+
+      const email =  user?.Email as string
+      await sendPaswordRequestToEmail(email)
+      setShowSuccess(true)
+
+    }catch(err){
+      setShowError(true)
+      console.log(err)
+    }
+  }
+
+
   return (
     <PaperProvider>
 
-
-
+      {renderSuccess()}
+      {renderError()}
       <SafeAreaView style={styles.mainContainer}>
         
         <View style={styles.header}>
@@ -45,51 +151,80 @@ const passwordControlScreen = () => {
 
 
 
-            <Text style={{fontSize:20,fontWeight:600,color:'#37474F',marginLeft:20}}>Change Username</Text>
+            <Text style={{fontSize:20,fontWeight:600,color:'#37474F',marginLeft:20}}>Change Password Request</Text>
 
         </View>
 
         <ScrollView style={styles.scrollContainer}>
 
 
+            <View style={noteStyles.noteWrapper}>
+              <View style={{width:'100%',display:'flex',flexDirection:'row',alignItems:'center',paddingVertical:10}}>
+                  <MaterialIcons name="lock" size={25} color="#BFA76F" />
+                  <Text style={noteStyles.header}>Security Tips</Text>
+              </View>
+              
 
+              <View style={noteStyles.textWrapper}>
+                <Text style={noteStyles.textWrapper__bullet}>
+                  •
+                </Text>
+                <Text style={noteStyles.textWrapper__text}>
+                  Use a unique password
+                </Text>
+
+              </View>
+
+              <View style={noteStyles.textWrapper}>
+                <Text style={noteStyles.textWrapper__bullet}>
+                  •
+                </Text>
+
+                <Text style={noteStyles.textWrapper__text}>
+                  Don't share your password with anyone
+                </Text>
+
+              </View>
+
+              <View style={noteStyles.textWrapper}>
+
+                <Text style={noteStyles.textWrapper__bullet}>
+                  •
+                </Text>
+
+                <Text style={noteStyles.textWrapper__text}>
+                  Change your password regularly
+                </Text>
+
+            </View>
+
+  
+            </View>
           
             <View style={[fieldStyles.fieldWrapper,{marginBottom:10}]}>
               <Text style={fieldStyles.fieldWrapperLabel}>
-                Current Password
+                Email
               </Text>
 
-              <TextInput style={fieldStyles.textInput} placeholder='Enter New Username' onChange={(e)=>setCurrentPassword(e.nativeEvent.text)}/>
+              <TextInput editable={false} style={fieldStyles.textInput} placeholder='Enter New Username' value={user?.Email} onChange={(e)=>setCurrentPassword(e.nativeEvent.text)}/>
             </View>
 
 
-            <View style={[fieldStyles.fieldWrapper,{marginBottom:10}]}>
-              <Text style={fieldStyles.fieldWrapperLabel}>
-                New Password
-              </Text>
-
-              <TextInput style={fieldStyles.textInput} placeholder='Enter New Username' onChange={(e)=>setNewPassword(e.nativeEvent.text)}/>
-            </View>
-
-            <View style={fieldStyles.fieldWrapper}>
-              <Text style={fieldStyles.fieldWrapperLabel}>
-                Confirm New Password
-              </Text>
-
-              <TextInput style={fieldStyles.textInput} placeholder='Confirm New Username' onChange={(e)=>setConfirmNewPassword(e.nativeEvent.text)}/>
-            </View>
 
             <View style={buttonStyles.buttonContainers}>
 
-              <TouchableOpacity disabled={!isValid} style={{display:'flex',
-                backgroundColor: isValid ? '#607D8B' : '#CBD5E1',
+              <TouchableOpacity  style={{display:'flex',
+                backgroundColor:  '#607D8B',
                 flexDirection:'row',
                 alignItems:'center',
                 justifyContent:'center',
                 paddingVertical:10,
                 borderRadius:5,
-                }}>
-                <Text style={{color:'white',fontSize:16, fontWeight:600}}>Update Password</Text>
+                
+                }}
+                onPress={changePassword}
+                >
+                <Text style={{color:'white',fontSize:16, fontWeight:600}}>Send Reset Link</Text>
               </TouchableOpacity>
 
               
@@ -102,53 +237,12 @@ const passwordControlScreen = () => {
                 borderWidth:2,
                 borderColor:'#e2e8f0'
                 }}>
-                <Text style={{color:'#37474F',fontSize:16, fontWeight:600}}>Cancel</Text>
+                <Text style={{color:'#37474F',fontSize:16, fontWeight:600}}>Didn't mean to reset?</Text>
               </TouchableOpacity>
 
             </View>
 
-            <View style={noteStyles.noteWrapper}>
-                <View style={{width:'100%',display:'flex',flexDirection:'row',alignItems:'center',paddingVertical:10}}>
-                    <MaterialIcons name="lock" size={25} color="#BFA76F" />
-                    <Text style={noteStyles.header}>Security Tips</Text>
-                </View>
-                
 
-                <View style={noteStyles.textWrapper}>
-                  <Text style={noteStyles.textWrapper__bullet}>
-                    •
-                  </Text>
-                  <Text style={noteStyles.textWrapper__text}>
-                    Use a unique password
-                  </Text>
-
-                </View>
-
-                <View style={noteStyles.textWrapper}>
-                  <Text style={noteStyles.textWrapper__bullet}>
-                    •
-                  </Text>
-
-                  <Text style={noteStyles.textWrapper__text}>
-                    Don't share your password with anyone
-                  </Text>
-
-                </View>
-
-                <View style={noteStyles.textWrapper}>
-
-                  <Text style={noteStyles.textWrapper__bullet}>
-                    •
-                  </Text>
-
-                  <Text style={noteStyles.textWrapper__text}>
-                    Change your password regularly
-                  </Text>
-
-                </View>
-
-  
-            </View>
             
 
 
@@ -297,8 +391,8 @@ const noteStyles = StyleSheet.create({
     borderRadius:5,
     borderColor:'#F0EEc8',
     borderWidth:1,
-    marginTop:35,
-    marginBottom:35,
+    marginTop:15,
+    marginBottom:20,
   },
 
   header:{
