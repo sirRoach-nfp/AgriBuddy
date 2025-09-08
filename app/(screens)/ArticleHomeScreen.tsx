@@ -107,9 +107,7 @@ const ArticleHomeScreen = () => {
                     onSubmitEditing={() => {
                     // You can call your search handler here
                         redirectToSearchResult()
-                    }}
-
- 
+                    }} 
             />
 
 

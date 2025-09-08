@@ -8,11 +8,13 @@ import { arrayRemove, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } f
 import { db } from '../firebaseconfig';
 import {router, useFocusEffect} from 'expo-router';
 import { Image } from 'react-native';
+
+//icons
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useUserContext } from '../Context/UserContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 
 //import ImageViewing from "react-native-image-viewing";
@@ -440,6 +442,12 @@ const DisussionScreen = () => {
             console.error("Error deleting discussion:", error);
         }
     };
+
+
+  const redirectToReport = () =>{
+    console.log("Redirecting to rs")
+    router.push(`/(screens)/reportScreen`)
+  }
   
   return (
 
@@ -471,9 +479,13 @@ const DisussionScreen = () => {
                 </TouchableOpacity>
                 
 
+                <TouchableOpacity style={{marginLeft:'auto'}} onPress={redirectToReport}>
+                    <MaterialIcons name="report" size={24} color="black" />
+                </TouchableOpacity>
+
                 {user?.UserId === discussionData?.Author && (
 
-                    <TouchableOpacity onPress={()=> setShowDeletePostConfirmation(true)} style={{alignSelf:'flex-start',marginRight:10, marginLeft:'auto'}}>
+                    <TouchableOpacity onPress={()=> setShowDeletePostConfirmation(true)} style={{alignSelf:'flex-start',marginRight:10, marginLeft:20}}>
                         <MaterialCommunityIcons name="delete-empty" size={30} color="red" />
                     </TouchableOpacity>
 
