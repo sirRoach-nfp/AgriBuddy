@@ -10,8 +10,9 @@ import { Picker } from '@react-native-picker/picker';
 import { router } from 'expo-router'
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, TextInput, Touchable, ScrollView } from 'react-native'
-import { PaperProvider } from 'react-native-paper'
+import { Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { uploadReport } from '../controllers/ReportControllers/reportController';
 
 const reportScreen = () => {
 
@@ -19,11 +20,16 @@ const reportScreen = () => {
     //use states --- data
 
     const [reportType,setReportType] = useState("Comment")
-    const [reason,setReason] = useState("Select a reason")
+    const [reason,setReason] = useState("Spam")
     const [additionalInfo,setAdditionalInfo] = useState("")
 
 
 
+    //modal controllers
+    const[showConfirmation,setShowConfirmation] = useState(false)
+    const[showError,setShowError] = useState(false)
+    const [showProcess,setShowProcess] = useState(false)
+    const[postLoading,setPostLoading] = useState(false)
     const isValid = true
 
 
@@ -37,10 +43,187 @@ const reportScreen = () => {
 
 
 
+
+    
+
+    // modal
+const renderPostConfirmation = ()=>(
+
+        <Portal>
+            <Dialog visible={showConfirmation} onDismiss={()=>setShowConfirmation(false)}>
+
+
+                <Dialog.Title>
+                    <Text style={{color:'#37474F'}}>
+                        Confirm Report
+                    </Text>
+                    
+                </Dialog.Title>
+                
+                <Dialog.Content>
+                    <Text style={{color:'#475569'}}>Are you sure you want to report this item? Please confirm so we can review it.</Text>
+                </Dialog.Content>
+
+
+
+                <Dialog.Actions>
+
+                <TouchableOpacity onPress={submitReport} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+
+                    <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                        Submit
+                    </Text>
+
+                </TouchableOpacity>
+
+                </Dialog.Actions>
+
+            </Dialog>
+
+
+
+
+        </Portal>
+
+    )
+
+
+
+    const renderError = ()=>(
+
+    <Portal>
+        <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
+
+            <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
+
+            <Dialog.Title>
+                <Text style={{color:'#37474F'}}>
+                    Something went wrong
+                </Text>
+                
+            </Dialog.Title>
+            
+            <Dialog.Content>
+                <Text style={{color:'#475569'}}>An unexpected error occured. Please try again later</Text>
+            </Dialog.Content>
+
+
+
+            <Dialog.Actions>
+
+            <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+
+                <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                    OK
+                </Text>
+
+            </TouchableOpacity>
+
+            </Dialog.Actions>
+
+        </Dialog>
+
+    </Portal>
+
+    )
+
+
+
+
+    const renderProcess = () => (
+
+        <Portal>
+            <Dialog visible={showProcess} onDismiss={()=>{}}>
+
+                {postLoading ? (
+                    <Dialog.Title>
+                        Submitting Report
+                    </Dialog.Title>
+                ) :(
+                    <Dialog.Title>
+                        Report Submitted
+                    </Dialog.Title>
+                )}
+
+
+
+                {postLoading ? (
+                    <Dialog.Content>
+                        <Text>Your report is being submitted. Please wait while we process your request....</Text>
+                    </Dialog.Content>
+                ) : (
+                    <Dialog.Content>
+                    <Text>Thank you. Your report has been successfully submitted and will be reviewed shortly.</Text>
+                    </Dialog.Content>
+                )}
+
+
+
+                {postLoading ? (
+                    <ProgressBar indeterminate color={MD3Colors.error50} style={{marginBottom:20,width:'80%',marginLeft:'auto',marginRight:'auto',borderRadius:'50%'}} />
+                ) : (
+                    <Dialog.Actions>
+
+                        <TouchableOpacity onPress={()=>{router.back()}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+
+                            <Text style={{color:'white'}}>
+                                Continue
+                            </Text>
+
+                        </TouchableOpacity>
+
+                    </Dialog.Actions>
+                )}
+
+            </Dialog>
+
+
+
+
+        </Portal>
+    )
+
+
+    const submitReport = async() => {
+
+        setShowConfirmation(false)
+        setPostLoading(true)
+        setShowProcess(true)
+        try{
+            const newReport = {
+               
+                id: Date.now().toString(),
+                reportType:reportType,
+                reportReason:reason,
+                additionalInfo:additionalInfo,
+            }
+
+            await uploadReport(newReport);
+      
+            setPostLoading(false)
+            console.log("Report data : ", newReport)
+        }catch(err){
+            setPostLoading(false)
+            setShowProcess(false)
+            setShowError(true)
+        }
+    }
+
+    //helper
+      const isFieldsValid = (reason : string, contentType : string) => {
+                /*
+                const isFieldsNotEmpty =  newUsername.length > 0 && confirmNewUsername.length > 0
+                const isUsernameMatched = newUsername === confirmNewUsername
+                return isFieldsNotEmpty && isUsernameMatched
+                */
+        }
+
     return(<>
 
         <PaperProvider>
-
+            {renderPostConfirmation()}
+            {renderError()}
+            {renderProcess()}
             <SafeAreaView style={styles.mainWrapper}>
                 <View style={styles.headerContainer}>
 
@@ -85,7 +268,8 @@ const reportScreen = () => {
                                 onValueChange={setReportType}
                                 style={{width:'100%',backgroundColor:'white',borderRadius:5}}
     
-                            >
+                            >   
+                     
                                 <Picker.Item key="Comment" label="Comment" value="Comment"/>
                                 <Picker.Item key="Post" label="Post" value="Post"/>
                                 <Picker.Item key="Crop__Data" label="Crop Data" value="Crop__Data"/>
@@ -103,15 +287,17 @@ const reportScreen = () => {
                         <View style={{width:'100%',borderWidth:1,borderRadius:5,borderColor:'#E2E8f0',marginVertical:10}}>
     
                             <Picker
-                                selectedValue={reportType}
-                                onValueChange={setReportType}
+                                selectedValue={reason}
+                                onValueChange={setReason}
                                 style={{width:'100%',backgroundColor:'white',borderRadius:5}}
     
-                            >
-                                <Picker.Item key="Comment" label="Comment" value="Comment"/>
-                                <Picker.Item key="Post" label="Post" value="Post"/>
-                                <Picker.Item key="Crop__Data" label="Crop Data" value="Crop__Data"/>
-                           
+                            >   
+                         
+                                <Picker.Item key="Spam" label="Spam Or Unwanted Content" value="Spam"/>
+                                <Picker.Item key="Bullying" label="Harassment or Bullying" value="Harassment"/>
+                                <Picker.Item key="FalseInformation" label="False or Misleading Information" value="FalseInformation"/>
+                                <Picker.Item key="InappropriateContent" label="Inappropriate Content" value="InappropriateContent"/>
+                                
                             </Picker>
     
                         </View>
@@ -133,7 +319,7 @@ const reportScreen = () => {
                        
                     </View>
 
-                    <TouchableOpacity style={[isValid ? buttonStyle.postButton__active : buttonStyle.postButton__disabled,{marginBottom:20}]}>
+                    <TouchableOpacity onPress={()=>setShowConfirmation(true)} style={[isValid ? buttonStyle.postButton__active : buttonStyle.postButton__disabled,{marginBottom:20}]}>
                         <Text style={{fontWeight:500,fontSize:15,color:'#ECF4F7'}}>
                             Submit report
                         </Text>
@@ -151,12 +337,16 @@ const reportScreen = () => {
 
 
 
+
+
+
 const styles = StyleSheet.create({
     
     headerContainer:{
         width:'100%',
         paddingVertical:5,
-        borderWidth:1,
+        borderBottomWidth:1,
+        borderColor:"#e2e8f0",
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
@@ -172,7 +362,7 @@ const styles = StyleSheet.create({
         flex:1,
         flexDirection:'column',
         width:'100%',
-        borderWidth:1,
+        borderWidth:0,
         alignItems:'center',
         backgroundColor:'#F4F5F7',
 
@@ -186,7 +376,7 @@ const styles = StyleSheet.create({
         paddingVertical:10,
         paddingHorizontal:10,
         flex:1,
-        borderWidth:1,
+        borderWidth:0,
         paddingTop:10
     },
 
@@ -222,7 +412,7 @@ const styles = StyleSheet.create({
     typo__Secondary:{
         fontSize:14,
         fontWeight:400,
-        color:'red'
+        color:'#64748B'
     },
     typo__headerMain__primary:{
         fontSize:17,

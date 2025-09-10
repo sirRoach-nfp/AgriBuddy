@@ -330,7 +330,7 @@ const account = () => {
                   <Text numberOfLines={1} ellipsizeMode="tail" style={{color:'#64748B'}}>{user?.Email}</Text>
               </View>
 
-              <View style={styles.profileSettingWrapper}>
+              <View style={[styles.profileSettingWrapper,{display:'none'}]}>
 
                 <TouchableOpacity onPress={logoutAccount} style={{alignSelf:'flex-start'}}>
                   <AntDesign name="logout" size={24} color="black" />
@@ -342,7 +342,7 @@ const account = () => {
 
 
 
-          <View style={sections.summarySection}>
+          <View style={[sections.summarySection,{display:'none'}]}>
 
             <View style={innerComponent.summaryCard}>
 
@@ -624,7 +624,7 @@ const styles = StyleSheet.create({
   },
 
   scrollWrapperContainer:{
-    borderWidth:1,
+    borderWidth:0,
     borderColor:'#37474F',
     flex:1,
     gap:10,
@@ -639,7 +639,7 @@ const styles = StyleSheet.create({
 
   plotContainerWrapper:{
     width:'95%',
-    marginBottom:25,
+    marginVertical:25,
     backgroundColor:'white',
     display:'flex',
     flexDirection:'column',

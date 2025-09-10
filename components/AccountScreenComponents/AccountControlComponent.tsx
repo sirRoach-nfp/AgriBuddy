@@ -6,11 +6,40 @@ import { router } from 'expo-router'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { signOut } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { auth } from '@/app/firebaseconfig';
+import { useUserContext } from '@/app/Context/UserContext';
 
 
+
+
+
+
+  
 const AccountControlComponent = () => {
 
+   const {user,logout} = useUserContext();
 
+  const logoutAccount = async () => {
+    try {
+      console.log("Logging out...");
+  
+      // Sign out fr m Firebase
+      await signOut(auth);
+      console.log("User signed out from Firebase.");
+  
+      // Remove user data from AsyncStorage
+      await AsyncStorage.removeItem("userData");
+      console.log("User data removed from AsyncStorage.");
+      logout();
+  
+      // Redirect to login page
+      router.replace('/(screens)/LoginPage'); // Update path as per your routing setup
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
 
     
 
@@ -61,7 +90,7 @@ const AccountControlComponent = () => {
         </View>
 
 
-        <View style={[styles.accountControls__itemWrapper,{borderTopWidth:1,borderBottomWidth:1,borderColor:'#e2e8f0'}]}>
+        <View style={[styles.accountControls__itemWrapper,{borderTopWidth:1,borderBottomWidth:0,borderColor:'#e2e8f0'}]}>
 
             <View style={[styles.accountControls__itemWrapper__iconWrapper,{backgroundColor:'#E1F7E2'}]}>
         
@@ -86,7 +115,7 @@ const AccountControlComponent = () => {
         </View>
 
 
-        <View style={[styles.accountControls__itemWrapper]}>
+        <View style={[styles.accountControls__itemWrapper,{display:'none'}]}>
 
             <View style={[styles.accountControls__itemWrapper__iconWrapper,{backgroundColor:'#FFDBDC'}]}>
         
@@ -113,7 +142,7 @@ const AccountControlComponent = () => {
       </View>
 
 
-      <TouchableOpacity style={{backgroundColor:'#FFDBDC',borderWidth:0,borderColor:'#B64D5E',display:'flex',flexDirection:'row',paddingVertical:10,alignItems:'center',justifyContent:'center',gap:10,borderRadius:5}}>
+      <TouchableOpacity onPress={logoutAccount} style={{backgroundColor:'#FFDBDC',borderWidth:0,borderColor:'#B64D5E',display:'flex',flexDirection:'row',paddingVertical:10,alignItems:'center',justifyContent:'center',gap:10,borderRadius:5}}>
         <MaterialIcons name="logout" size={24} color="#B64D5E" />
         <Text style={{color:'#B64D5E',fontSize:16,fontWeight:600}}>Logout</Text>
       </TouchableOpacity>

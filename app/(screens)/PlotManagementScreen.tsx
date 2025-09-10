@@ -546,9 +546,9 @@ const PlotManagementScreen = () => {
 
         <View style={styles.headerContainer}>
 
-            <TouchableOpacity style={{marginLeft:10,borderWidth:0,padding:5}} onPress={()=> router.back()}>
+            <TouchableOpacity style={{marginLeft:0,borderWidth:0,padding:5}} onPress={()=> router.back()}>
 
-                <Ionicons name="arrow-back" size={20} color="#607D8B" />
+                <Ionicons name="arrow-back" size={25} color="#607D8B" />
 
             </TouchableOpacity>
             
@@ -558,16 +558,16 @@ const PlotManagementScreen = () => {
                 <Image source={{uri:plotData.PlotThumbnail}} style={styles.headerContainer__metaDataWrapper__thumbnail}/>
 
                 <View style={{display:'flex',flexDirection:'column',justifyContent:'center'}}>
-                    <Text style={fonts.headerSecondary}>Plot Name</Text>
-                    <Text style={{color:'#64748B'}}>0.3 hectares • Clay loam</Text>
+                    <Text style={fonts.headerSecondary}>{plotData.PlotName}</Text>
+                    
                 </View>
 
             </View>
 
 
-            <TouchableOpacity onPress={()=>navigateToPlotSetting(plotId as string,plotData?.PlotName,plotData.currentCrops.CropAssocId,plotData.PlotThumbnail)}>
+            <TouchableOpacity style={{padding:5,marginLeft:'auto'}} onPress={()=>navigateToPlotSetting(plotId as string,plotData?.PlotName,plotData.currentCrops.CropAssocId,plotData.PlotThumbnail)}>
 
-                <Ionicons name="options" size={24} color="#607D8B" />
+                <Ionicons name="options" size={25} color="#607D8B" />
 
             </TouchableOpacity>
 
@@ -576,7 +576,7 @@ const PlotManagementScreen = () => {
 
         </View>
 
-        <ScrollView style={{borderWidth:1,width:'100%',flex:1,display:'flex',flexDirection:'column',gap:10,paddingVertical:10,paddingBottom:30}} contentContainerStyle={{alignItems:'center'}}>
+        <ScrollView style={{borderWidth:0,width:'100%',flex:1,display:'flex',flexDirection:'column',gap:10,paddingVertical:10,paddingBottom:30}} contentContainerStyle={{alignItems:'center'}}>
 
 
 
@@ -773,7 +773,11 @@ const PlotManagementScreen = () => {
             </View>
             <Text style={styles.chartsHeader}>Disease Trend (last 6 months)</Text>
             
- 
+            <TouchableOpacity style={{flexShrink:1,borderWidth:0,marginLeft:'auto'}} onPress={()=> router.push(`/(screens)/DiseaseOccurenceDetailed?plotAssocId=${encodeURIComponent(plotId as string)}`)}>
+
+                <Text style={styles.chartsHeaderViewMore}>View In Detail </Text>
+
+            </TouchableOpacity>
             
         </View>
 
@@ -936,15 +940,17 @@ const styles = StyleSheet.create({
     headerContainer:{
         width:'100%',
        // maxHeight:50,
-        borderWidth:1,
+        borderBottomWidth:1,
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
         paddingVertical:10,
+        paddingHorizontal:10,
        // height:50,
         //backgroundColor:'#2E6F40',
         //marginBottom:20,
-        backgroundColor:'white'
+        backgroundColor:'white',
+        borderColor:'#E2E8f0'
     },
 
     headerContainer__metaDataWrapper:{
