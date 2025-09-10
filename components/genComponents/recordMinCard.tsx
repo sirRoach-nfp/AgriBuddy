@@ -41,17 +41,17 @@ const RecordMinCard = ({cropName,cropId,status,datePlanted,SessionId,PlotAssoc,P
             imageStyle={styles.imageBackgroundStyle}
         >
             <View style={styles.overlay}>
-            <Text style={styles.commonName}>{cropName}</Text>
+                <Text style={styles.commonName}>{cropName}</Text>
 
-            {PlotAssoc && PlotAssoc !== 'null' ? (
-                <View style={styles.badgeWrapperPlot}>
-                <Text style={styles.badgeTextPlot}>{PlotName}</Text>
-                </View>
-            ) : (
-                <View style={styles.badgeWrapperNoPlot}>
-                <Text style={styles.badgeText}>No Plot</Text>
-                </View>
-            )}
+                {PlotAssoc && PlotAssoc !== 'null' ? (
+                    <View style={styles.badgeWrapperPlot}>
+                    <Text style={styles.badgeTextPlot}>{PlotName}</Text>
+                    </View>
+                ) : (
+                    <View style={styles.badgeWrapperNoPlot}>
+                    <Text style={styles.badgeText}>No Plot</Text>
+                    </View>
+                )}
             </View>
         </ImageBackground>
     </TouchableOpacity>
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
       overlay: {
         backgroundColor: 'rgba(255,255,255,0.85)', // slight overlay for readability
         padding: 10,
-        alignItems: 'center',
+     
       },
       
     badgeWrapperNoPlot:{
@@ -104,9 +104,9 @@ const styles = StyleSheet.create({
         marginTop:5,
         borderRadius:5,
         backgroundColor:'#2E6F40',
-        padding:3,
-        marginLeft:'auto',
-        marginRight:'auto'
+        paddingVertical:7,
+        paddingHorizontal:10
+
     },
     badgeText:{
         fontSize:14,
@@ -115,8 +115,8 @@ const styles = StyleSheet.create({
 
     },
     container: {
-        width: '47%',
-        aspectRatio: 1,
+        width: '100%',
+        aspectRatio: 3/2,
         borderRadius: 10,
         overflow: 'hidden',
         elevation: 2,
@@ -169,8 +169,8 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
     },
     commonName: {
-        fontSize: 15,
-        fontWeight: '600',
+        fontSize: 19,
+        fontWeight: '700',
         color: '#333',
         marginBottom: 5,
       },

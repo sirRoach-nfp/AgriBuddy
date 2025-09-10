@@ -452,9 +452,9 @@ const account = () => {
                     {discussions && discussions.length > 0 && discussions.map((discussion,index)=>(
 
 
-                      <TouchableOpacity onPress={()=> navigateToPost(discussion.discussionId)} style={{
+                      <TouchableOpacity key={discussion.discussionId} onPress={()=> navigateToPost(discussion.discussionId)} style={{
                         borderRadius:5,elevation:0,display:'flex',flexDirection:'column', 
-                        alignItems:'flex-start',borderWidth:1,paddingVertical:10,paddingHorizontal:10,borderColor:'#E2E8F0',gap:5}}>
+                        alignItems:'flex-start',borderWidth:1,paddingVertical:10,paddingHorizontal:10,borderColor:'#E2E8F0',gap:5,marginBottom:5}}>
 
                         
                    

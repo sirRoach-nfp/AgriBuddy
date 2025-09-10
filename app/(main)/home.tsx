@@ -402,7 +402,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 20,
     //paddingHorizontal: 10,
-    backgroundColor:'#F2F3F5',
+    //backgroundColor:'#F2F3F5',
   },
   currentCropContainer : {
     width:'95%',

@@ -10,6 +10,7 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { useSearchParams } from 'expo-router/build/hooks'
 
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import ArticleCard from '@/components/genComponents/ArticleCard'
 
 interface ArticleData {
     cover:string,
@@ -90,11 +91,11 @@ const ArticleSearchResult = () => {
 
             <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10,marginTop:'auto',marginBottom:'auto'}} onPress={()=> router.back()}>
 
-                <Ionicons name="arrow-back" size={30} color="#607D8B" />
+                <Ionicons name="arrow-back" size={25} color="#607D8B" />
 
             </TouchableOpacity>
 
-            <Text numberOfLines={2} ellipsizeMode="tail" style={{marginLeft:10,fontSize:18,fontWeight:600,color:'#37474F'}} >
+            <Text numberOfLines={2} ellipsizeMode="tail" style={{marginLeft:10,fontSize:18,fontWeight:500,color:'#37474F'}} >
                 Search Results For {queryString}
             </Text>
 
@@ -116,53 +117,7 @@ const ArticleSearchResult = () => {
             {articleData && articleData.length > 0 ? articleData.map((article,index)=>(
 
 
-            <TouchableOpacity key={index}
-                      style={{
-                        width: '100%',
-                        height: 200,
-                        borderRadius: 10,
-                        overflow: 'hidden', // Important to clip children like the rounded corners
-                      }}
-                      onPress={() => {
-                        router.push(`/(screens)/ArticleMainScreen?articleId=${encodeURIComponent(article.articleId)}`);
-                      }}
-                    >
-                      <ImageBackground
-                        source={{ uri: article.cover }}
-                        resizeMode="cover"
-                        style={{
-                          flex: 1,
-                          display:'flex',
-                          flexDirection:'column'
-                        }}
-                      >
-                        {/* Overlay Gradient to improve text readability */}
-                        <LinearGradient
-                          colors={['transparent', 'rgba(0,0,0,0.6)']}
-                          style={{
-                            padding: 10,
-                            width: '100%',
-                            position: 'absolute',
-                            bottom: 0,
-                          }}
-                        >
-                          <Text
-                            numberOfLines={2}
-                            ellipsizeMode="tail"
-                            style={{
-                              color: 'white',
-                              fontSize: 20,
-                              fontWeight: '600',
-                              marginTop:'auto'
-                            }}
-                          >
-
-
-                            {article.title}
-                          </Text>
-                        </LinearGradient>
-                      </ImageBackground>
-                  </TouchableOpacity>
+              <ArticleCard articleId={article.articleId} cover={article.cover} title={article.title} key={article.articleId}/>
 
 
 
@@ -193,20 +148,22 @@ const styles = StyleSheet.create({
     
     headerContainer:{
         width:'100%',
-        height:56,
-        //borderWidth:1,
+        
+        borderBottomWidth:1,
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
-      
+        backgroundColor:'white',
+        paddingVertical:10,
+        borderColor:'#E2E8F0'
         //backgroundColor:'#2E6F40',
         //marginBottom:20,
-        backgroundColor:'white'
+
     },
 
     scrollContainer:{
         display:'flex',
-        width:'98%',
+        width:'95%',
         flexDirection:'column',
 
         flex:1,

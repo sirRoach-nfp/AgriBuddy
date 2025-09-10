@@ -7,6 +7,7 @@ import { Searchbar } from 'react-native-paper'
 import { collection, getDocs } from 'firebase/firestore'
 import { db } from '../firebaseconfig'
 import { LinearGradient } from 'expo-linear-gradient'
+import ArticleCard from '@/components/genComponents/ArticleCard'
 
 
 
@@ -66,13 +67,13 @@ const ArticleHomeScreen = () => {
   return (
 
 
-    <SafeAreaView style={{flex:1,borderWidth:0,flexDirection:'column',display:'flex',alignItems:'center'}}>
+    <SafeAreaView style={{flex:1,borderWidth:0,flexDirection:'column',display:'flex',alignItems:'center',backgroundColor:'#F4F5F7'}}>
 
         <View style={styles.headerContainer}>
 
             <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10,marginTop:'auto',marginBottom:'auto'}} onPress={()=> router.back()}>
 
-                <Ionicons name="arrow-back" size={30} color="black" />
+                <Ionicons name="arrow-back" size={25} color="black" />
 
             </TouchableOpacity>
 
@@ -118,56 +119,12 @@ const ArticleHomeScreen = () => {
         </View>
 
         <ScrollView style={styles.scrollContainer}  contentContainerStyle={{alignItems:'center'}}>
+        
+            
             {articleData && articleData.length > 0 && articleData.map((article,index)=>(
 
 
-            <TouchableOpacity key={index}
-                    style={{
-                      width: '100%',
-                      height: 200,
-                      borderRadius: 10,
-                      overflow: 'hidden', // Important to clip children like the rounded corners
-                    }}
-                    onPress={() => {
-                      router.push(`/(screens)/ArticleMainScreen?articleId=${encodeURIComponent(article.articleId)}`);
-                    }}
-                  >
-                    <ImageBackground
-                      source={{ uri: article.cover }}
-                      resizeMode="cover"
-                      style={{
-                        flex: 1,
-                        display:'flex',
-                        flexDirection:'column'
-                      }}
-                    >
-                      {/* Overlay Gradient to improve text readability */}
-                      <LinearGradient
-                        colors={['transparent', 'rgba(0,0,0,0.6)']}
-                        style={{
-                          padding: 10,
-                          width: '100%',
-                          position: 'absolute',
-                          bottom: 0,
-                        }}
-                      >
-                        <Text
-                          numberOfLines={2}
-                          ellipsizeMode="tail"
-                          style={{
-                            color: 'white',
-                            fontSize: 20,
-                            fontWeight: '600',
-                            marginTop:'auto'
-                          }}
-                        >
-
-
-                          {article.title}
-                        </Text>
-                      </LinearGradient>
-                    </ImageBackground>
-                </TouchableOpacity>
+              <ArticleCard articleId={article.articleId} key={article.articleId} title={article.title} cover={article.cover} />
 
 
 
@@ -186,21 +143,24 @@ export default ArticleHomeScreen
 const styles = StyleSheet.create({
     
     headerContainer:{
-        width:'100%',
-        paddingVertical:5,
-        //borderWidth:1,
-        display:'flex',
-        flexDirection:'row',
-        alignItems:'center',
-      
-        //backgroundColor:'#2E6F40',
-        //marginBottom:20,
-        backgroundColor:'white'
+      width:'100%',
+      maxHeight:100,
+      borderWidth:0,
+      display:'flex',
+      flexDirection:'row',
+      alignItems:'center',
+      justifyContent:'center',
+   
+      paddingVertical:5,
+      paddingHorizontal:10,
+      backgroundColor:'white',
+      borderBottomWidth:1,
+      borderColor:'#E2E8F0'
     },
 
     scrollContainer:{
         display:'flex',
-        width:'98%',
+        width:'95%',
         flexDirection:'column',
         flex:1,
         //borderWidth:1,
