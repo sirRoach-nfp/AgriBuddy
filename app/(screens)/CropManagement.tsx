@@ -1,3 +1,5 @@
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 import { StyleSheet, Text, TouchableOpacity, View,KeyboardAvoidingView, Platform } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -112,6 +114,7 @@ import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore'
 import { db } from '../firebaseconfig'
 import { hide } from 'expo-splash-screen'
 import { useUserContext } from '../Context/UserContext'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 
 
@@ -1094,7 +1097,7 @@ const CropManagement = () => {
               <Ionicons name="arrow-back" size={30} color="black" />
 
           </TouchableOpacity>
-
+          <TouchableOpacity onPress={() => setDialogDeleteVisible(true)} style={{marginLeft:'auto',alignSelf:'flex-start'}}><AntDesign name="delete" size={24} color="red" style={{marginLeft:'auto',marginRight:20}} /></TouchableOpacity>
 
         </View>
         
@@ -1172,7 +1175,7 @@ const CropManagement = () => {
             <View style={styles.nameWrapper}>
               <Text style={styles.cropName}>{cropData?.commonName || 'Loading...'}</Text>
               <Text style={styles.scientificName}>({cropData?.scientificName})</Text>
-              <TouchableOpacity onPress={() => setDialogDeleteVisible(true)} style={{marginLeft:'auto'}}><AntDesign name="delete" size={24} color="red" style={{marginLeft:'auto',marginRight:20}} /></TouchableOpacity>
+              
               
             </View>
 
@@ -1268,7 +1271,7 @@ const CropManagement = () => {
 
           
         
-        <ScrollView style={styles.contentWrapper} contentContainerStyle={{alignItems:'center'}}>
+        <KeyboardAwareScrollView extraScrollHeight={100} style={styles.contentWrapper} contentContainerStyle={{alignItems:'center'}} nestedScrollEnabled={true}>
 
 
           <View style={stylesRecords.container}>
@@ -1405,7 +1408,7 @@ const CropManagement = () => {
 
 
 
-              <View style={stylesRecords.inputWrapper}>
+              <View style={[stylesRecords.inputWrapper,{display:'none'}]}>
 
 
                 <View style={stylesRecords.inputHeaderNormal}>
@@ -1518,7 +1521,7 @@ const CropManagement = () => {
 
 
 
-              <View style={stylesRecords.inputWrapper}>
+              <View style={[stylesRecords.inputWrapper,{display:'none'}]}>
 
 
                 <View style={stylesRecords.inputHeaderNormal}>
@@ -1563,7 +1566,7 @@ const CropManagement = () => {
           </Button>
 
 
-        </ScrollView>
+        </KeyboardAwareScrollView>
        
        }
 
@@ -1573,28 +1576,45 @@ const CropManagement = () => {
        
        
        
-        <View style={stylesAiles.contentWrapper}>
+        <ScrollView style={stylesAiles.contentWrapper} contentContainerStyle={{alignItems:'center'}}>
 
           <View style={stylesAiles.containerWrappperPest}>
-              <Text style={stylesAiles.subContainerHeaderPest}>Common Pests</Text>
-
+              
+              <View style={stylesAiles.containerWrapperHeader}>
+                  <MaterialIcons name="pest-control" size={24} color="#842C2B" />
+                  <Text style={stylesAiles.subContainerHeaderPest}>Common Pests</Text>
+              </View>
 
 
               <View style={stylesAiles.badgeContainer}>
 
 
-                {cropData?.commonPests && cropData.commonPests.length > 0  && cropData.commonPests.map((pest,index)=>(
+                {cropData?.commonPests && cropData.commonPests.length > 0  ? cropData.commonPests.map((pest,index)=>(
 
 
                 <TouchableOpacity style={stylesAiles.badgeWrapper} onPress={()=>{router.push(`/(screens)/DiseasePestScreen?pestName=${encodeURIComponent(pest.pestId)}`)}}>
-                                      
-                  <Image source={{ uri:pest.pestCoverImage }} style={{width:60,height:60,marginBottom:5, borderRadius:20}}/>
-                  <Text  style={stylesAiles.badgesText}>{pest.pestName}</Text>
-
+                  
+                  <View style={stylesAiles.badgeWrapper__imageWrapper}>
+                    <Image source={{ uri:pest.pestCoverImage}} style={{objectFit:'cover',width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
+                  </View>                      
+                  
+                  
+                  <View style={stylesAiles.badgeWrapper__infoWrapper}>
+                    <Text  style={stylesAiles.badgesText}>{pest.pestName}</Text>
+                  </View>
                 </TouchableOpacity>
 
 
-                ))}
+                )): (
+                    <View style={stylesAiles.noDataPlaceholder}>
+                      <View style={stylesAiles.noDataPlaceholder__iconWrapper}>
+                        <MaterialIcons name="pest-control" size={24} color="#64748B" />
+                      </View>
+                      
+                      <Text style={stylesAiles.noDataPlaceholder__Primary}>No Disease Data Available</Text>
+                      <Text style={stylesAiles.noDataPlaceholder__Secondary}>Disease information for this crop is currently being updated</Text>
+                    </View>
+                  )}
 
 
               </View>
@@ -1612,7 +1632,10 @@ const CropManagement = () => {
 
 
           <View style={stylesAiles.containerWrappperPest}>
-              <Text style={stylesAiles.subContainerHeaderPest}>Common Diseases</Text>
+              <View style={stylesAiles.containerWrapperHeader}>
+                  <MaterialIcons name="pest-control" size={24} color="#842C2B" />
+                  <Text style={stylesAiles.subContainerHeaderPest}>Common Disease</Text>
+              </View>
 
 
               <View style={stylesAiles.badgeContainer}>
@@ -1620,17 +1643,32 @@ const CropManagement = () => {
 
 
 
-                  {cropData?.commonDiseases && cropData.commonDiseases.length > 0 && cropData.commonDiseases.map((disease,index)=>(
+                  {cropData?.commonDiseases && cropData.commonDiseases.length > 0 ? cropData.commonDiseases.map((disease,index)=>(
 
-                    <TouchableOpacity style={stylesAiles.badgeWrapper} onPress={()=>{router.push(`/(screens)/DiseaseScreen?diseaseId=${encodeURIComponent(disease.diseaseId)}`)}} >
-                        
-                      <Image source={{ uri:disease.diseaseCoverImage }} style={{width:60,height:60,marginBottom:5, borderRadius:20}}/>
-                      <Text  style={stylesAiles.badgesText}>{disease.diseaseName}</Text>
+                    <TouchableOpacity  key={disease.diseaseId} style={stylesAiles.badgeWrapper} onPress={()=>{router.push(`/(screens)/DiseaseScreen?diseaseId=${encodeURIComponent(disease.diseaseId)}`)}} >
+                      
+                      <View style={stylesAiles.badgeWrapper__imageWrapper}>
+                        <Image source={{ uri: disease.diseaseCoverImage}} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
+                      </View>
+                      
+                      <View style={stylesAiles.badgeWrapper__infoWrapper}>
+                        <Text  style={stylesAiles.badgesText}>{disease.diseaseName}</Text>
+                      </View>
+                      
 
                     </TouchableOpacity>
 
 
-                  ))}
+                  )) : (
+                    <View style={stylesAiles.noDataPlaceholder}>
+                      <View style={stylesAiles.noDataPlaceholder__iconWrapper}>
+                        <MaterialIcons name="pest-control" size={24} color="#64748B" />
+                      </View>
+                      
+                      <Text style={stylesAiles.noDataPlaceholder__Primary}>No Pest Data Available</Text>
+                      <Text style={stylesAiles.noDataPlaceholder__Secondary}>Pest information for this crop is currently being updated</Text>
+                    </View>
+                  )}
 
 
          
@@ -1647,7 +1685,7 @@ const CropManagement = () => {
 
           </View>
 
-        </View>
+        </ScrollView>
        
        
        
@@ -1701,18 +1739,17 @@ const stylesCollapsible = StyleSheet.create({
     width:'100%',
     //borderWidth:1,
     borderRadius:5,
-    paddingTop:10,
-    paddingBottom:10,
-    paddingLeft:10,
+    padding:15,
     backgroundColor:'white',
     marginBottom:10,
-    elevation:2
+    borderWidth:1,
+    borderColor:'#E2E8f0'
   },
 
   header:{
     color:'#37474F',
     fontSize:18,
-    fontWeight:700
+    fontWeight:700,
   },
   contentText:{
     marginBottom:20,
@@ -1726,37 +1763,80 @@ const stylesCollapsible = StyleSheet.create({
 
 
 const stylesAiles = StyleSheet.create({
-  contentWrapper:{
-    width:'100%',
-    //borderWidth:1,
+
+
+  noDataPlaceholder:{
     display:'flex',
     flexDirection:'column',
+    width:'100%',
+    borderWidth:0,
+    padding:10,
     alignItems:'center',
-    paddingTop:30
+    justifyContent:'center',
+    gap:10,
+    height:250
+  },
+
+  noDataPlaceholder__iconWrapper:{
+    width:60,
+    height:60,
+    borderWidth:0,
+    borderRadius:'50%',
+    backgroundColor:'#F3F4F6',
+    display:'flex',
+    flexDirection:'column',
+    justifyContent:'center',
+    alignItems:'center'
+  },
+
+  noDataPlaceholder__Primary:{
+    fontSize:18,
+    fontWeight:700,
+    color:"#2D303F"
+  },
+  noDataPlaceholder__Secondary:{
+    fontSize:15,
+    fontWeight:400,
+    textAlign:'center',
+    color:"#64748B"
+  },
+  contentWrapper:{
+    width:'100%',
+    borderWidth:0,
+    display:'flex',
+    flexDirection:'column',
+ 
+    paddingTop:0
   },
   containerWrappperPest: {
-    paddingTop:10,
+    paddingTop:0,
+    paddingHorizontal:0,
     width:'95%',
-    ///borderWidth:1,
+    borderWidth:0,
     position:'relative',
     marginBottom:20,
-    backgroundColor:'#ffffff',
+    backgroundColor:'white',
     borderRadius:5,
-    elevation:2
+
 },
 badgeContainer:{
   width:'100%',
-  //borderWidth:1,
+  borderWidth:0,
+  borderLeftWidth:1,
+  borderBottomWidth:1,
+  borderRightWidth:1,
+  borderColor:'#e2e8f0',
   position:'relative',
   //borderWidth: 1,
   flexDirection: 'row',
   flexWrap: 'wrap',
   paddingVertical:10,
-  justifyContent: 'center',
+  //justifyContent: 'center',
   gap: 10,
   paddingHorizontal: 10,
 },
 badgeWrapper:{
+  /*
   height:100,
   width:150,
   //borderWidth:1,
@@ -1764,26 +1844,71 @@ badgeWrapper:{
   flexDirection:'column',
   alignItems:'center',
   justifyContent:'center'
+  */
+
+  height:220,
+  width:'100%',
+  borderWidth:1,
+  borderColor:'#E2E8F0',
+  display:'flex',
+  flexDirection:'column',
+  alignItems:'center',
+  justifyContent:'center',
+  borderRadius:5
   
 },
 subContainerHeaderPest:{
-  color:'#A94442',
-  fontWeight:500,
-  fontSize:15,
-  marginBottom:20,
-  marginTop:10,
-  marginLeft:10,
+    color:'#842C2B',
+    fontWeight:700,
+    fontSize:18,
 
   
 },
 badgesText:{
-  color:'#253D2C',
-  fontWeight:400,
+  color:'#2D303F',
+  fontWeight:500,
   fontSize:16,
-  fontStyle:'italic',
+  
   marginTop:10,
   marginBottom:10
 },
+
+
+badgeWrapper__infoWrapper:{
+    width:'100%',
+    borderWidth:0,
+    height:'30%',
+    marginTop:'auto',
+    display:'flex',
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'center',
+    backgroundColor:'#FFFFFF',
+    borderBottomEndRadius:5,
+    borderBottomLeftRadius:5,
+
+},
+
+badgeWrapper__imageWrapper:{
+    flex:1,
+    width:'100%',
+    borderWidth:0,
+    borderTopEndRadius:5,
+    borderTopStartRadius:5,
+},
+    containerWrapperHeader:{
+        width:'100%',
+        borderColor:'#D7514E',
+        paddingVertical:10,
+        paddingLeft:5,
+        display:'flex',
+        flexDirection:'row',
+        alignItems:'center',
+        gap:5,
+        borderLeftWidth:5,
+        borderTopLeftRadius:10,
+        backgroundColor:'#FEF2F2'
+    },
 
 
 })
@@ -1884,16 +2009,17 @@ const stylesRecords = StyleSheet.create({
 const styles = StyleSheet.create({
   headerContainer:{
     width:'100%',
-    maxHeight:50,
-    //borderWidth:1,
+    //maxHeight:50,
+    borderBottomWidth:1,
     display:'flex',
     flexDirection:'row',
     alignItems:'center',
     paddingVertical:10,
     height:50,
-    //backgroundColor:'#2E6F40',
+    backgroundColor:'white',
     //marginBottom:20,
-    backgroundColor:'white'
+    borderColor:'#E2e8f0'
+    //backgroundColor:'white'
 },
   picker: {
     height: 60,
@@ -1902,23 +2028,26 @@ const styles = StyleSheet.create({
   },
   BadgeWrapper:{
     padding:3,
-    backgroundColor:'#2E6F40',
-    
-    alignSelf:'flex-start',
+    backgroundColor:'#607D8B',
+    borderWidth:0,
+  
     display:'flex',
-    paddingTop:5,
-    paddingBottom:5,
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'center',
+  
+    paddingTop:11,
+    paddingBottom:11,
     paddingLeft:25,
     paddingRight:25,
     borderRadius:5,
-    marginTop:15,
-    marginBottom:15
+  
   },
 
   BadgeText:{
     color:'#ffffff',
-    fontSize:14,
-    fontWeight:400,
+    fontSize:16,
+    fontWeight:600,
   },  
   //care guide
 
@@ -1927,12 +2056,16 @@ const styles = StyleSheet.create({
 
   headerWrapper:{
     width:'100%',
-    //borderWidth:1,
+    borderWidth:1,
     marginTop:10,
     display:'flex',
     flexDirection:'column',
     marginBottom:30,
-    paddingTop:10
+    paddingVertical:10,
+    paddingHorizontal:10,
+    backgroundColor:'white',
+    borderRadius:5,
+    borderColor:'#E2e8f0'
 
   },
   nameWrapper:{
@@ -1990,7 +2123,8 @@ const styles = StyleSheet.create({
     display:'flex',
     //borderWidth:1,
     borderColor:'green',
-    alignItems:'center'
+    alignItems:'center',
+    backgroundColor:'#F4F5F7'
 
   },
 
@@ -2014,8 +2148,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    width:'100%'
+    borderBottomColor: '#E2E8f0',
+    width:'100%',
+    backgroundColor:'white',
+    paddingVertical:5,
+    marginBottom:10,
+
   },
   segmentButton: {
     alignItems: 'center',

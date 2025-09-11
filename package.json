@@ -62,6 +62,7 @@
     "react-native-gesture-handler": "~2.20.2",
     "react-native-image-picker": "^8.2.0",
     "react-native-image-viewing": "^0.2.2",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-loader-kit": "^2.0.8",
     "react-native-modal-dropdown": "^1.0.2",

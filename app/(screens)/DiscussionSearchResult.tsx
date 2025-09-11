@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { router } from 'expo-router'
 import { Searchbar } from 'react-native-paper'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, orderBy, query, QueryDocumentSnapshot, where } from 'firebase/firestore'
 import { db } from '../firebaseconfig'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useSearchParams } from 'expo-router/build/hooks'
@@ -18,7 +18,9 @@ interface DiscussionData {
     Content:string,
     CreatedAt:any,
     Title:string,
-    ReplyCount:any
+    ReplyCount:any,
+    Tag:string,
+    AuthorName:string
   }
   
 
@@ -54,7 +56,7 @@ const DiscussionSearchResult = () => {
 
 
     useEffect(()=>{
-
+        /*
         const searchDiscussions = async(searchText:string)=>{
 
             try{
@@ -88,6 +90,7 @@ const DiscussionSearchResult = () => {
                         CreatedAt: doc.data().CreatedAt,
                         Title: doc.data().Title,
                         ReplyCount: replyCount,
+                        Tag:doc.data().Tag,
                       };
                     })
                   );
@@ -105,16 +108,85 @@ const DiscussionSearchResult = () => {
             }catch(err){console.error(err)}
             
 
-        }
+        }*/
 
-        searchDiscussions(queryString as string)
+
+        const searchDiscussion = async (searchText: string) => {
+            try {
+                // Step 1: Preprocess search keywords
+                const keywords = preprocessSearch(searchText).slice(0, 10);
+                if (keywords.length === 0) {
+                return [];
+                }
+
+                // Step 2: Build query using keywords
+                const discussionRef = query(
+                collection(db, "Discussions"),
+                where("Keyword", "array-contains-any", keywords),
+                orderBy("CreatedAt", "desc")
+                );
+
+                // Step 3: Fetch snapshot
+                const snapshot = await getDocs(discussionRef);
+                const docs = snapshot.docs as QueryDocumentSnapshot<DiscussionData>[];
+
+                // Step 4: Map discussions
+                const discussions = await Promise.all(
+                docs.map(async (docSnap) => {
+                    const repliesRef = collection(db, "Discussions", docSnap.id, "Comments");
+                    const repliesSnap = await getDocs(repliesRef);
+
+                    return {
+                    DocumentId: docSnap.id,
+                    Author: docSnap.data().Author,
+                    Content: docSnap.data().Content,
+                    CreatedAt: docSnap.data().CreatedAt,
+                    Title: docSnap.data().Title,
+                    ReplyCount: repliesSnap.size,
+                    Tag: docSnap.data().Tag,
+                    };
+                })
+                );
+
+                // Step 5: Collect all unique Author UIDs
+                const authorIds = [...new Set(discussions.map((d) => d.Author))];
+                const userDocs = await Promise.all(
+                authorIds.map(async (uid) => {
+                    const userSnap = await getDoc(doc(db, "Users", uid));
+                    return userSnap.exists()
+                    ? { uid, Username: userSnap.data().Username }
+                    : { uid, Username: "Unknown" };
+                })
+                );
+
+                // Step 6: Build lookup map
+                const userMap = userDocs.reduce<Record<string, string>>((acc, u) => {
+                acc[u.uid] = u.Username;
+                return acc;
+                }, {});
+
+                // Step 7: Attach usernames
+                const discussionsWithNames = discussions.map((d) => ({
+                ...d,
+                AuthorName: userMap[d.Author] || "Unknown",
+                }));
+
+                //return discussionsWithNames;
+                setDiscussionData(discussionsWithNames)
+            } catch (err) {
+                console.error(err);
+                return [];
+            }
+            };
+
+        searchDiscussion(queryString as string)
 
 
     },[])
   return (
 
 
-    <SafeAreaView style={{flex:1,borderWidth:0,flexDirection:'column',display:'flex',alignItems:'center'}}>
+    <SafeAreaView style={{flex:1,borderWidth:0,flexDirection:'column',display:'flex',alignItems:'center',backgroundColor:'#F4F5F7'}}>
 
         <View style={styles.headerContainer}>
 
@@ -152,7 +224,7 @@ const DiscussionSearchResult = () => {
                     {discussionData && discussionData.length > 0 ? discussionData.map((data,index)=>(
 
 
-                        <PostCard Author={data.Author} CreatedAt={data.CreatedAt} Content={data.Content} Id={data.DocumentId} key={index} Title={data.Title} ReplyCount={data.ReplyCount}/>
+                        <PostCard Tag={data.Tag} AuthorName={data.AuthorName} Author={data.Author} CreatedAt={data.CreatedAt} Content={data.Content} Id={data.DocumentId} key={index} Title={data.Title} ReplyCount={data.ReplyCount}/>
 
 
 
@@ -192,23 +264,25 @@ const styles = StyleSheet.create({
     headerContainer:{
         width:'100%',
         height:56,
-        //borderWidth:1,
+        borderBottomWidth:1,
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
       
         //backgroundColor:'#2E6F40',
         //marginBottom:20,
-        backgroundColor:'white'
+        backgroundColor:'white',
+        borderColor:'#E2e8f0'
     },
 
     scrollContainer:{
         display:'flex',
-        width:'98%',
+        width:'100%',
         flexDirection:'column',
         //backgroundColor:'red',
        //flex:1,
         //borderWidth:1,
-        paddingTop:10
+        paddingTop:10,
+        paddingHorizontal:10,
     }
 })

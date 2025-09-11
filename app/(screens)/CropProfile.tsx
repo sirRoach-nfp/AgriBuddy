@@ -828,7 +828,6 @@ const subContainer = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         paddingVertical:10,
-        
         gap: 5,
         paddingHorizontal: 0,
     },
