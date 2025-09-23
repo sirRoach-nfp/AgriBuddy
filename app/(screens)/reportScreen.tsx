@@ -13,6 +13,8 @@ import { StyleSheet, Text, TouchableOpacity, View, TextInput, Touchable, ScrollV
 import { Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { uploadReport } from '../controllers/ReportControllers/reportController';
+import { useSearchParams } from 'expo-router/build/hooks';
+import { serverTimestamp } from 'firebase/firestore';
 
 const reportScreen = () => {
 
@@ -22,14 +24,23 @@ const reportScreen = () => {
     const [reportType,setReportType] = useState("Comment")
     const [reason,setReason] = useState("Spam")
     const [additionalInfo,setAdditionalInfo] = useState("")
+    const [reportTitle,setReportTitle] = useState("");
 
-
-
+    //metadata 
+    const searchParams = useSearchParams()
+    const discussionId = searchParams.get('PostRefId')
+    const replyId = searchParams.get('ReplyRefId')
+    const postTitle = searchParams.get('PostTitle')
+    const postBody = searchParams.get('PostBody')
+    const contentType = searchParams.get('ContentType')
+    const contentAuthor = searchParams.get('Author')
+    
     //modal controllers
     const[showConfirmation,setShowConfirmation] = useState(false)
     const[showError,setShowError] = useState(false)
     const [showProcess,setShowProcess] = useState(false)
     const[postLoading,setPostLoading] = useState(false)
+    const [showInternetError,setShowInternetError] = useState(false)
     const isValid = true
 
 
@@ -42,8 +53,18 @@ const reportScreen = () => {
 
 
 
+    useEffect(()=> {
+        setReportType(contentType as string)
+    },[discussionId,postTitle,postBody,contentType])
 
 
+    const checkParams = () => {
+
+        console.log("discussionId : ",discussionId)
+        console.log("discussionTitle : ",postTitle)
+        console.log("discussionBody : ",postBody)
+        console.log("contentType : ",contentType)
+    }
     
 
     // modal
@@ -128,6 +149,43 @@ const renderPostConfirmation = ()=>(
     )
 
 
+    const renderSlowInternet = () => (
+        <Portal>
+            <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)}>
+
+                <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
+
+                <Dialog.Title>
+                    <Text style={{color:'#37474F'}}>
+                        Slow Connection
+                    </Text>
+                    
+                </Dialog.Title>
+                
+                <Dialog.Content>
+                    <Text style={{color:'#475569'}}>Connection seems slow. Please try again.</Text>
+                </Dialog.Content>
+
+
+
+                <Dialog.Actions>
+
+                <TouchableOpacity onPress={()=> setShowInternetError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+
+                    <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                        OK
+                    </Text>
+
+                </TouchableOpacity>
+
+                </Dialog.Actions>
+
+            </Dialog>
+
+        </Portal>
+    )
+
+
 
 
     const renderProcess = () => (
@@ -190,22 +248,68 @@ const renderPostConfirmation = ()=>(
         setPostLoading(true)
         setShowProcess(true)
         try{
-            const newReport = {
-               
-                id: Date.now().toString(),
-                reportType:reportType,
-                reportReason:reason,
-                additionalInfo:additionalInfo,
-            }
 
-            await uploadReport(newReport);
+            //if post
+            let newReport;
+            let contentTitle = contentType === "Post" ? contentType : "";
+            if(contentType === "Post"){
+                newReport = {
+                
+                    id: Date.now().toString(),
+                    reportType:reportType as string,
+                    reportReason:reason as string,
+                    reportTitle:reportTitle as string, 
+                    additionalInfo:additionalInfo as string,
+                    contentTitle:contentTitle as string,
+                    contentBody:postBody as string,
+                    postRefId: discussionId as string,
+                    replyRefId:null,
+                    author: contentAuthor as string,
+                    createdAt: serverTimestamp(),
+                    
+                }
+            } else {
+
+                newReport = {
+                
+                    id: Date.now().toString(),
+                    reportType:reportType as string,
+                    reportReason:reason as string,
+                    reportTitle:reportTitle as string, 
+                    additionalInfo:additionalInfo as string,
+                    contentTitle:null,
+                    contentBody:postBody as string,
+                    postRefId: discussionId as string,
+                    replyRefId: replyId,
+                    author: contentAuthor as string,
+                    createdAt: serverTimestamp(),
+                    
+                }
+            }
+           
+
+
+            const timeoutPromise = new Promise((_,reject)=>
+                setTimeout(()=> reject(new Error("timeout")),20000)
+            )
+
+            await Promise.race([uploadReport(newReport),timeoutPromise])
+
+            //await uploadReport(newReport);
       
             setPostLoading(false)
             console.log("Report data : ", newReport)
-        }catch(err){
+        }catch(err:any){
             setPostLoading(false)
             setShowProcess(false)
-            setShowError(true)
+
+            if(err.message === "timeout") {
+                setShowInternetError(true)
+            } else {
+                setShowError(true)
+            }
+
+        
         }
     }
 
@@ -224,6 +328,7 @@ const renderPostConfirmation = ()=>(
             {renderPostConfirmation()}
             {renderError()}
             {renderProcess()}
+            {renderSlowInternet()}
             <SafeAreaView style={styles.mainWrapper}>
                 <View style={styles.headerContainer}>
 
@@ -258,7 +363,7 @@ const renderPostConfirmation = ()=>(
 
 
 
-                    <View style={[styles.itemWrapper,{display:'flex',flexDirection:'column'}]}>
+                    <View style={[styles.itemWrapper,{display:'flex',flexDirection:'column'}]} pointerEvents="none">
                         <Text style={styles.itemWrapper__primary}>What are you reporting?</Text>
 
                         <View style={{width:'100%',borderWidth:1,borderRadius:5,borderColor:'#E2E8f0',marginVertical:10}}>
@@ -267,12 +372,12 @@ const renderPostConfirmation = ()=>(
                                 selectedValue={reportType}
                                 onValueChange={setReportType}
                                 style={{width:'100%',backgroundColor:'white',borderRadius:5}}
-    
+                                
                             >   
                      
                                 <Picker.Item key="Comment" label="Comment" value="Comment"/>
                                 <Picker.Item key="Post" label="Post" value="Post"/>
-                                <Picker.Item key="Crop__Data" label="Crop Data" value="Crop__Data"/>
+                              
                            
                             </Picker>
     
@@ -304,7 +409,18 @@ const renderPostConfirmation = ()=>(
                     </View>
 
 
+                    <View style={[styles.itemWrapper,{display:'flex',flexDirection:'column',height:250}]}>
+                        <Text style={styles.itemWrapper__primary}>Report title (optional)</Text>
 
+                        <TextInput maxLength={150} onChange={(e)=>setReportTitle(e.nativeEvent.text)} placeholder="Report title..." textAlignVertical="top" style={styles.TextInput}></TextInput>
+                        
+
+                        <View style={{paddingVertical:5,width:'100%',display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
+                            <Text style={[styles.typo__Secondary]}>Help us understand the issue better</Text>   
+                            <Text style={[styles.typo__Secondary]}>{additionalInfo.length}/150</Text>
+                        </View>
+                       
+                    </View>
 
                     <View style={[styles.itemWrapper,{display:'flex',flexDirection:'column',height:250}]}>
                         <Text style={styles.itemWrapper__primary}>Additional Details? (Optional)</Text>
@@ -325,6 +441,9 @@ const renderPostConfirmation = ()=>(
                         </Text>
                     </TouchableOpacity>
 
+                    <TouchableOpacity onPress={checkParams}>
+                        <Text>Check params</Text>
+                    </TouchableOpacity>
 
                 </ScrollView>
             </SafeAreaView>

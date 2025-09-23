@@ -446,7 +446,22 @@ const DisussionScreen = () => {
 
   const redirectToReport = () =>{
     console.log("Redirecting to rs")
-    router.push(`/(screens)/reportScreen`)
+    const queryString = `?PostRefId=${discussionid}
+        &PostTitle=${discussionData?.Title}
+        &PostBody=${discussionData?.Content}
+        &Author=${discussionData?.Author}
+        &ContentType=Post`;
+    router.push(`/(screens)/reportScreen${queryString}` as any)
+  }
+
+  const redirectToCommentReport = (commentContent:string,commentRefId:string,commentAuthor:string) => {
+    const queryString = `?PostRefId=${discussionid}
+        &ReplyRefId=${commentRefId}
+        &Author=${commentAuthor}
+        &PostBody=${commentContent}
+        &ContentType=Comment`;
+
+    router.push(`/(screens)/reportScreen${queryString}` as any)
   }
   
   return (
@@ -480,7 +495,7 @@ const DisussionScreen = () => {
                 
 
                 <TouchableOpacity style={{marginLeft:'auto'}} onPress={redirectToReport}>
-                    <MaterialIcons name="report" size={24} color="black" />
+                    <MaterialIcons name="report" size={24} color="#6F7072" />
                 </TouchableOpacity>
 
                 {user?.UserId === discussionData?.Author && (
@@ -589,29 +604,38 @@ const DisussionScreen = () => {
 
                             <View style={stylesReply.replyWrapper } key={index}>
 
-                                <View style={stylesReply.avatarIconWrapper}>
-                                    <Avatar.Text size={35} label={getAuthorInitials(comment?.Author as string)}/>
-                                </View>
+
 
                                 
 
                                 <View style={stylesReply.infoWrapper}>
-
+                                    <View style={stylesReply.avatarIconWrapper}>
+                                        <Avatar.Text size={35} label={getAuthorInitials(comment?.Author as string)}/>
+                                    </View>
                                     <View style={stylesReply.infoWrapper__metadataWrapper}> 
                                         <Text  style={stylesReply.userText}>{comment?.Author}</Text>
                                         <Text style={stylesReply.dateText}>{formatDate(comment?.CreatedAt)}</Text>
-                                        {user?.Username === comment?.Author && 
-                                            <TouchableOpacity style={{alignSelf:'flex-start',borderWidth:0,marginLeft:'auto',marginRight:20}} onPress={()=> {setSelectedCommentIndex(index); setSelectedCommentId(comment?.id as string); setShowDeleteConfirmation(true)}}>
-                                                    <AntDesign name="delete" size={20} color="#E63946" />
-                                            </TouchableOpacity>
-                                        }
+
                                     </View>
-                                    <View style={stylesReply.replyContent}>
-                                        <Text style={{fontSize:15,color:'#475569'}} >{comment?.Content}</Text>
-                                    </View>
+
 
                                 </View>
             
+                                <View style={stylesReply.replyContent}>
+                                    <Text style={{fontSize:15,color:'#475569'}} >{comment?.Content}</Text>
+                                </View>
+
+                                <View style={stylesReply.actionsWrapper}>
+
+                                    {user?.Username === comment?.Author && 
+                                        <TouchableOpacity style={{alignSelf:'flex-start',borderWidth:0}} onPress={()=> {setSelectedCommentIndex(index); setSelectedCommentId(comment?.id as string); setShowDeleteConfirmation(true)}}>
+                                                <AntDesign name="delete" size={20} color="#6F7072" />
+                                        </TouchableOpacity>
+                                    }
+                                    <TouchableOpacity style={{}} onPress={()=> redirectToCommentReport(comment?.Content,comment?.id,comment?.Author)}>
+                                        <MaterialIcons name="report" size={22} color="#6F7072" />
+                                    </TouchableOpacity>
+                                </View>
 
                             </View>
 
@@ -660,7 +684,18 @@ const stylesReply = StyleSheet.create({
     avatarIconWrapper:{
         //borderWidth:1,
     },
+    
 
+    actionsWrapper:{
+        borderTopWidth:1,
+        
+        borderColor:'#E2E8f0',
+        paddingVertical:5,
+        justifyContent:'flex-end',
+        display:'flex',
+        flexDirection:'row',
+        gap:10
+    },
     
     replyHeader:{
         //borderWidth:1,
@@ -682,28 +717,30 @@ const stylesReply = StyleSheet.create({
         borderColor:'#E2E8F0',
        paddingRight:10,
         display:'flex',
-        flexDirection:'row',
+        flexDirection:'column',
         paddingHorizontal:5,
         gap:10,
-        paddingVertical:20,
+        paddingTop:20,
+        paddingBottom:5,
       
-        marginBottom:0,
+        marginBottom:5,
         backgroundColor:'white'
+        
     },
 
 
     infoWrapper:{
-        width:'95%',
+        width:'100%',
         display:'flex',
-        flexDirection:'column',
+        flexDirection:'row',
         //borderWidth:1,
-        
+        gap:10,
         paddingRight:5,
       
     },
     infoWrapper__metadataWrapper:{
         display:'flex',
-        flexDirection:'row',
+        flexDirection:'column',
         borderWidth:0,
     },
 

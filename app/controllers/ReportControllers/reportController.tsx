@@ -1,14 +1,34 @@
-import { db } from "@/app/firebaseconfig";
-import { addDoc, arrayUnion, collection, doc, Timestamp, updateDoc } from 'firebase/firestore';
+import { auth, db } from "@/app/firebaseconfig";
+import { addDoc, arrayUnion, collection, doc, FieldValue, Timestamp, updateDoc } from 'firebase/firestore';
 
 interface reportData {
     id:string,
     reportType:string,
     reportReason:string,
     additionalInfo:string
+    contentTitle: string | null,
+    contentBody:string,
+    reportTitle:string,
+    postRefId:string,
+    createdAt:Timestamp | null | FieldValue
+    replyRefId:string | null
+    author:string
+    
 }
 
-export const uploadReport = async({id,reportType,reportReason,additionalInfo}:reportData) =>{
+export const uploadReport = async({
+    id,
+    reportType,
+    reportReason,
+    additionalInfo,
+    reportTitle,
+    contentTitle,
+    contentBody,
+    postRefId,
+    replyRefId,
+    createdAt,
+    author,
+    }:reportData) =>{
 
 
     try{
@@ -18,7 +38,16 @@ export const uploadReport = async({id,reportType,reportReason,additionalInfo}:re
             _id:id,
             _reportType:reportType,
             _reportReason:reportReason,
-            _additionalInfo:additionalInfo
+            _additionalInfo:additionalInfo,
+            _reportTitle:reportTitle,
+            _contentTitle: contentTitle || null,
+            _contentBody: contentBody,
+            _postRefId:postRefId,
+            _replyRefId: replyRefId || null,
+            _author: author,
+            CreatedAt:createdAt,
+
+
         }
 
 
