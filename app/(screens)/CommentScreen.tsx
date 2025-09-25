@@ -137,7 +137,7 @@ const CommentScreen = () => {
 
                 <Text style={stylesHeader.HeaderText}>Add Comment</Text>
 
-                <TouchableOpacity disabled={!isValid} style={[!isValid ? styles.postButton__disabled : styles.postButton__active]} onPress={()=>{addComment(user?.Username as string)}}>
+                <TouchableOpacity disabled={!isValid} style={[!isValid ? styles.postButton__disabled : styles.postButton__active]} onPress={()=>{addComment(user?.UserId as string)}}>
                    <FontAwesome name="send" size={15} color="#ECF4F7" />
                    <Text style={stylesHeader.buttonText}>Post</Text>
                 </TouchableOpacity>

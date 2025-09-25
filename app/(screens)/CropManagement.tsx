@@ -1,6 +1,6 @@
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import { StyleSheet, Text, TouchableOpacity, View,KeyboardAvoidingView, Platform } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View,KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ScrollView } from 'react-native-gesture-handler'
@@ -186,7 +186,7 @@ const CropManagement = () => {
   //> data 
 
 
-  const [cropData,setCropData] = useState<CropData>()
+  const [cropData,setCropData] = useState<CropData | null>()
 
   const [pesticide,setPesticide] = useState<string> ('')
   const [fertilizer,setFertilizer] = useState<string> ('')
@@ -289,44 +289,43 @@ const CropManagement = () => {
   useEffect(()=>{
     setLoading(true)
 
-    const fetchCropDataFromFirebase = async()=>{
-                
-          try{
-              console.log("Passed Document ID : ",cropId)
-              const cropDataDocRef = doc(db,'Crops',cropId as string)
-              const cropDataDocSnapshot = await getDoc(cropDataDocRef)
+   const fetchCropDataFromFirebase = async () => {
+      try {
+        setLoading(true); // start loading
+        console.log("Passed Document ID : ", cropId);
 
-              console.log("Fetched Data : ", cropDataDocSnapshot.data())
-              if(cropDataDocSnapshot.exists()){
+        const cropDataDocRef = doc(db, "Crops", cropId as string);
+        const cropDataDocSnapshot = await getDoc(cropDataDocRef);
 
-                  const rawData = {
-                      cropId:cropDataDocSnapshot.id as string || "",
-                      thumbnail: cropDataDocSnapshot.data().cropCover as string || " ",
-                      scientificName: cropDataDocSnapshot.data().scientificName as string || " ",
-                      commonName: cropDataDocSnapshot.data().cropName as string || " ",
-                      family: cropDataDocSnapshot.data().family as string || " ",
-                      growthTime: cropDataDocSnapshot.data().growthTime as string || " ",
-                      bestSeason: cropDataDocSnapshot.data().bestSeason as string || " ",
-                      soilType: cropDataDocSnapshot.data().cropCover as string[] || [],
-                      soilPh: cropDataDocSnapshot.data().soilPh as string || "",
-                      commonPests: cropDataDocSnapshot.data().pests as pestType[] || [],
-                      commonDiseases: cropDataDocSnapshot.data().diseases as diseaseType[] || "",
-                      content:cropDataDocSnapshot.data().contents as guideStep[] || "",
-                      sessionId:cropDataDocSnapshot.data().SessionId as string || ""
-                  }
-                  console.log("Done Fetching Data : ",rawData)
+        if (cropDataDocSnapshot.exists()) {
+          const rawData = {
+            cropId: cropDataDocSnapshot.id || "",
+            thumbnail: cropDataDocSnapshot.data().cropCover || " ",
+            scientificName: cropDataDocSnapshot.data().scientificName || " ",
+            commonName: cropDataDocSnapshot.data().cropName || " ",
+            family: cropDataDocSnapshot.data().family || " ",
+            growthTime: cropDataDocSnapshot.data().growthTime || " ",
+            bestSeason: cropDataDocSnapshot.data().bestSeason || " ",
+            soilType: cropDataDocSnapshot.data().cropCover || [],
+            soilPh: cropDataDocSnapshot.data().soilPh || "",
+            commonPests: cropDataDocSnapshot.data().pests || [],
+            commonDiseases: cropDataDocSnapshot.data().diseases || [],
+            content: cropDataDocSnapshot.data().contents || [],
+            sessionId: cropDataDocSnapshot.data().SessionId || "",
+          };
 
-                  setCropData(rawData)
-              }
-          }catch(err){
-              console.error(err)
-          }
-    
-    }
-
-    fetchCropDataFromFirebase()
-
-    setAssocPlot(PlotAssoc)
+          console.log("Done Fetching Data : ", rawData);
+          setCropData(rawData);
+        } else {
+          setCropData(null); // explicit "not found"
+        }
+      } catch (err) {
+        console.error(err);
+        setCropData(null);
+      } finally {
+        setLoading(false); // ✅ always stop loading
+      }
+    };
 
 
     const fetchPlots = async()=> {
@@ -362,10 +361,6 @@ const CropManagement = () => {
       }catch(err){console.error(err)}
     }
 
-
-
-
-
     const FetchTemp = async () => {
       try {
         
@@ -396,6 +391,8 @@ const CropManagement = () => {
   }
 
 
+    fetchCropDataFromFirebase()
+    setAssocPlot(PlotAssoc)
     fetchPlots()
     FetchTemp()
 
@@ -403,14 +400,13 @@ const CropManagement = () => {
     console.log(localCropData)
     console.log(cropName)
 
-
-
-
-
-    
   },[cropName])
 
 
+
+  /* Legacy use effect*/
+  
+ 
   useEffect(() => {
     console.log("Updated localCropData", localCropData);
 
@@ -432,7 +428,7 @@ const CropManagement = () => {
       setLocalDiseaseData(disease)
     }
 
-    /*
+    
     if(Object.values(localCropData)[0]?.commonPests){
       const pests = Object.values(localCropData)[0]?.commonPests.map((pest, index) => ({
         id: (index + 1).toString(),
@@ -448,12 +444,12 @@ const CropManagement = () => {
       }))
       setLocalDiseaseData(disease)
     }
-      */
-    setLoading(false)
+     
+ 
  
 
   }, [cropData]);
-
+  
 
 
   //select crop data
@@ -1054,6 +1050,76 @@ const CropManagement = () => {
     }
   }
 
+  const deleteCurrentCropNoModal = async(plotAssoc:any,sessionId:any)=>{
+        console.log("session id of the crop : ", sessionId)
+
+    try{
+      const cropRef = doc(db, "CurrentCrops", user?.CurrentCropsRefId as string); // Change this to your actual document ID
+      const cropDoc = await getDoc(cropRef);
+
+
+      
+  
+      if (cropDoc.exists()) {
+        const currentCrops = cropDoc.data().CurrentCrops || []; // Ensure it's an array
+  
+        // Filter out the object with the matching sessionId
+        const updatedCrops = currentCrops.filter((crop: any) => crop.SessionId !== sessionId);
+  
+        // Update Firestore with the modified array
+        await updateDoc(cropRef, { CurrentCrops: updatedCrops });
+  
+        console.log("Crop deleted successfully!");
+
+
+      
+      } else {
+        console.log("Document does not exist!");
+      }
+
+
+      
+      //remove currentCrop if the crop is assigned to a plot
+
+      if(plotAssoc !== null){
+
+
+        const plotRef = doc(db, "Plots", user?.PlotsRefId as string);
+        const plotDoc = await getDoc(plotRef);
+    
+        if (plotDoc.exists()) {
+          let plotsArray = plotDoc.data().Plots || []; // Ensure it's an array
+    
+          // Find the index of the plot to update
+          const plotIndex = plotsArray.findIndex((plot: any) => plot.PlotId === PlotAssoc);
+    
+          if (plotIndex !== -1) {
+            const updatedPlots = [...plotsArray]; // Create a copy of the array
+    
+            updatedPlots[plotIndex] = {
+              ...updatedPlots[plotIndex],
+              CurrentCrops: {
+                CropId: null,
+                CropName: null,
+                CropAssocId: null,
+                CropCover:null
+              }
+            };
+    
+            // Update the whole array in Firestore
+            await updateDoc(plotRef, { Plots: updatedPlots });
+          }
+        }
+      
+        router.back()
+
+      }
+
+    }catch(err){
+      console.error(err)
+    }
+  }
+
 
 
   const displayCropData = ()=> {
@@ -1064,6 +1130,51 @@ const CropManagement = () => {
   const displayPestData = ()=>{
     console.log("Pest List :",localPestData)
   }
+
+  if (isLoading) {
+    // Return loading screen
+    return (
+      <SafeAreaView style={[styles.mainContainer,{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}]}>
+        <ActivityIndicator size="large" color="#607D8B" />
+        <Text>Loading crop data...</Text>
+      </SafeAreaView>
+    );
+  }
+
+  if (!cropData && !isLoading) {
+    // Return fallback screen (data not found)
+    return (
+      <SafeAreaView style={styles.mainContainer}>
+
+          <View style={styles.headerContainer}>
+
+            <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10}} onPress={()=> router.back()}>
+
+                <Ionicons name="arrow-back" size={30} color="black" />
+
+            </TouchableOpacity>
+   
+        </View>
+
+        <View style={stylesDataDoesntExist.wrapper}>
+          <MaterialIcons name="error-outline" size={28} color="#E63946" />
+          <Text style={stylesDataDoesntExist.primaryText}>
+            This crop data is no longer available
+          </Text>
+          <Text style={stylesDataDoesntExist.secondaryText}>
+            It may have been removed or not found.
+          </Text>
+
+          <TouchableOpacity style={stylesDataDoesntExist.actionWrapper} 
+              onPress={()=>deleteCurrentCropNoModal(PlotAssoc,sessionId)}>
+              <Text style={stylesDataDoesntExist.actionText}>Delete from your tracklist</Text>
+          </TouchableOpacity>
+
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
 
 
@@ -1715,7 +1826,53 @@ const CropManagement = () => {
 
 export default CropManagement
 
+const stylesDataDoesntExist = StyleSheet.create({
 
+    wrapper:{
+        display:'flex',
+        flexDirection:'column',
+        width:'80%',
+        borderWidth:0,
+        justifyContent:'center',
+        alignItems:'center',
+        gap:10,
+        marginVertical:'auto',
+        marginHorizontal:'auto'
+    },
+
+    secondaryText:{
+        textAlign:'center',
+        color:'#6C757D',
+        fontSize:15
+    },
+    primaryText:{
+        fontSize:20,
+        textAlign:'center',
+        color:'#2B2D42',
+        fontWeight:600
+    },
+
+    actionWrapper:{
+        paddingVertical:5,
+        paddingHorizontal:10,
+        borderColor:'#E63946',
+        borderWidth:1,
+        display:'flex',
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'center',
+        backgroundColor:'#FFE5E5',
+        borderRadius:5,
+        marginTop:10,
+    },
+
+    actionText:{
+        fontSize:15,
+        fontWeight:500,
+        color:'#E63946'
+    }
+
+})
 
 const stylesButtons = StyleSheet.create({
   plotAssign:{

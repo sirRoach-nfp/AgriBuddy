@@ -75,6 +75,8 @@ const FertilizerUsageByCrop:React.FC<cropsDat> = ({cropNames,data}) => {
 
 
   useEffect(()=>{
+
+    console.log("Initial data set for barChart : ", data)
     const formattedBarData = formatDataForBarchart(data);
     console.log(formattedBarData)
     setFormattedData(formattedBarData)

@@ -69,7 +69,7 @@ const DiseasePestScreen = () => {
   },[])
   return (
     <SafeAreaView style={styles.mainContainer}>
-
+    <ScrollView style={stylesContent.mainContainer} contentContainerStyle={{alignItems:'center'}}>
 
         <View style={styles.headerContainer}>
             <Image source={{ uri: pestData?.PestSnapshot }}
@@ -149,7 +149,7 @@ const DiseasePestScreen = () => {
                                 selectedOption === 'DamageSymptoms' && styles.activeText,
                             ]}
                             >
-                            DamageSymptoms
+                            Symptoms
                             </Text>
                             {selectedOption === 'DamageSymptoms' && (
                             <View style={styles.activeLine} />
@@ -181,44 +181,75 @@ const DiseasePestScreen = () => {
 
 
 
-        {selectedOption === 'Characteristics' && 
-        
-            <ScrollView style={stylesContent.mainContainer}>
+        {selectedOption === 'Characteristics' && (
+            <>
+                <View style={stylesContent.infoCard}>
+                <Text style={stylesContent.contentTextPrimary}>
+                    Physical Characteristics
+                </Text>
                 {pestData?.Characterstics.replace(/\\n/g, '\n').split('\n').map((line, index) => (
-                    <Text key={index} style={stylesContent.contentText}>
-                        {line}
-                    </Text>
-                ))}
+                    
+
+
+                        <Text key={index} style={stylesContent.contentText}>
+                            {line}
+                        </Text>
+                   
+
+                ))} 
+                </View>
+            </>
+        )
+        
+   
+
 
         
 
-            </ScrollView>
+
         }
 
 
 
-        {selectedOption === 'Ecology' && 
-        
-            <ScrollView style={stylesContent.mainContainer}>
-                {pestData?.Ecology.replace(/\\n/g, '\n').split('\n').map((line, index) => (
-                    <Text key={index} style={stylesContent.contentText}>
-                        {line}
+        {selectedOption === 'Ecology' && (
+            <>  
+                <View style={stylesContent.infoCard}>
+                    <Text style={stylesContent.contentTextPrimary}>
+                                Life cycle and ecology
                     </Text>
-                ))}
+                    {pestData?.Ecology.replace(/\\n/g, '\n')
+                        .split('\n')
+                        .map((line, index) => (
 
-            </ScrollView>
-        }
+                            
+
+                                <Text key={index} style={stylesContent.contentText}>
+                                    {line}
+                                </Text>
+                            
+
+                    ))}
+                </View>
+            </>
+        )}
 
 
-        {selectedOption === 'DamageSymptoms' && 
-        
-            <ScrollView style={stylesContent.mainContainer}>
+        {selectedOption === 'DamageSymptoms' && (
+            <View style={stylesContent.infoCard}>
 
-
+                <Text style={stylesContent.contentTextPrimary}>
+                        Damage Symptoms
+                </Text>  
+            <>
                 {pestData?.DamageSymptoms?.Symptoms && pestData?.DamageSymptoms.Symptoms.replace(/\\n/g, '\n').split('\n').map((line, index) => (
-                    <Text key={index} style={stylesContent.contentText}>
-                        {line}
-                    </Text>
+  
+                        
+                        <Text key={index} style={stylesContent.contentText}>
+                            {line}
+                        </Text>
+                    
+
+
                 ))}
 
 
@@ -228,33 +259,36 @@ const DiseasePestScreen = () => {
                     </View>
 
                 ))}
-
-
-            </ScrollView>
-        }
+            </>
+            </View>
+        )}
 
 
 
         
-        {selectedOption === 'ControlMeasures' && 
-        
-            <ScrollView style={stylesContent.mainContainer}>
-                <View style={{ paddingHorizontal: 10, marginTop: 10 }}>
-                    
-                    {pestData && pestData.ControlMeasures && pestData?.ControlMeasures.replace(/\\n/g, '\n').split('\n').map((line, index) => (
-                        <Text key={index} style={stylesContent.contentText}>
-                            {line}
-                        </Text>
-                    ))}
-                </View>
+        {selectedOption === 'ControlMeasures' && (
+            <>
+            
+            
+            <View style={stylesContent.infoCard}>
+            <Text style={stylesContent.contentTextPrimary}>
+                    Management Strategies
+            </Text>
+            {pestData && pestData.ControlMeasures && pestData?.ControlMeasures.replace(/\\n/g, '\n').split('\n').map((line, index) => (
+                
+                
 
+                    <Text key={index} style={stylesContent.contentText}>
+                        {line}
+                    </Text>
+                
 
+            ))}
+            </View>
+            </>
+        )}
 
-
-            </ScrollView>
-        }
-
-
+    </ScrollView>
     </SafeAreaView>
   )
 }
@@ -263,11 +297,26 @@ export default DiseasePestScreen
 
 
 const stylesContent = StyleSheet.create({
+
+    infoCard:{
+        borderWidth:1,
+        padding:20,
+        width:'95%',
+        marginVertical:'auto',
+        borderRadius:20,
+        borderColor:'#E2e8f0',
+        marginBottom:30,
+    
+
+    },
+
     mainContainer:{
         width:'95%',
         display:'flex',
-        //borderWidth:1,
-        paddingTop:10
+        borderWidth:0,
+        paddingTop:10,
+        flexDirection:'column',
+        
     },
     snapShots:{
         width:'100%',
@@ -278,9 +327,16 @@ const stylesContent = StyleSheet.create({
     contentText:{
         marginBottom:15,
         color:'#333333',
-        fontSize:19,
+        fontSize:17,
         fontWeight:400
-    }
+    },
+
+    contentTextPrimary:{
+        marginVertical:15,
+        color:'#333333',
+        fontSize:20,
+        fontWeight:500
+    },
 })
 
 const styles = StyleSheet.create({
@@ -304,7 +360,10 @@ const styles = StyleSheet.create({
 
     infoHeaderContainer:{
         width:'95%',
-        //borderWidth:1,
+        borderWidth:0,
+        display:'flex',
+        flexDirection:'column',
+        marginBottom:20,
 
     },
     segmentContainer: {
@@ -353,3 +412,4 @@ const styles = StyleSheet.create({
         marginBottom:5
       }
 })
+

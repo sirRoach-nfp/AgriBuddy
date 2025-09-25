@@ -195,7 +195,7 @@ export default function SignupPage() {
             await setDoc(doc(db,"CurrentCrops",CurrentCropsRefId),{CurrentCrops:[]})
             await setDoc(doc(db,"CropRotationPlan",cropRotationPlanRefId),{Plans:[]})
             await setDoc(doc(db,"DiscussionRecords",DiscussionRecordRefId),{Discussions:[]})
-            await setDoc(doc(db,"ExpensesCollection ",ExpenseRecordRefId),{ExpenseLog:[]})
+            await setDoc(doc(db,"ExpensesCollection",ExpenseRecordRefId),{ExpenseLog:[]})
 
 
             Alert.alert("Account Created Successfully")

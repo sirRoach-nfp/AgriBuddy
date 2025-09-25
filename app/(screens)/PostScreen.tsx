@@ -43,7 +43,7 @@ const PostScreen = () => {
     const [showConfirmation,setShowConfirmation] = useState<boolean>(false);
     const [showProcess,setShowProcess] = useState<boolean>(false);
     const [showError,setShowError] = useState<boolean>(false)
-
+    const [showInternetError,setShowInternetError] = useState(false)
     //
     const isValid = 
         title.trim().length >= 10 && 
@@ -91,8 +91,6 @@ const PostScreen = () => {
 
     )
 
-
-
     const renderError = ()=>(
 
     <Portal>
@@ -131,8 +129,42 @@ const PostScreen = () => {
 
     )
 
-
-
+    const renderSlowInternet = () => (
+            <Portal>
+                <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)}>
+    
+                    <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
+    
+                    <Dialog.Title>
+                        <Text style={{color:'#37474F'}}>
+                            Slow Connection
+                        </Text>
+                        
+                    </Dialog.Title>
+                    
+                    <Dialog.Content>
+                        <Text style={{color:'#475569'}}>Connection seems slow. Please try again.</Text>
+                    </Dialog.Content>
+    
+    
+    
+                    <Dialog.Actions>
+    
+                    <TouchableOpacity onPress={()=> setShowInternetError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+    
+                        <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                            OK
+                        </Text>
+    
+                    </TouchableOpacity>
+    
+                    </Dialog.Actions>
+    
+                </Dialog>
+    
+            </Portal>
+    )
+    
 
     const renderProcess = () => (
 
@@ -223,24 +255,34 @@ const PostScreen = () => {
         console.log("Selected image : ", imageUri)
 
         try{
-          
-            await uploadPostController(imageUri,title,body,user,selectedTag);
-          
-           setPostLoading(false);
-           //throw new Error("Deliberate failure");
-            
+
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error("timeout")), 20000)
+            );
+
+            await Promise.race([
+                uploadPostController(imageUri,title,body,user,selectedTag),timeoutPromise
+            ])
+        
+
+            setPostLoading(false);
+            //throw new Error("Deliberate failure");
+
             setTitle(""),
             setBody(""),
             setImageUri([])
         
-        }catch(err){
-            console.log({err})
-            setShowError(true)
+        }catch(err:any){
+            setPostLoading(false);
+            setShowProcess(false)
+
+            if(err.message === "timeout") {
+                setShowInternetError(true)
+            } else {
+                setShowError(true)
+            }
         
         }
-
-       
-
 
     }
 
@@ -281,7 +323,7 @@ const PostScreen = () => {
         {renderPostConfirmation()}
         {renderProcess()}
         {renderError()}
-    
+        {renderSlowInternet()}
         <SafeAreaView style={styles.mainWrapper}>
 
             <View style={styles.headerContainer}>

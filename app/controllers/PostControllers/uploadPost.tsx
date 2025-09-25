@@ -69,6 +69,7 @@ export const uploadPostController = async(imageUri : string[],
             ImageSnapshots:uploadedImageUrls,
             ReplyCount:0,
             Author:user?.UserId || "placeholder",
+            AuthorUid:user?.UserId,
             CreatedAt:Timestamp.now(),
             Keyword: extractKeywords(title)
         }
@@ -91,7 +92,9 @@ export const uploadPostController = async(imageUri : string[],
         await updateDoc(discussionRecordRef,{
             Discussions:arrayUnion({
                 discussionId:discussionRef.id,
-                discussionTitle:title
+                discussionTitle:title,
+                CreatedAt:Timestamp.now(),
+                authorSignature:user?.UserId
             })
         })
 

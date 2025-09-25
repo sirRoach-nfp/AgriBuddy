@@ -6,7 +6,7 @@ import { ScrollView } from 'react-native-gesture-handler'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import PlotMinCard from '@/components/PlotComponents/PlotMinCard';
-import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { arrayUnion, doc, getDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../firebaseconfig';
 import { Avatar, Button, Dialog, PaperProvider, Portal } from 'react-native-paper';
 import { ProgressBar, MD3Colors } from 'react-native-paper';
@@ -51,7 +51,9 @@ interface Plots{
 
 interface discussion{
   discussionId:string,
-  discussionTitle:string
+  discussionTitle:string,
+  CreatedAt:any,
+  authorSignature:string,
 }
 
 const getAuthorInitials = (name:string) => {
@@ -85,9 +87,9 @@ interface userData{
 
 const account = () => {
 
-  const navigateToPost = (RefId:string) =>{
+  const navigateToPost = (RefId:string,SignatureId:string) =>{
 
-    const queryString= `?PostRefId=${encodeURIComponent(RefId)}`
+    const queryString= `?PostRefId=${encodeURIComponent(RefId)}&SignatureId=${SignatureId}`
     //router.push(`/(sc)${queryString}` as any)
 
     router.push(`/(screens)/DisussionScreen${queryString}` as any)
@@ -302,6 +304,20 @@ const account = () => {
     }
   }
 
+  //helper
+  function formatFirestoreDate(timestamp: Timestamp): string {
+      if (!timestamp) return "";
+      console.log("raw timestamp : ",timestamp)
+      const date = timestamp.toDate(); // Convert Firestore Timestamp to JS Date
+      const options: Intl.DateTimeFormatOptions = {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+      };
+
+      return date.toLocaleDateString("en-US", options);
+  }
+
   return (
 
 
@@ -452,7 +468,7 @@ const account = () => {
                     {discussions && discussions.length > 0 && discussions.map((discussion,index)=>(
 
 
-                      <TouchableOpacity key={discussion.discussionId} onPress={()=> navigateToPost(discussion.discussionId)} style={{
+                      <TouchableOpacity key={discussion.discussionId} onPress={()=> navigateToPost(discussion.discussionId,discussion.authorSignature)} style={{
                         borderRadius:5,elevation:0,display:'flex',flexDirection:'column', 
                         alignItems:'flex-start',borderWidth:1,paddingVertical:10,paddingHorizontal:10,borderColor:'#E2E8F0',gap:5,marginBottom:5}}>
 
@@ -460,8 +476,7 @@ const account = () => {
                    
                         <Text style={{fontSize:17,fontWeight:500,color:'#37474F'}}>{discussion.discussionTitle}</Text>
                         <View style={{width:'100%',display:'flex',flexDirection:'row',borderWidth:0,gap:10}}>
-                          <Text style={{color:'#94A3B8'}}>8 Replies</Text>
-                          <Text style={{color:'#94A3B8'}}>5 Hours Ago</Text>
+                          <Text style={{color:'#94A3B8'}}>{formatFirestoreDate(discussion?.CreatedAt)}</Text>
                         </View>
                       </TouchableOpacity>
 

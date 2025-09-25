@@ -3,16 +3,20 @@ import React from 'react'
 import { Image } from 'react-native';
 import { router } from 'expo-router';
 
-
+interface optimalSeasonType{
+    end:number,
+    start:number
+}
 type CropMinCardProps = {
     commonName: string;
     scientificName: string;
     imgUrl:string;
-    cropId:string
+    cropId:string;
+    optimalSeason:optimalSeasonType
   };
   
 
-const CropMinCard = ({commonName,scientificName,imgUrl,cropId}: CropMinCardProps) => {
+const CropMinCard = ({commonName,scientificName,imgUrl,cropId,optimalSeason}: CropMinCardProps) => {
 
 
 
@@ -20,6 +24,22 @@ const CropMinCard = ({commonName,scientificName,imgUrl,cropId}: CropMinCardProps
     const queryString = `?commonName=${encodeURIComponent(commonName)}&scientificName=${encodeURIComponent(scientificName)}&imgUrl=${encodeURIComponent(imgUrl)}&cropid=${encodeURIComponent(cropId)}`;
     router.push(`/CropProfile${queryString}` as any);
   }
+
+    const currentMonth = new Date().getMonth()+1
+    //helper
+    const isCropSuitable = (season:optimalSeasonType, currentMonth:number): boolean => {
+        const {start,end} = season;
+
+        if(start <= end){
+            return currentMonth >= start && currentMonth <= end;
+        }
+        else{
+            return currentMonth >= start || currentMonth <= end;
+        }
+    }
+
+  const isSuitable = isCropSuitable(optimalSeason,currentMonth)
+
   return (
     <TouchableOpacity style={styles.container} onPress={navigateToView} >
 
@@ -36,10 +56,19 @@ const CropMinCard = ({commonName,scientificName,imgUrl,cropId}: CropMinCardProps
 
             
             <View style={styles.statusWrapper}> 
-                <View style={styles.statusIndi}>
 
-                </View>
-                <Text style={styles.statusText}>In Season</Text>
+                {isSuitable ?(
+                    <>
+                        <View style={styles.statusIndi}></View>
+                        <Text style={styles.statusText}>Ideal Season</Text>
+                    </>
+                ) : (
+                    <>
+                        <View style={[styles.statusIndi,{backgroundColor:'#FFC107'}]}></View>
+                        <Text style={styles.statusText}>Not Ideal Season</Text>
+                    </>
+                )}
+
 
 
                 

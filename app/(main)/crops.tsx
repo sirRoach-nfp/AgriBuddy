@@ -66,13 +66,17 @@ interface CropsData {
   [key: string]: CropData;
 }
 
-
+interface optimalSeasonType{
+    end:number,
+    start:number
+}
 interface CropsDataFire {
 
   cropId:string,
   cropName:string,
   cropCover:string,
-  cropScientificName:string
+  cropScientificName:string,
+  optimalSeason:optimalSeasonType
 }
 
 const crops = () => {
@@ -101,7 +105,8 @@ const crops = () => {
               cropId:doc.id,
               cropName:doc.data().cropName,
               cropScientificName: doc.data().scientificName,
-              cropCover:doc.data().cropCover
+              cropCover:doc.data().cropCover,
+              optimalSeason:doc.data().optimalSeason
 
             }
 
@@ -172,7 +177,7 @@ const crops = () => {
 
       
 
-      <View style={styles.segmentContainer}>
+      <View style={[styles.segmentContainer,{display:'none'}]}>
         <TouchableOpacity
           style={styles.segmentButton}
           onPress={() => handleSegmentChange('crops')}
@@ -219,7 +224,13 @@ const crops = () => {
 
         {cropData && cropData.length > 0 && cropData.map((crop,index)=>(
 
-            <CropMinCard cropId={crop.cropId} key={index} commonName={crop.cropName} scientificName={crop.cropScientificName} imgUrl={crop.cropCover}/>
+            <CropMinCard 
+            cropId={crop.cropId} 
+            key={index} commonName={crop.cropName} 
+            scientificName={crop.cropScientificName} 
+            imgUrl={crop.cropCover}
+            optimalSeason={crop.optimalSeason}
+            />
 
         ))}
       </ScrollView> 
@@ -311,7 +322,7 @@ const styles = StyleSheet.create({
     //borderWidth:1,
     display:'flex',
     flexDirection:'column',
-    paddingTop:10
+    paddingTop:20
  
   },
 

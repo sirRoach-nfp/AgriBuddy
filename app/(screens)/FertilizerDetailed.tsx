@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Appbar, PaperProvider } from 'react-native-paper'
@@ -54,7 +54,7 @@ const FertilizerDetailed = () => {
     const [monthDataForFilter, setMonthDataForFilter] = useState<any[]>([]);
     const [filteredLogs, setFilteredLogs] = useState<FertilizerLog[]>([]);
     const [onCropsData,setOnCropsData] = useState<string[]>([])
-
+    const [loading,setLoading] = useState(false)
 
     //Assoc datas
     const {user} = useUserContext();
@@ -118,7 +118,7 @@ const filterLogsByYear = (year:string)=>{
 }
 
 const fetchFertilizerLogRecord = async(plotId:string) =>{
-
+    setLoading(true)
     console.log("Fetching Fertilizer Log Record for this PLotId .....", plotId)
 
     try{
@@ -160,10 +160,17 @@ const fetchFertilizerLogRecord = async(plotId:string) =>{
             fertilizerLog.sort((a: any, b: any) => {
                 return new Date(b.DateApplied).getTime() - new Date(a.DateApplied).getTime();
             });
+            console.log("Fertilizer log data initial : ", fertilizerLog)
             setFertilizerLogs(fertilizerLog)
+            setFilteredLogs(fertilizerLog);
+
+            setLoading(false)
         }
 
-    }catch(err){console.log(err)}
+    }catch(err){
+        setLoading(false)
+        console.log(err)
+    }
 }
 
 
@@ -229,6 +236,32 @@ const fetchFertilizerLogRecord = async(plotId:string) =>{
                 )}
             </TouchableOpacity>
         </View>
+
+            {selectedOption === 'analytics' && (
+            <ScrollView 
+                style={{ flex: 1, width: '100%' }} 
+                contentContainerStyle={{ alignItems: 'center' }}
+            >
+                {loading ? (
+                <ActivityIndicator size="large" color="#607D8B" />
+                ) : fertilizerLogs.length > 0 ? (
+                <>
+                    <FertilizerDistributionPiechart 
+                    data={fertilizerLogs} 
+                    yearDataFilter={yearDataForFilter} 
+                    />
+                    <FertilizerUsageByCrop 
+                    data={fertilizerLogs} 
+                    cropNames={onCropsData} 
+                    />
+                </>
+                ) : (
+                <Text style={{ color: '#64748B', marginTop: 20 }}>
+                    No fertilizer data available yet.
+                </Text>
+                )}
+            </ScrollView>
+            )}
 
 
 
@@ -312,14 +345,7 @@ const fetchFertilizerLogRecord = async(plotId:string) =>{
         }
 
 
-        {selectedOption === 'analytics' && (
 
-                <ScrollView style={{display:'flex',flexDirection:'column',width:'100%',flex:1,borderWidth:0,borderColor:'blue'}} contentContainerStyle={{alignItems:'center'}}>
-                    <FertilizerDistributionPiechart data={fertilizerLogs} yearDataFilter={yearDataForFilter}/>
-                    <FertilizerUsageByCrop data={fertilizerLogs} cropNames={onCropsData}/>
-
-                </ScrollView>
-        )}
 
 
 

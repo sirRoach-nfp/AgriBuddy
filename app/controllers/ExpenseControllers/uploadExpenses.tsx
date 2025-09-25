@@ -41,7 +41,7 @@ export const uploadExpenseController = async(
 
 
         const expenseRecordRef = doc(db,"ExpensesCollection",user?.ExpensesRefId as string)
-
+        console.log("Expense record collection reference : ", expenseRecordRef)
         console.log("New Expense Record[From Expenses Controller] : ", newExpenseRecord);
 
         await updateDoc(expenseRecordRef,{

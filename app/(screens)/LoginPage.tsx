@@ -20,23 +20,38 @@ export default function LoginPage(){
 
     const [loginErrorVisible,setlogInErrorVisible] = useState(false);
     const [logProcess,SetLogProcess] = useState(false)
+    const [showInternetError,setShowInternetError] = useState(false)
     const [loading,setLoading] = useState(false)
 
 
+
+    async function withTimeout<T>(promise: Promise<T>, ms = 20000): Promise<T> {
+    const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("timeout")), ms)
+    );
+    return Promise.race([promise, timeoutPromise]);
+    }
+
+    /*--- Legacy login logic ---*/
+    
     const login = async(email:string,password:string) => {
         if(email.length === 0 || password.length === 0){return} 
 
         setLoading(true)
 
-        
-
-
-        
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("timeout")), 20000)
+        );
 
         try{
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+            const userCredential = await withTimeout(
+            signInWithEmailAndPassword(auth, email, password)
+            );
+          
             const user = userCredential.user;
             console.log("User ID : ",user.uid)
+
 
 
 
@@ -56,13 +71,19 @@ export default function LoginPage(){
             setLoading(false)
             router.replace('/(main)/home');
         }
-        catch(err){
-            console.error(err)
-            setLoading(false)
-            setlogInErrorVisible(true)
+        catch(err:any){
+            setLoading(false);
+
+            if (err.message === "timeout") {
+            console.error("Request failed: timeout");
+            setShowInternetError?.(true); // show slow internet modal
+            } else {
+            console.error("Login error:", err);
+            setlogInErrorVisible(true);
+            }
         }
     }
-
+    
 
 
 
@@ -74,13 +95,51 @@ export default function LoginPage(){
             <Dialog visible={loginErrorVisible} onDismiss={()=>setlogInErrorVisible(false)}>
 
                 <Dialog.Content>
-                    <Text>Email or Password is incorrect, Please try again</Text>
+                    <Text>The email or password you entered is incorrect. Check your details and try again.</Text>
                 </Dialog.Content>
 
             </Dialog>
         </Portal>
 
     )
+
+
+    const renderSlowInternet = () => (
+        <Portal>
+            <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)}>
+
+                <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
+
+                <Dialog.Title>
+                    <Text style={{color:'#37474F'}}>
+                        Slow Connection
+                    </Text>
+                    
+                </Dialog.Title>
+                
+                <Dialog.Content>
+                    <Text style={{color:'#475569'}}>Connection seems slow. Please try again.</Text>
+                </Dialog.Content>
+
+
+
+                <Dialog.Actions>
+
+                <TouchableOpacity onPress={()=> setShowInternetError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+
+                    <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                        OK
+                    </Text>
+
+                </TouchableOpacity>
+
+                </Dialog.Actions>
+
+            </Dialog>
+
+        </Portal>
+    )
+    
 
 
 
@@ -127,7 +186,7 @@ export default function LoginPage(){
 
                 {renderLogInError()}
                 {renderLogInLoading()}
-
+                {renderSlowInternet()}
                 
 
 
@@ -154,7 +213,7 @@ export default function LoginPage(){
                     </View>
 
 
-                    <TouchableOpacity style={styles.forgotPasswordButton}>
+                    <TouchableOpacity style={styles.forgotPasswordButton} onPress={()=>router.push('/(screens)/ForgotPasswordScreen')}>
                         <Text style={styles.forgotPasswordText}>Forgot Password</Text>
                     </TouchableOpacity>
 

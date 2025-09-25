@@ -266,7 +266,7 @@ const ExpensesRecords = () => {
     <SafeAreaView  style={{flex:1,display:'flex',flexDirection:'column'}}>
 
         
-        <ScrollView style={{flex:1,borderWidth:1,display:'flex',flexDirection:'column',gap:20,borderColor:'red'}} contentContainerStyle={{alignItems:'center'}}>
+        <ScrollView style={{flex:1,borderWidth:0,display:'flex',flexDirection:'column',gap:20,borderColor:'red'}} contentContainerStyle={{alignItems:'center'}}>
             <View style={{width:'100%',maxHeight:50,height:50,
            display:'flex',flexDirection:'row',
             alignItems:'center',gap:10,marginBottom:10
