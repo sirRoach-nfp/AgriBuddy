@@ -218,7 +218,7 @@ const WeatherCard = () => {
                   
                 </View>
 
-                <View style={styles.bottomPartDiv2}>
+                <View style={[styles.bottomPartDiv2,{display:'none'}]}>
                     <TouchableOpacity onPress={navigateToWeather}>
                         <Text style={styles.seeMore}>See more</Text>
                     </TouchableOpacity>

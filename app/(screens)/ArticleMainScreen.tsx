@@ -97,8 +97,8 @@ const ArticleMainScreen = () => {
             {articleData?.contents && articleData.contents.length > 0 && articleData.contents.map((content,index)=>(
 
 
-                <View style={stylesContent.contentMainWrapper}>
-                    <View style={stylesContent.headerWrapper}>
+                <View style={stylesContent.contentMainWrapper} key={index}>
+                    <View style={[stylesContent.headerWrapper,content?.header.length <= 0 && {display:'none'}]}>
                         <Text style={stylesContent.headerText}>{content?.header}</Text>
                     </View>
 
@@ -139,10 +139,13 @@ const styles = StyleSheet.create({
 
     headerWrapper:{
         width:'100%',
-        height:50,
-        borderWidth:0,
+        //height:50,
+        borderBottomWidth:1,
+        marginBottom:10,
         display:'flex',
         flexDirection:'row',
+        borderColor:'#e2e8f0',
+        paddingVertical:10
         //alignItems:'center'
         //marginBottom:30
     },
@@ -155,25 +158,28 @@ const styles = StyleSheet.create({
     },
     articleInfoWrapper:{
         width:'100%',
-        //borderWidth:1,
-        borderColor:'blue',
+        borderWidth:1,
+        borderColor:'#e2e8f0',
         display:'flex',
         flexDirection:'column',
         marginVertical:20,
         flexWrap:'wrap',
+        padding:10,
+        borderRadius:5,
+        backgroundColor:'#ffffff',
         
         //gap:15
     },
     titleMain:{
-        fontSize:35,
+        fontSize:25,
         fontWeight:700,
         width: '100%', 
         flexShrink: 1,
         
     },
     dateText:{
-        fontSize:17,
-        fontWeight:600
+        fontSize:16,
+        fontWeight:500
         
     }
 })
@@ -181,9 +187,12 @@ const styles = StyleSheet.create({
 const stylesContent = StyleSheet.create({
     contentMainWrapper:{
         width:'100%',
-        //borderWidth:1,
+
+        padding:10,
         marginBottom:10,
-        
+        borderWidth:1,
+        borderColor:'#e2e8f0',
+        borderRadius:10,
     },
     headerWrapper:{
         width:'100%',
@@ -193,6 +202,8 @@ const stylesContent = StyleSheet.create({
         flexWrap:'wrap',
         //borderWidth:1,
         marginBottom:10,
+        borderBottomWidth:1,
+        borderColor:'#e2e8f0',
 
     },
 
@@ -208,7 +219,7 @@ const stylesContent = StyleSheet.create({
     },
     headerText:{
         fontSize:20,
-        fontWeight:500
+        fontWeight:600
     },
     contentText:{
         fontSize:17,

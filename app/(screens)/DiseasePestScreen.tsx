@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { doc, getDoc } from 'firebase/firestore';
@@ -8,12 +8,22 @@ import { Image } from 'react-native';
 import { useUserContext } from '../Context/UserContext';
 import { useSearchParams } from 'expo-router/build/hooks';
 import { router } from 'expo-router';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Feather from '@expo/vector-icons/Feather';
 
 
 interface Symptoms{
     Symptoms:string,
     SymptomsSnapshot:string[]
 }
+
+
+interface referenceType{
+  referenceTitle:string,
+  referenceLink:string,
+}
+
+
 interface PestData{
     CommonName:string,
     ScientificName:string,
@@ -22,6 +32,7 @@ interface PestData{
     DamageSymptoms : Symptoms,
     PestSnapshot:string,
     ControlMeasures:string,
+     reference:referenceType[]
 }
 
 
@@ -172,6 +183,23 @@ const DiseasePestScreen = () => {
                             <View style={styles.activeLine} />
                             )}
                         </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.segmentButton}
+                            onPress={() => handleSegmentChange('Sources')}
+                        >
+                            <Text
+                            style={[
+                                styles.segmentText,
+                                selectedOption === 'Sources' && styles.activeText,
+                            ]}
+                            >
+                            Sources
+                            </Text>
+                            {selectedOption === 'Sources' && (
+                            <View style={styles.activeLine} />
+                            )}
+                        </TouchableOpacity>
                         </View>
 
                 </ScrollView>
@@ -288,6 +316,80 @@ const DiseasePestScreen = () => {
             </>
         )}
 
+                
+        {selectedOption === 'Sources' && (
+            <>
+            
+            
+                <View style={[stylesAiles.containerWrappperPest,{borderWidth:0,}]}>
+                            
+                            <View style={[stylesAiles.containerWrapperHeader,{backgroundColor:'#DAEEF7',borderColor:'#53697E'}]}>
+                    
+                                <AntDesign name="link" size={24} color="#53697E" />
+                                <Text style={[stylesAiles.subContainerHeaderPest,{color:'#53697E'}]}>Reference Links</Text>
+                            </View>
+
+
+                            <View style={{width:'100%',backgroundColor:'white',
+                                paddingVertical:10,
+                                paddingHorizontal:10,
+                                display:'flex',
+                                flexDirection:'column',
+                                gap:5,
+                                borderLeftWidth:1,
+                                borderBottomWidth:1,
+                                borderRightWidth:1,
+                                borderColor:'#e2e8f0',
+                        
+                                }}>
+
+
+                                    {pestData&& pestData.reference && pestData.reference.length > 0 
+                                    ? pestData.reference.map((ref,index)=> (
+                                        <View style={{
+                                        borderWidth:0,
+                                        width:'100%',
+                                        display:'flex',
+                                        flexDirection:'row',
+                                        alignItems:'center',
+                                        gap:5,
+                                        }}
+                                        key={index}
+                                        >
+
+                                        <TouchableOpacity style={{padding:7,borderRadius:'50%',borderWidth:0,}}
+                                            onPress={() => Linking.openURL(ref.referenceLink)}
+                                        >
+                                            <Feather name="external-link" size={20} color="#53697E" />
+                                        </TouchableOpacity>
+                                        <Text style={{fontSize:17}}>
+                                            {ref.referenceTitle}
+                                        </Text>
+                                        
+                                        </View>
+                                    )) : (
+
+                                    <View style={stylesAiles.noDataPlaceholder}>
+                                        <View style={stylesAiles.noDataPlaceholder__iconWrapper}>
+                                    
+                                        <AntDesign name="link" size={24} color="#64748B" />
+                                        </View>
+                                        
+                                        <Text style={stylesAiles.noDataPlaceholder__Primary}>No References Yet</Text>
+                                        <Text style={stylesAiles.noDataPlaceholder__Secondary}>Looks like we don’t have reference links for this pest Data at the moment.</Text>
+                                    </View>
+
+                                    )
+                                    }
+
+
+                            </View>
+
+
+
+                </View>
+            </>
+        )}
     </ScrollView>
     </SafeAreaView>
   )
@@ -412,4 +514,154 @@ const styles = StyleSheet.create({
         marginBottom:5
       }
 })
+const stylesAiles = StyleSheet.create({
 
+
+  noDataPlaceholder:{
+    display:'flex',
+    flexDirection:'column',
+    width:'100%',
+    borderWidth:0,
+    padding:10,
+    alignItems:'center',
+    justifyContent:'center',
+    gap:10,
+    height:250
+  },
+
+  noDataPlaceholder__iconWrapper:{
+    width:60,
+    height:60,
+    borderWidth:0,
+    borderRadius:'50%',
+    backgroundColor:'#F3F4F6',
+    display:'flex',
+    flexDirection:'column',
+    justifyContent:'center',
+    alignItems:'center'
+  },
+
+  noDataPlaceholder__Primary:{
+    fontSize:18,
+    fontWeight:700,
+    color:"#2D303F"
+  },
+  noDataPlaceholder__Secondary:{
+    fontSize:15,
+    fontWeight:400,
+    textAlign:'center',
+    color:"#64748B"
+  },
+  contentWrapper:{
+    width:'100%',
+  
+   
+    display:'flex',
+    flexDirection:'column',
+ 
+    paddingTop:0
+  },
+  containerWrappperPest: {
+    paddingTop:0,
+    paddingHorizontal:0,
+    width:'95%',
+    borderWidth:0,
+    position:'relative',
+    marginBottom:20,
+    backgroundColor:'white',
+    borderRadius:5,
+
+},
+badgeContainer:{
+  width:'100%',
+  borderWidth:0,
+  borderLeftWidth:1,
+  borderBottomWidth:1,
+  borderRightWidth:1,
+  borderColor:'#e2e8f0',
+  position:'relative',
+  //borderWidth: 1,
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  paddingVertical:10,
+  //justifyContent: 'center',
+  gap: 10,
+  paddingHorizontal: 10,
+},
+badgeWrapper:{
+  /*
+  height:100,
+  width:150,
+  //borderWidth:1,
+  display:'flex',
+  flexDirection:'column',
+  alignItems:'center',
+  justifyContent:'center'
+  */
+
+  height:220,
+  width:'100%',
+  borderWidth:1,
+  borderColor:'#E2E8F0',
+  display:'flex',
+  flexDirection:'column',
+  alignItems:'center',
+  justifyContent:'center',
+  borderRadius:5
+  
+},
+subContainerHeaderPest:{
+    color:'#842C2B',
+    fontWeight:700,
+    fontSize:18,
+
+  
+},
+badgesText:{
+  color:'#2D303F',
+  fontWeight:500,
+  fontSize:16,
+  
+  marginTop:10,
+  marginBottom:10
+},
+
+
+badgeWrapper__infoWrapper:{
+    width:'100%',
+    borderWidth:0,
+    height:'30%',
+    marginTop:'auto',
+    display:'flex',
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'center',
+    backgroundColor:'#FFFFFF',
+    borderBottomEndRadius:5,
+    borderBottomLeftRadius:5,
+
+},
+
+badgeWrapper__imageWrapper:{
+    flex:1,
+    width:'100%',
+    borderWidth:0,
+    borderTopEndRadius:5,
+    borderTopStartRadius:5,
+},
+    containerWrapperHeader:{
+        width:'100%',
+        borderColor:'#D7514E',
+        paddingVertical:10,
+        paddingLeft:5,
+        display:'flex',
+        flexDirection:'row',
+        alignItems:'center',
+        gap:5,
+        borderLeftWidth:5,
+        borderTopLeftRadius:10,
+        backgroundColor:'#FEF2F2'
+    },
+
+
+})

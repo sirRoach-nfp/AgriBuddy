@@ -1,6 +1,6 @@
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import { StyleSheet, Text, TouchableOpacity, View,KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View,KeyboardAvoidingView, Platform, ActivityIndicator, Linking } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ScrollView } from 'react-native-gesture-handler'
@@ -74,6 +74,12 @@ interface diseaseType{
   diseaseId:string,
   diseaseName:string
 
+  
+}
+
+interface referenceType{
+  referenceTitle:string,
+  referenceLink:string,
 }
 
 interface CropData{
@@ -89,7 +95,8 @@ interface CropData{
   soilPh: string;
   commonPests: pestType[];
   commonDiseases: diseaseType[];
-  content:guideStep[]
+  content:guideStep[];
+  reference:referenceType[]
 }
 
 
@@ -115,6 +122,7 @@ import { db } from '../firebaseconfig'
 import { hide } from 'expo-splash-screen'
 import { useUserContext } from '../Context/UserContext'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import Feather from '@expo/vector-icons/Feather';
 
 
 
@@ -245,6 +253,9 @@ const CropManagement = () => {
   const [amountFertilzer, setAmountFertilizer] = useState('');
 
 
+  const [showError,setShowError] = useState<boolean>(false)
+  const [showInternetError,setShowInternetError] = useState(false)
+  const [logProcess,setLogProcess] = useState(false)
 
   //radio button handler for fertilizer 
 
@@ -312,6 +323,7 @@ const CropManagement = () => {
             commonDiseases: cropDataDocSnapshot.data().diseases || [],
             content: cropDataDocSnapshot.data().contents || [],
             sessionId: cropDataDocSnapshot.data().SessionId || "",
+            reference:cropDataDocSnapshot.data().reference ?? []
           };
 
           console.log("Done Fetching Data : ", rawData);
@@ -708,12 +720,15 @@ const CropManagement = () => {
 
 
 
+  /*--- Log Data [LEGACY]*/
 
+
+  /* 
   const logData = async(cropNameParam:any,plotAssocParam:any)=>{
 
     console.log("Logging Data...");
     hideEntryPosteDialog();
-
+    setLogProcess(true)
 
 
     const cropName = cropNameParam;
@@ -854,16 +869,170 @@ const CropManagement = () => {
       }
 
       
+      setLogProcess(false)
 
 
 
     }catch(err){console.error(err)}finally {
       console.log("Logging finished");
       showEntrySuccessDialog();
+      setLogProcess(false)
+
     }
 
 
-  }
+  }*/
+
+
+  const logData = async (cropNameParam: any, plotAssocParam: any) => {
+    console.log("Logging Data...");
+    hideEntryPosteDialog();
+    setLogProcess(true);
+
+    const cropName = cropNameParam;
+    const plotAssocId = plotAssocParam;
+    const date = new Date()
+      .toLocaleDateString("en-CA", { timeZone: "Asia/Manila" })
+      .slice(0, 10);
+
+    console.log("Date is ", date);
+
+    try {
+      const docRef = doc(db, "Records", user?.RecordsRefId as string);
+
+      // Wrap everything in Promise.race
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("slowInternetError")), 20000)
+      );
+
+      const loggingPromise = (async () => {
+        const docSnap = await getDoc(docRef);
+
+        if (!docSnap.exists()) {
+          console.log("Document not found");
+          return;
+        }
+
+        const data = docSnap.data();
+        const existingPestLogs = data?.PestLogs || [];
+        const existingDiseaseLogs = data?.DiseaseLogs || [];
+        const existingFertilizerLogs = data?.FertilizerLogs || [];
+
+        let updatePayload: any = {};
+
+        // ===== Pest Logging =====
+        if (selectedPestnames && selectedPestnames.length > 0) {
+          const pestLogEntries = selectedPestnames.map((pest) => ({
+            Pestname: pest,
+            Date: date,
+            CropName: cropName,
+            Temp: currentTemp,
+          }));
+
+          const pestLogIndex = existingPestLogs.findIndex(
+            (log: any) => log.PlotAssocId === plotAssocId
+          );
+
+          if (pestLogIndex !== -1) {
+            existingPestLogs[pestLogIndex].PlotPestLog = [
+              ...(existingPestLogs[pestLogIndex].PlotPestLog || []),
+              ...pestLogEntries,
+            ];
+          } else {
+            existingPestLogs.push({
+              PlotAssocId: plotAssocId,
+              PlotPestLog: pestLogEntries,
+            });
+          }
+
+          updatePayload.PestLogs = existingPestLogs;
+        }
+
+        // ===== Disease Logging =====
+        if (selectedDiseaseNames && selectedDiseaseNames.length > 0) {
+          const diseaseLogEntries = selectedDiseaseNames.map((disease) => ({
+            Diseasename: disease,
+            Date: date,
+            CropName: cropName,
+            Temp: currentTemp,
+          }));
+
+          const diseaseLogIndex = existingDiseaseLogs.findIndex(
+            (log: any) => log.PlotAssocId === plotAssocId
+          );
+
+          if (diseaseLogIndex !== -1) {
+            existingDiseaseLogs[diseaseLogIndex].PlotDiseaseLog = [
+              ...(existingDiseaseLogs[diseaseLogIndex].PlotDiseaseLog || []),
+              ...diseaseLogEntries,
+            ];
+          } else {
+            existingDiseaseLogs.push({
+              PlotAssocId: plotAssocId,
+              PlotDiseaseLog: diseaseLogEntries,
+            });
+          }
+
+          updatePayload.DiseaseLogs = existingDiseaseLogs;
+        }
+
+        // ===== Fertilizer Logging =====
+        if (selectedFertilizer && amountFertilzer && selectedApplication) {
+          const newFertilizerEntry = {
+            DateApplied: date,
+            cropName: cropName,
+            fertilizerType: selectedFertilizer,
+            fertilizerAmmount: amountFertilzer,
+            selectedApplication: selectedApplication,
+          };
+
+          const fertLogIndex = existingFertilizerLogs.findIndex(
+            (log: any) => log.PlotAssocId === plotAssocId
+          );
+
+          if (fertLogIndex !== -1) {
+            existingFertilizerLogs[fertLogIndex].FertilizerApplications = [
+              ...(existingFertilizerLogs[fertLogIndex].FertilizerApplications ||
+                []),
+              newFertilizerEntry,
+            ];
+          } else {
+            existingFertilizerLogs.push({
+              PlotAssocId: plotAssocId,
+              FertilizerApplications: [newFertilizerEntry],
+            });
+          }
+
+          updatePayload.FertilizerLogs = existingFertilizerLogs;
+        }
+
+        // ===== Update DB =====
+        if (Object.keys(updatePayload).length > 0) {
+          await updateDoc(docRef, updatePayload);
+          console.log("Data successfully updated:", updatePayload);
+        } else {
+          console.log("No data to log. All fields empty.");
+        }
+      })();
+
+      await Promise.race([loggingPromise, timeoutPromise]);
+
+      showEntrySuccessDialog();
+    } catch (err: any) {
+      if (err.message === "slowInternetError") {
+        console.error("⚠️ Logging failed due to slow internet.");
+        // optional: trigger a UI warning dialog
+        setShowInternetError(true)
+      } else {
+        setShowError(true)
+      }
+    } finally {
+      console.log("Logging finished");
+      setLogProcess(false);
+    }
+  };
+
+
 
   const renderDialog = (plotId:any,plotName:any,cropId:any,cropName:any,cropSessionId:any) => (
     <Portal>
@@ -879,8 +1048,6 @@ const CropManagement = () => {
       </Dialog>
     </Portal>
   );
-
-
   const renderConfirmationDeletion = (plotAssoc:any,sessionId:any) => (
     <Portal>
       <Dialog visible={dialogDeleteVisible} onDismiss={hideDeleteDialog}>
@@ -894,6 +1061,80 @@ const CropManagement = () => {
         </Dialog.Actions>
       </Dialog>
     </Portal>
+  );
+
+  const renderError = ()=>(
+
+  <Portal>
+      <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
+
+          <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
+
+          <Dialog.Title>
+              <Text style={{color:'#37474F'}}>
+                  Something went wrong
+              </Text>
+              
+          </Dialog.Title>
+          
+          <Dialog.Content>
+              <Text style={{color:'#475569'}}>An unexpected error occured. Please try again later</Text>
+          </Dialog.Content>
+
+
+
+          <Dialog.Actions>
+
+          <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+
+              <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                  OK
+              </Text>
+
+          </TouchableOpacity>
+
+          </Dialog.Actions>
+
+      </Dialog>
+
+  </Portal>
+
+  )
+
+  const renderSlowInternet = () => (
+          <Portal>
+              <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)}>
+  
+                  <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
+  
+                  <Dialog.Title>
+                      <Text style={{color:'#37474F'}}>
+                          Slow Connection
+                      </Text>
+                      
+                  </Dialog.Title>
+                  
+                  <Dialog.Content>
+                      <Text style={{color:'#475569'}}>Connection seems slow. Please try again.</Text>
+                  </Dialog.Content>
+  
+  
+  
+                  <Dialog.Actions>
+  
+                  <TouchableOpacity onPress={()=> setShowInternetError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+  
+                      <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                          OK
+                      </Text>
+  
+                  </TouchableOpacity>
+  
+                  </Dialog.Actions>
+  
+              </Dialog>
+  
+          </Portal>
   )
 
 
@@ -904,20 +1145,15 @@ const CropManagement = () => {
   const hideEntryPosteDialog = () => {
     setDialogEntryVisible(false)
   }
-
   const showEntryDialog = () => {
    setDialogEntryVisible(true)
   };
-
-
   const showEntrySuccessDialog = () => {
     setDialogEntrySuccessVisible(true)
   }
-
   const hideEntrySuccessDialog = () => {
     setDialogEntrySuccessVisible(false)
   }
-  
   const renderConfirmationLogEntry= (cropName:any,plotAssoc:any) => (
     <Portal>
     <Dialog visible={dialogEntryVisible} onDismiss={hideEntryPosteDialog}>
@@ -932,11 +1168,6 @@ const CropManagement = () => {
     </Dialog>
   </Portal>
   )
-
-
-
-
-
   const renderSuccessLogEntry= () => (
     <Portal>
     <Dialog visible={dialogEntrySuccessVisible} onDismiss={() => {}}>
@@ -951,10 +1182,6 @@ const CropManagement = () => {
     </Dialog>
   </Portal>
   )
-
-
-
-
   const renderDeleteSuccess = () => (
 
    <Portal>
@@ -971,9 +1198,6 @@ const CropManagement = () => {
   </Portal>
 
   )
-
-
-
   const deleteCurrentCrop = async(plotAssoc:any,sessionId:any)=>{
 
 
@@ -1049,7 +1273,6 @@ const CropManagement = () => {
       setDialogRemoveVisible(true)
     }
   }
-
   const deleteCurrentCropNoModal = async(plotAssoc:any,sessionId:any)=>{
         console.log("session id of the crop : ", sessionId)
 
@@ -1119,18 +1342,12 @@ const CropManagement = () => {
       console.error(err)
     }
   }
-
-
-
   const displayCropData = ()=> {
     console.log("plots : ", plots)
   }
-
-
   const displayPestData = ()=>{
     console.log("Pest List :",localPestData)
   }
-
   if (isLoading) {
     // Return loading screen
     return (
@@ -1140,7 +1357,6 @@ const CropManagement = () => {
       </SafeAreaView>
     );
   }
-
   if (!cropData && !isLoading) {
     // Return fallback screen (data not found)
     return (
@@ -1193,6 +1409,8 @@ const CropManagement = () => {
       {renderDeleteSuccess()}
       {renderConfirmationLogEntry(cropName,PlotAssoc)}
       {renderSuccessLogEntry()}
+      {renderError()}
+      {renderSlowInternet()}
 
       {isLoading ? (
         <View >
@@ -1203,73 +1421,94 @@ const CropManagement = () => {
 
         <View style={styles.headerContainer}>
 
-          <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10}} onPress={()=> router.back()}>
+          <View style={[styles.headerContainerTop,{width:'100%',borderWidth:1,}]}>
 
-              <Ionicons name="arrow-back" size={30} color="black" />
+            <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10}} onPress={()=> router.back()}>
 
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setDialogDeleteVisible(true)} style={{marginLeft:'auto',alignSelf:'flex-start'}}><AntDesign name="delete" size={24} color="red" style={{marginLeft:'auto',marginRight:20}} /></TouchableOpacity>
+                <Ionicons name="arrow-back" size={30} color="black" />
+
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setDialogDeleteVisible(true)} style={{marginLeft:'auto',alignSelf:'flex-start'}}><AntDesign name="delete" size={24} color="red" style={{marginLeft:'auto',marginRight:20}} /></TouchableOpacity>
+
+          </View>
+
+
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContainer}
+          >
+            <TouchableOpacity
+              style={styles.segmentButton}
+              onPress={() => handleSegmentChange('CareGuide')}
+            >
+              <Text
+                style={[
+                  styles.segmentText,
+                  selectedOption === 'CareGuide' && styles.activeText,
+                ]}
+              >
+                Care Guide
+              </Text>
+              {selectedOption === 'CareGuide' && <View style={styles.activeLine} />}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.segmentButton}
+              onPress={() => handleSegmentChange('Management')}
+            >
+              <Text
+                style={[
+                  styles.segmentText,
+                  selectedOption === 'Management' && styles.activeText,
+                ]}
+              >
+                Management
+              </Text>
+              {selectedOption === 'Management' && <View style={styles.activeLine} />}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.segmentButton}
+              onPress={() => handleSegmentChange('PestAndDiseases')}
+            >
+              <Text
+                style={[
+                  styles.segmentText,
+                  selectedOption === 'PestAndDiseases' && styles.activeText,
+                ]}
+              >
+                Pest And Diseases
+              </Text>
+              {selectedOption === 'PestAndDiseases' && <View style={styles.activeLine} />}
+            </TouchableOpacity>
+
+
+            <TouchableOpacity
+              style={styles.segmentButton}
+              onPress={() => handleSegmentChange('Sources')}
+            >
+              <Text
+                style={[
+                  styles.segmentText,
+                  selectedOption === 'Sources' && styles.activeText,
+                ]}
+              >
+                Sources
+              </Text>
+              {selectedOption === 'Sources' && <View style={styles.activeLine} />}
+            </TouchableOpacity>
+          </ScrollView>
 
         </View>
         
         
-        <View style={styles.segmentContainer}>
-          <TouchableOpacity
-            style={styles.segmentButton}
-            onPress={() => handleSegmentChange('CareGuide')}
-          >
-            <Text
-              style={[
-                styles.segmentText,
-                selectedOption === 'CareGuide' && styles.activeText,
-              ]}
-            >
-              Care Guide
-            </Text>
-            {selectedOption === 'CareGuide' && (
-              <View style={styles.activeLine} />
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.segmentButton}
-            onPress={() => handleSegmentChange('Management')}
-          >
-            <Text
-              style={[
-                styles.segmentText,
-                selectedOption === 'Management' && styles.activeText,
-              ]}
-            >
-              Management
-            </Text>
-            {selectedOption === 'Management' && (
-              <View style={styles.activeLine} />
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.segmentButton}
-            onPress={() => handleSegmentChange('PestAndDiseases')}
-          >
-            <Text
-              style={[
-                styles.segmentText,
-                selectedOption === 'PestAndDiseases' && styles.activeText,
-              ]}
-            >
-              Pest And Diseases
-            </Text>
-            {selectedOption === 'PestAndDiseases' && (
-              <View style={styles.activeLine} />
-            )}
-          </TouchableOpacity>
-        </View>
-
-
+        
 
        {selectedOption === 'CareGuide' && 
        
        
-        <ScrollView style={styles.contentWrapper}>
+        <ScrollView style={styles.contentWrapper} contentContainerStyle={{borderWidth:0,display:'flex'}}>
 
           <View  style={styles.Thumbnail}>
             <Image source={{ uri:cropData?.thumbnail }} style={{width:'100%',height:'100%',alignSelf: 'stretch'}} resizeMode="cover" />
@@ -1671,7 +1910,7 @@ const CropManagement = () => {
 
           <Button style={{marginTop:20,marginBottom:20}} icon={() => <FontAwesomeIcon icon={faFileArrowDown} size={20} color="#FFFFFF" />} mode="contained-tonal" onPress={showEntryDialog} buttonColor="#2e6f40" textColor="#FFFFFF"
           
-          disabled={assocPlot === null || assocPlot === "null"}
+          disabled={assocPlot === null || assocPlot === "null" || logProcess}
           >
               Log Crop Data
           </Button>
@@ -1802,6 +2041,80 @@ const CropManagement = () => {
        
        
        
+       }
+
+       {selectedOption === "Sources" && 
+
+
+        <ScrollView style={stylesAiles.contentWrapper} contentContainerStyle={{alignItems:'center'}}>
+
+          <View style={[stylesAiles.containerWrappperPest,{borderWidth:0,}]}>
+              <View style={[stylesAiles.containerWrapperHeader,{backgroundColor:'#DAEEF7',borderColor:'#53697E'}]}>
+      
+                  <AntDesign name="link" size={24} color="#53697E" />
+                  <Text style={[stylesAiles.subContainerHeaderPest,{color:'#53697E'}]}>Reference Links</Text>
+              </View>
+
+
+              <View style={{width:'100%',backgroundColor:'white',
+                paddingVertical:10,
+                paddingHorizontal:10,
+                display:'flex',
+                flexDirection:'column',
+                gap:5,
+                borderLeftWidth:1,
+                borderBottomWidth:1,
+                borderRightWidth:1,
+                borderColor:'#e2e8f0',
+           
+                }}>
+
+
+                    {cropData && cropData.reference && cropData.reference.length > 0 
+                      ? cropData.reference.map((ref,index)=> (
+                        <View style={{
+                          borderWidth:0,
+                          width:'100%',
+                          display:'flex',
+                          flexDirection:'row',
+                          alignItems:'center',
+                          gap:5,
+
+                        }}>
+
+                          <TouchableOpacity style={{padding:7,borderRadius:'50%',borderWidth:0,}}
+                            onPress={() => Linking.openURL(ref.referenceLink)}
+                          >
+                            <Feather name="external-link" size={20} color="#53697E" />
+                          </TouchableOpacity>
+                          <Text style={{fontSize:17}}>
+                            {ref.referenceTitle}
+                          </Text>
+                          
+                        </View>
+                      )) : (
+
+                      <View style={stylesAiles.noDataPlaceholder}>
+                        <View style={stylesAiles.noDataPlaceholder__iconWrapper}>
+                    
+                          <AntDesign name="link" size={24} color="#64748B" />
+                        </View>
+                        
+                        <Text style={stylesAiles.noDataPlaceholder__Primary}>No References Yet</Text>
+                        <Text style={stylesAiles.noDataPlaceholder__Secondary}>Looks like we don’t have reference links for this crop at the moment.</Text>
+                      </View>
+
+                      )
+                    }
+
+
+              </View>
+
+
+
+          </View>
+
+        </ScrollView>
        }
         
         
@@ -1959,7 +2272,8 @@ const stylesAiles = StyleSheet.create({
   },
   contentWrapper:{
     width:'100%',
-    borderWidth:0,
+  
+   
     display:'flex',
     flexDirection:'column',
  
@@ -2164,7 +2478,32 @@ const stylesRecords = StyleSheet.create({
 })
 
 const styles = StyleSheet.create({
+
+  scrollContainer: {
+    flexDirection: 'row',
+    borderWidth:1,
+    gap:20,
+    paddingHorizontal:10,
+
+
+  },
   headerContainer:{
+    width:'100%',
+    //maxHeight:50,
+    borderBottomWidth:1,
+    display:'flex',
+    flexDirection:'column',
+    alignItems:'center',
+
+ 
+    backgroundColor:'white',
+    marginBottom:20,
+    borderColor:'#E2e8f0'
+    //backgroundColor:'white'
+     
+  },
+
+  headerContainerTop:{
     width:'100%',
     //maxHeight:50,
     borderBottomWidth:1,
@@ -2172,12 +2511,11 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     alignItems:'center',
     paddingVertical:10,
-    height:50,
+   // height:50,
     backgroundColor:'white',
     //marginBottom:20,
     borderColor:'#E2e8f0'
-    //backgroundColor:'white'
-},
+  },
   picker: {
     height: 60,
     width: '100%',
@@ -2278,19 +2616,22 @@ const styles = StyleSheet.create({
     flex:1,
     flexDirection:'column',
     display:'flex',
-    //borderWidth:1,
+    borderWidth:0,
     borderColor:'green',
     alignItems:'center',
+    justifyContent:'flex-start',
     backgroundColor:'#F4F5F7'
 
   },
 
   contentWrapper:{
     width:'95%',
-    //borderWidth:1,
-    flex:1,
+    borderWidth:0,
+    alignSelf:'auto',
     flexDirection:'column',
     display:'flex',
+    flex:1,
+   
    
   },
 
