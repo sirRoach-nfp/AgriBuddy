@@ -40,6 +40,7 @@ import { RectProps } from 'react-native-svg';
 
 
 import {fonts} from '../utils/typography'
+import { useLanguage } from '../Context/LanguageContex';
 interface PlotData{
     PlotId : string,
     PlotName: string,
@@ -80,7 +81,7 @@ interface FertilizerLog{
 
 const PlotManagementScreen = () => {
     const screenWidth = Dimensions.get("window").width;
-
+    const{language,setLanguage} = useLanguage()
     //chart tools 
 
     const getMonthlyTotals = (logs:any) => {
@@ -676,7 +677,7 @@ const PlotManagementScreen = () => {
                     <View style={styles.chartsHeaderWrapperIcon}>
 
                     </View>
-                    <Text style={styles.chartsHeader}>Pest Trend (last 6 months)</Text>
+                    <Text style={styles.chartsHeader}>{language === "en" ? "Pest Trend (last 6 months)" : "Trend ng Peste (huling 6 buwan)"}</Text>
                     
                     <TouchableOpacity style={{flexShrink:1,borderWidth:0,marginLeft:'auto'}} onPress={()=> router.push(`/(screens)/PestOccurrencesDetailed?plotAssocId=${encodeURIComponent(plotId as string)}`)}>
 
@@ -771,7 +772,7 @@ const PlotManagementScreen = () => {
                 <View style={styles.chartsHeaderWrapperIcon}>
 
             </View>
-            <Text style={styles.chartsHeader}>Disease Trend (last 6 months)</Text>
+            <Text style={styles.chartsHeader}>{language === "en" ? "Disease Trend (last 6 months)" : "Trend ng Sakit (huling 6 na buwan)"}</Text>
             
             <TouchableOpacity style={{flexShrink:1,borderWidth:0,marginLeft:'auto'}} onPress={()=> router.push(`/(screens)/DiseaseOccurenceDetailed?plotAssocId=${encodeURIComponent(plotId as string)}`)}>
 
@@ -849,7 +850,7 @@ const PlotManagementScreen = () => {
 
             ) : (
             <View style={{width:'100%',borderWidth:0,marginTop:15,backgroundColor:'#ffffff',height:220,borderRadius:5,display:'flex',alignItems:'center',justifyContent:'center'}}> 
-                <Text style={{fontSize:15,fontWeight:600,color:'#909090'}}>No Available Data To Display</Text>
+                <Text style={{fontSize:15,fontWeight:600,color:'#909090'}}>{language === "en" ? "No Available Data To Display" : "Walang Datos na Maipapakita"}</Text>
             </View>
             )}
 
@@ -867,7 +868,9 @@ const PlotManagementScreen = () => {
                         <View style={styles.chartsHeaderWrapperIcon}>
 
                         </View>
-                        <Text style={styles.chartsHeader}>Fertilizer Application</Text>
+                        <Text style={styles.chartsHeader}>
+                        {language === "en" ? "Fertilizer Application" : "Paglalagay ng Pataba"}
+                        </Text>
 
                         <TouchableOpacity style={{flexShrink:1,borderWidth:0,marginLeft:'auto'}} onPress={()=> router.push(`/(screens)/FertilizerDetailed?plotAssocId=${encodeURIComponent(plotId as string)}`)}>
 
@@ -887,7 +890,7 @@ const PlotManagementScreen = () => {
                                 datasets:[{data:fertilizerChartMonthlyTotal}] ,
                             }}
                             width={screenWidth * 0.95}
-                            height={220}
+                            height={270}
                             yAxisLabel=""
                             yAxisSuffix="kg"
                             chartConfig={{
@@ -1006,7 +1009,7 @@ const styles = StyleSheet.create({
         color:'#333333'
     },
     chartsHeader:{
-        fontSize:17,
+        fontSize:16,
         fontWeight:500,
         color:"#37474F",
         //borderWidth:1,

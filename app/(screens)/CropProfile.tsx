@@ -41,6 +41,8 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import Entypo from '@expo/vector-icons/Entypo';
 import { Picker } from '@react-native-picker/picker'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
+import Feather from '@expo/vector-icons/Feather'
+import { useLanguage } from '../Context/LanguageContex'
 interface guideStep{
     header: string;
     content: string;
@@ -95,7 +97,7 @@ interface seasonData{
 
 const CropProfile = () => {
 
-
+    const {language} = useLanguage()
     const [showConfirmationVisible,setShowConfirmationVisible] = useState(false)
 
     const [cropBestSeason,setCropBestSeason] = useState<optimalSeasonType>({
@@ -144,61 +146,75 @@ const CropProfile = () => {
 
     const renderAddCropConfirmationDialog = (cropId:string,commonName:string) => (
         <Portal>
-        <Dialog visible={showConfirmationVisible} onDismiss={()=>{}}>
-          
-            <Dialog.Icon
-                icon={isSuitable ? "check-circle-outline" : "alert-circle-outline"}
-                size={40}
-                color={isSuitable ? "#17A34A" : "#FFA000"}
-            />
+            <Dialog visible={showConfirmationVisible} onDismiss={()=>{}}>
 
-            <Dialog.Title style={{color:'#475569'}}>Crop Suitability</Dialog.Title>
-          
-          
-          <Dialog.Content>
-            {isSuitable ?(
+                <Dialog.Icon
+                    icon={isSuitable ? "check-circle-outline" : "alert-circle-outline"}
+                    size={40}
+                    color={isSuitable ? "#17A34A" : "#FFA000"}
+                />
 
-                <>
-                <Text style={{fontSize:15,fontWeight:600,color:'#17A34A'}}>
-                    Great choice! This crop is suitable for the current season.
-                </Text>
-                <Text style={{marginTop:10,marginBottom:10,color:"#767273"}}>
-                    {"\u2022"} Recommended planting season matches the current season{"\n"}
-                    {"\u2022"} For best results, use the specified compatible soil types
-                </Text>
-                </>
-            ):(
-                <>
-
-                    <Text style={{fontSize:15,fontWeight:600,color:'#FFA000'}}>
-                        The selected crop is NOT suitable for the current season.
-                    </Text>
-
-                    <Text style={{marginTop:10,marginBottom:10,color:"#767273"}}>
-                        {"\u2022"} Recommended planting season: {getSeasonMonthRange(cropBestSeason.start,cropBestSeason.end)}{"\n"}
-                        {"\u2022"} Soil caution: Using soil types other than the specified may lead to poor yield or crop failure.
-                    </Text>
-                
-                </>
-            )}
+                <Dialog.Title style={{color:'#475569'}}>
+                    {language === "en" ? "Crop Suitability" : "Kakayahan ng Pananim"}
+                </Dialog.Title>
 
 
+                <Dialog.Content>
+                    {isSuitable ?(
+                        <>
+                        <Text style={{fontSize:15,fontWeight:600,color:'#17A34A'}}>
+                            {language === "en" 
+                                ? "Great choice! This crop is suitable for the current season." 
+                                : "Magandang pagpili! Ang pananim na ito ay angkop para sa kasalukuyang panahon."}
+                        </Text>
+                        <Text style={{marginTop:10,marginBottom:10,color:"#767273"}}>
+                            {language === "en"
+                                ? "\u2022 Recommended planting season matches the current season\n\u2022 For best results, use the specified compatible soil types"
+                                : "\u2022 Ang inirekomendang panahon ng pagtatanim ay tugma sa kasalukuyang panahon\n\u2022 Para sa pinakamahusay na resulta, gamitin ang mga tinukoy na angkop na uri ng lupa"}
+                        </Text>
+                        </>
+                    ):(
+                        <>
+                        <Text style={{fontSize:15,fontWeight:600,color:'#FFA000'}}>
+                            {language === "en" 
+                                ? "The selected crop is NOT suitable for the current season." 
+                                : "Ang napiling pananim ay HINDI angkop para sa kasalukuyang panahon."}
+                        </Text>
 
-            {isSuitable ? (
-                <Text style={{color:'#475569',fontSize:15,fontWeight:600}}>Would you like to proceed with planting?</Text>
-            ) :(
-                <Text style={{color:'#475569',fontSize:15,fontWeight:600}}>Do you still want to proceed?</Text>
-            )}
+                        <Text style={{marginTop:10,marginBottom:10,color:"#767273"}}>
+                            {language === "en"
+                                ? `\u2022 Recommended planting season: ${getSeasonMonthRange(cropBestSeason.start,cropBestSeason.end)}\n\u2022 Soil caution: Using soil types other than the specified may lead to poor yield or crop failure.`
+                                : `\u2022 Inirekomendang panahon ng pagtatanim: ${getSeasonMonthRange(cropBestSeason.start,cropBestSeason.end)}\n\u2022 Babala sa lupa: Ang paggamit ng ibang uri ng lupa kaysa sa tinukoy ay maaaring magdulot ng mababang ani o pagkasira ng pananim.`}
+                        </Text>
+                        </>
+                    )}
 
-            
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={()=>setShowConfirmationVisible(false)} style={{borderWidth:1,borderColor:'#7b7b7b',width:'49%',borderRadius:5}}>Cancel</Button>
-            <Button onPress={() => AddToCurrent(cropId,commonName)} style={[{borderWidth:1,width:'49%',borderRadius:5},
-                isSuitable ?{backgroundColor:'#17A34A',borderColor:'#17A34A'} :{backgroundColor:'#FFA000',borderColor:'#FFA000'}]}>Proceed</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+                    {isSuitable ? (
+                        <Text style={{color:'#475569',fontSize:15,fontWeight:600}}>
+                            {language === "en" 
+                                ? "Would you like to proceed with planting?" 
+                                : "Gusto mo bang ituloy ang pagtatanim?"}
+                        </Text>
+                    ) :(
+                        <Text style={{color:'#475569',fontSize:15,fontWeight:600}}>
+                            {language === "en" 
+                                ? "Do you still want to proceed?" 
+                                : "Gusto mo pa ring ituloy?"}
+                        </Text>
+                    )}
+
+                </Dialog.Content>
+                <Dialog.Actions>
+                    <Button onPress={()=>setShowConfirmationVisible(false)} style={{borderWidth:1,borderColor:'#7b7b7b',width:'49%',borderRadius:5}}>
+                        {language === "en" ? "Cancel" : "Kanselahin"}
+                    </Button>
+                    <Button onPress={() => AddToCurrent(cropId,commonName)} style={[{borderWidth:1,width:'49%',borderRadius:5},
+                        isSuitable ?{backgroundColor:'#17A34A',borderColor:'#17A34A'} :{backgroundColor:'#FFA000',borderColor:'#FFA000'}]}>
+                        {language === "en" ? "Proceed" : "Ituloy"}
+                    </Button>
+                </Dialog.Actions>
+            </Dialog>
+        </Portal>
     )
 
     const renderSlowInternet = () => (
@@ -209,69 +225,66 @@ const CropProfile = () => {
     
                     <Dialog.Title>
                         <Text style={{color:'#37474F'}}>
-                            Slow Connection
+                            {language === "en" ? "Slow Connection" : "Mabagal na Koneksyon"}
                         </Text>
-                        
                     </Dialog.Title>
                     
                     <Dialog.Content>
-                        <Text style={{color:'#475569'}}>Connection seems slow. Please try again.</Text>
+                        <Text style={{color:'#475569'}}>
+                            {language === "en" ? "Connection seems slow. Please try again." : "Mabagal ang koneksyon. Pakisubukang muli."}
+                        </Text>
                     </Dialog.Content>
     
-    
-    
                     <Dialog.Actions>
-    
-                    <TouchableOpacity onPress={()=> setShowInternetError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-    
-                        <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                            OK
-                        </Text>
-    
-                    </TouchableOpacity>
-    
+                        <TouchableOpacity onPress={()=> setShowInternetError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+                            <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                                {language === "en" ? "OK" : "Sige"}
+                            </Text>
+                        </TouchableOpacity>
                     </Dialog.Actions>
     
                 </Dialog>
-    
             </Portal>
     )
 
     const renderError = ()=>(
 
     <Portal>
-        <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
-
-            <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
-
-            <Dialog.Title>
-                <Text style={{color:'#37474F'}}>
-                    Something went wrong
-                </Text>
+            <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
+    
+                <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
+    
+                <Dialog.Title>
+                    <Text style={{color:'#37474F'}}>
+                        {language === "en" ? "Something Went Wrong" : "May Nagkaproblema"}
+                    </Text>
+                    
+                </Dialog.Title>
                 
-            </Dialog.Title>
-            
-            <Dialog.Content>
-                <Text style={{color:'#475569'}}>An unexpected error occured. Please try again later</Text>
-            </Dialog.Content>
-
-
-
-            <Dialog.Actions>
-
-            <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-                <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                    OK
-                </Text>
-
-            </TouchableOpacity>
-
-            </Dialog.Actions>
-
-        </Dialog>
-
-    </Portal>
+                <Dialog.Content>
+                    <Text style={{color:'#475569'}}>
+                    {language === "en" ? "An unexpected error occured. Please try again later" : "Nagkaroon ng hindi inaasahang error. Pakisubukang muli mamaya."}
+                    
+                    </Text>
+                </Dialog.Content>
+    
+    
+    
+                <Dialog.Actions>
+    
+                <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+    
+                    <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                        OK
+                    </Text>
+    
+                </TouchableOpacity>
+    
+                </Dialog.Actions>
+    
+            </Dialog>
+    
+        </Portal>
 
     )
 
@@ -493,8 +506,168 @@ const CropProfile = () => {
                  
                             <Text style={styles.cropName}>{cropData?.commonName}</Text>
                             <Text style={styles.scientificName}>({cropData?.scientificName})</Text>
-                            <Text style={styles.scientificName}>Optimal Season : {getSeasonMonthRange(cropBestSeason.start,cropBestSeason.end)}</Text>
-                            <Text style={styles.familyName}>From The Family {cropData?.family}</Text>
+                            <View style={{
+                                borderWidth:1,
+                                padding:8,
+                                display:'flex',
+                                flexDirection:'row',
+                                backgroundColor:'#FAFAFA',
+                                borderRadius:16,
+                                borderColor:'#e2e8f0',
+                                alignItems:'center',
+                                gap:8,
+                            }}>
+                                <View style={{
+                                    width:40,
+                                    height:40,
+                                    borderWidth:0,
+                                    backgroundColor:'#E3E3E3',
+                                    borderRadius:8,
+                                    display:'flex',
+                                    flexDirection:'column',
+                                    alignItems:'center',
+                                    justifyContent:'center'
+                                }}>
+                                    <Feather name="calendar" size={20} color="#475569" />
+                                </View>
+
+                                <View style={{
+                                    display:'flex',
+                                    flexDirection:'column',
+                                }}>
+                                    <Text style={{fontSize:15,fontWeight:600,color:'#475569'}}>
+                                        {language === "en" ? "Optimal Season" : "Pinakamainam na Panahon"}
+                                    </Text>
+                                    <Text style={{fontSize:16,fontWeight:400,color:'#787C88'}}>
+                                        {getSeasonMonthRange(cropBestSeason.start,cropBestSeason.end)}
+                                    </Text>
+                                </View>
+                            </View>
+
+                            <View style={{
+                                borderWidth:1,
+                                padding:8,
+                                display:'flex',
+                                flexDirection:'row',
+                                backgroundColor:'#FAFAFA',
+                                borderRadius:16,
+                                borderColor:'#e2e8f0',
+                                alignItems:'center',
+                                gap:8,
+                            }}>
+                                <View style={{
+                                    width:40,
+                                    height:40,
+                                    borderWidth:0,
+                                    backgroundColor:'#E3E3E3',
+                                    borderRadius:8,
+                                    display:'flex',
+                                    flexDirection:'column',
+                                    alignItems:'center',
+                                    justifyContent:'center'
+                                }}>
+                                    <Feather name="tag" size={20} color="#475569" />
+                                </View>
+
+                                <View style={{
+                                    display:'flex',
+                                    flexDirection:'column',
+                                }}>
+                                    <Text style={{fontSize:15,fontWeight:600,color:'#475569'}}>
+                                        {language === "en" ? "Family" : "Pangkat ng Halaman"}
+                                    </Text>
+                                    <Text style={{fontSize:16,fontWeight:400,color:'#787C88'}}>
+                                        {cropData?.family}
+                                    </Text>
+                                </View>
+                            </View>
+
+
+
+                            <View style={{
+                                borderWidth:1,
+                                padding:8,
+                                display:'flex',
+                                flexDirection:'row',
+                                backgroundColor:'#FAFAFA',
+                                borderRadius:16,
+                                borderColor:'#e2e8f0',
+                                alignItems:'center',
+                                gap:8,
+                            }}>
+                                <View style={{
+                                    width:40,
+                                    height:40,
+                                    borderWidth:0,
+                                    backgroundColor:'#E3E3E3',
+                                    borderRadius:8,
+                                    display:'flex',
+                                    flexDirection:'column',
+                                    alignItems:'center',
+                                    justifyContent:'center'
+                                }}>
+                            
+                                    <Entypo name="cycle" size={20} color="#475569" />
+                                </View>
+
+                                <View style={{
+                                    display:'flex',
+                                    flexDirection:'column',
+                                }}>
+                                    <Text style={{fontSize:15,fontWeight:600,color:'#475569'}}>
+                                        {language === "en" ? "Maturity Period" : "Panahon ng Paglaki"}
+                                    </Text>
+                                    <Text style={{fontSize:16,fontWeight:400,color:'#787C88'}}>
+                                        {cropData?.growthTime}
+                                    </Text>
+                                </View>
+                            </View>
+
+
+
+
+                            <View style={{
+                                borderWidth:1,
+                                padding:8,
+                                display:'flex',
+                                flexDirection:'row',
+                                backgroundColor:'#FAFAFA',
+                                borderRadius:16,
+                                borderColor:'#e2e8f0',
+                                alignItems:'center',
+                                gap:8,
+                            }}>
+                                <View style={{
+                                    width:40,
+                                    height:40,
+                                    borderWidth:0,
+                                    backgroundColor:'#E3E3E3',
+                                    borderRadius:8,
+                                    display:'flex',
+                                    flexDirection:'column',
+                                    alignItems:'center',
+                                    justifyContent:'center'
+                                }}>
+                                    <FontAwesome6 name="mound" size={20} color="#475569" />
+                                
+                                </View>
+
+                                <View style={{
+                                    display:'flex',
+                                    flexDirection:'column',
+                                }}>
+                                    <Text style={{fontSize:15,fontWeight:600,color:'#475569'}}>
+                                        {language === "en" ? "Optimal Soil pH" : "Pinakamainam na pH ng Lupa"}
+                                    </Text>
+                                    <Text style={{fontSize:16,fontWeight:400,color:'#787C88'}}>
+                                        {cropData?.soilPh}
+                                    </Text>
+                                </View>
+                            </View>
+
+
+                          
+                        
                             
                         </View>
 
@@ -503,14 +676,14 @@ const CropProfile = () => {
                         <View style={subContainer.calculatorWrapperMain}>
                             <View style={subContainer.calculatorWrapperHeader}>
                                 <MaterialCommunityIcons name="seed" size={24} color="#16a34a" />
-                                <Text style={[styles.subContainerHeaderPest,{color:'#16a34a'}]}>Seed To Area</Text>
+                                <Text style={[styles.subContainerHeaderPest,{color:'#16a34a'}]}>{language === "en" ? "Seed To Area" : "Binhi sa Lupa"}</Text>
                             </View>
 
                             <View style={subContainer.calculatorWrapperMain__content}>
 
                                 <View style={fieldStyles.fieldWrapper}>
                                     <Text style={fieldStyles.fieldWrapperLabel}>
-                                        Enter Area
+                                        {language === "en" ? "Enter Area" : "Ilagay ang Sukat"}
                                     </Text>
 
                                    <TextInput
@@ -559,7 +732,7 @@ const CropProfile = () => {
 
                                 {result !== null && (
                                     <View style={subContainer.calculatorWrapperMain__resultWrapper}>
-                                        <Text style ={subContainer.calculatorWrapperMain__resultText}>You will need <Text style={subContainer.calculatorWrapperMain__resultTextHighlight}>{result}</Text> seeds for the provided area size</Text>
+                                        <Text style ={subContainer.calculatorWrapperMain__resultText}>You will need <Text style={subContainer.calculatorWrapperMain__resultTextHighlight}>{result}</Text> grams of seeds for the provided area size</Text>
                                     </View>
                                 )}
 
@@ -569,14 +742,17 @@ const CropProfile = () => {
 
                                 {cropData?.seedRatio && cropData?.seedRatio > 0 ? (
                                     <View style={noteStyles.noteWrapperActive}>
-                                        <Text style={noteStyles.textWrapper__text}>Note: The provided data for seed to hectare
-                                            ratio is {cropData?.seedRatio}:1 ({cropData?.seedRatio}g per hectare for optimal cultivation)
+                                        <Text style={noteStyles.textWrapper__text}>{language === "en" 
+                                           ? `Note: The provided data for seed to hectare ratio is ${cropData?.seedRatio}:1 (${cropData?.seedRatio}g per hectare for optimal cultivation)` 
+                                           : `Tandaan: Ang ibinigay na datos para sa ratio ng binhi sa ektarya ay ${cropData?.seedRatio}:1 (${cropData?.seedRatio}g kada ektarya para sa pinakamainam na pagtatanim)`}
                                         </Text>
                                     </View>
                                 ) : (
                                 <View style={noteStyles.noteWrapperDisabled}>
                                     <Text style={noteStyles.textWrapper__textDisabled}>
-                                        No seed-to-hectare information has been provided for this crop yet.
+                                         {language === "en" 
+                                            ? "No seed-to-hectare information has been provided for this crop yet." 
+                                            : "Wala pang impormasyon tungkol sa ratio ng binhi sa ektarya para sa pananim na ito."}
                                     </Text>
                                 </View>)}
 
@@ -589,7 +765,7 @@ const CropProfile = () => {
                             
                             <View style={subContainer.containerWrapperHeader}>
                                 <MaterialIcons name="pest-control" size={24} color="#842C2B" />
-                                <Text style={styles.subContainerHeaderPest}>Common Diseases</Text>
+                                <Text style={styles.subContainerHeaderPest}>{language === "en" ? "Common Diseases" : "Karaniwang Sakit"}</Text>
                             </View>
 
 
@@ -625,7 +801,7 @@ const CropProfile = () => {
 
                             <View style={subContainer.containerWrapperHeader}>
                                 <FontAwesome6 name="mound" size={24} color="#37474F" />
-                                <Text style={styles.subContainerHeader}>Suitable Soil</Text>
+                                <Text style={styles.subContainerHeader}>{language === "en" ? "Suitable Soil" : "Angkop na Lupa"}</Text>
                             </View>
                             
 
@@ -677,7 +853,7 @@ const CropProfile = () => {
                                         
 
                                         <View style={subContainer.badgeWrapper__imageWrapper}>
-                                            <Image source={soilImages['loamy']} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
+                                            <Image source={soilImages['silty']} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
                                         </View>
                                         
                                         <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Silty") && {backgroundColor:'#F0FDF4'}]}>
@@ -690,7 +866,7 @@ const CropProfile = () => {
                                     <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Peaty") && { borderColor: '#17A34A',borderWidth:2 }]}>
                                         
                                         <View style={subContainer.badgeWrapper__imageWrapper}>
-                                            <Image source={soilImages['sandy']} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
+                                            <Image source={soilImages['peaty']} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
                                         </View>
 
                                         <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Peaty") && {backgroundColor:'#F0FDF4'}]}>
@@ -702,7 +878,7 @@ const CropProfile = () => {
                                     <View style={[subContainer.badgeWrapper,cropData?.soilType.includes("Sandy loam") && { borderColor: '#17A34A',borderWidth:2 }]}>
 
                                         <View style={subContainer.badgeWrapper__imageWrapper}>
-                                            <Image source={soilImages['clay']} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
+                                            <Image source={soilImages['sandyLoam']} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
                                         </View>
 
                                         <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Sandy loam") && {backgroundColor:'#F0FDF4'}]}>
@@ -719,7 +895,7 @@ const CropProfile = () => {
                                     ]}>
                                         <View style={subContainer.badgeWrapper__imageWrapper}>
                                             <Image 
-                                            source={soilImages['loamy']} 
+                                            source={soilImages['clayLoam']} 
                                             style={{ width: '100%', height: '100%', borderTopLeftRadius: 3, borderTopRightRadius: 3 }}
                                             />
                                         </View>
@@ -738,7 +914,7 @@ const CropProfile = () => {
                                     ]}>
                                         <View style={subContainer.badgeWrapper__imageWrapper}>
                                             <Image 
-                                            source={soilImages['sandy']} 
+                                            source={soilImages['siltyLoam']} 
                                             style={{ width: '100%', height: '100%', borderTopLeftRadius: 3, borderTopRightRadius: 3 }}
                                             />
                                         </View>
@@ -757,7 +933,7 @@ const CropProfile = () => {
                                     ]}>
                                         <View style={subContainer.badgeWrapper__imageWrapper}>
                                             <Image 
-                                            source={soilImages['clay']} 
+                                            source={soilImages['sandyClayLoam']} 
                                             style={{ width: '100%', height: '100%', borderTopLeftRadius: 3, borderTopRightRadius: 3 }}
                                             />
                                         </View>
@@ -773,12 +949,6 @@ const CropProfile = () => {
 
                                 </View>
 
-
-                                <View style={subContainer.phIndi}>
-                                    <Text style={styles.phText}>
-                                        Optimal Soil PH is {cropData?.soilPh}
-                                    </Text>
-                                </View>
 
 
 
@@ -797,7 +967,7 @@ const CropProfile = () => {
 
                                 <View style={subContainer.containerWrapperHeader}>
                                     <MaterialIcons name="pest-control" size={24} color="#842C2B" />
-                                    <Text style={styles.subContainerHeaderPest}>Common Pests</Text>
+                                    <Text style={styles.subContainerHeaderPest}>{language === "en" ? "Common Pests" : "Karaniwang Peste"}</Text>
                                 </View>
                                 
 
@@ -949,15 +1119,19 @@ const styles = StyleSheet.create({
     headerWrapper:{
         width:'100%',
         //height:100,
-        //borderWidth:1,
+        borderWidth:0,
         borderTopLeftRadius:0,
         borderTopRightRadius:0,
         backgroundColor:'#FFFFFF',
         paddingTop:15,
         paddingBottom:15,
+        paddingHorizontal:10,
         borderBottomColor:'#B9B9B9',
         borderBottomWidth:1,
-        marginBottom:20
+        marginBottom:20,
+        display:'flex',
+        flexDirection:'column',
+        gap:8
 
     },
 
@@ -971,16 +1145,16 @@ const styles = StyleSheet.create({
     },
 
     cropName:{
-        marginLeft:15,
+        //marginLeft:15,
         fontWeight:600,
-        fontSize:35,
+        fontSize:32,
       
-        color:"#37474F"
+        color:"#475569"
         
         
     },
     scientificName:{
-        marginLeft:15,
+       // marginLeft:15,
         fontWeight:400,
         fontStyle:'italic',
         fontSize:17,
@@ -988,14 +1162,14 @@ const styles = StyleSheet.create({
         color:"#37474F"
     },
     familyName:{
-        marginLeft:15,
-        fontWeight:300,
+        //marginLeft:15,
+        fontWeight:400,
         fontSize:17,
-        fontStyle:'italic',
+        //fontStyle:'italic',
         color:'#333333',
     },
     bestGrown:{
-        marginLeft:15,
+        //marginLeft:15,
         fontWeight:300,
         fontSize:16,
         fontStyle:'italic',

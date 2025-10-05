@@ -12,6 +12,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper'
 import { router } from 'expo-router'
 import { deleteExpenseRecord } from '../controllers/ExpenseControllers/deleteExpenseRecord'
+import { useLanguage } from '../Context/LanguageContex'
 
 
 interface cartItem{
@@ -34,7 +35,7 @@ interface expenseLogData{
 
 const ExpandedExpenseReport = () => {
     const {user} = useUserContext();
- 
+    const{language,setLanguage} = useLanguage()
 
 
     const searchParams = useSearchParams();
@@ -110,24 +111,25 @@ const ExpandedExpenseReport = () => {
 
             <Dialog visible={showDeleteConfirmation} onDismiss={()=>{setShowDeleteConfirmation(false)}}>
 
-
                 <Dialog.Title>
-                    Delete Expense Record?
+                    <Text>
+                        {language === "en" ? "Delete Expense Record?" : "Tanggalin ang Rekord ng Gastos?"}
+                    </Text>
                 </Dialog.Title>
-
 
                 <Dialog.Content>
                     <Text>
-                        This action will permanently remove this expense and all its items from your records. You won’t be able to undo this.
+                        {language === "en" 
+                            ? "This action will permanently remove this expense and all its items from your records. You won’t be able to undo this." 
+                            : "Ang aksyong ito ay permanenteng magtatanggal ng gastos at lahat ng item nito mula sa iyong talaan. Hindi mo na ito maibabalik."}
                     </Text>
                 </Dialog.Content>
 
-
                 <Dialog.Actions>
                     <TouchableOpacity onPress={()=>{deleteRecord()}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-        
+
                         <Text style={{color:'white'}}>
-                            Continue
+                            {language === "en" ? "Continue" : "Tuloy"}
                         </Text>
 
                     </TouchableOpacity>
@@ -145,11 +147,15 @@ const ExpandedExpenseReport = () => {
 
                 {deletePostLoading ? (
                     <Dialog.Title>
-                        Deleting Expense...
+                        <Text>
+                            {language === "en" ? "Deleting Expense..." : "Binubura ang Gastos..."}
+                        </Text>
                     </Dialog.Title>
                 ) :(
                     <Dialog.Title>
-                        Expense Deleted
+                        <Text>
+                            {language === "en" ? "Expense Deleted" : "Natanggal na ang Gastos"}
+                        </Text>
                     </Dialog.Title>
                 )}
 
@@ -157,11 +163,21 @@ const ExpandedExpenseReport = () => {
 
                 {deletePostLoading ? (
                     <Dialog.Content>
-                        <Text>Please wait while we remove this record. This may take a few seconds.</Text>
+                        <Text>
+                            {language === "en" ? 
+                                "Please wait while we remove this record. This may take a few seconds." 
+                                : 
+                                "Maghintay habang tinatanggal namin ang rekord na ito. Maaaring tumagal ng ilang segundo."}
+                        </Text>
                     </Dialog.Content>
                 ) : (
                     <Dialog.Content>
-                    <Text>The expense record has been successfully removed from your records!</Text>
+                        <Text>
+                            {language === "en" ? 
+                                "The expense record has been successfully removed from your records!" 
+                                : 
+                                "Matagumpay nang natanggal ang rekord ng gastos sa iyong talaan!"}
+                        </Text>
                     </Dialog.Content>
                 )}
 
@@ -175,7 +191,7 @@ const ExpandedExpenseReport = () => {
                         <TouchableOpacity onPress={()=>{router.push('/(main)/expenses')}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
 
                             <Text style={{color:'white'}}>
-                                Continue
+                                {language === "en" ? "Continue" : "Tuloy"}
                             </Text>
 
                         </TouchableOpacity>
@@ -183,53 +199,51 @@ const ExpandedExpenseReport = () => {
                     </Dialog.Actions>
                 )}
 
-
             </Dialog>
-
-
-
-
         </Portal>
     )
 
 
     const renderError = ()=>(
-    
+
         <Portal>
-            <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
-    
-                <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
-    
-                <Dialog.Title>
-                    <Text style={{color:'#37474F'}}>
-                        Something went wrong
-                    </Text>
-                    
-                </Dialog.Title>
-                
-                <Dialog.Content>
-                    <Text style={{color:'#475569'}}>An unexpected error occured. Please try again later</Text>
-                </Dialog.Content>
-    
-    
-    
-                <Dialog.Actions>
-    
-                <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-    
-                    <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                        OK
-                    </Text>
-    
-                </TouchableOpacity>
-    
-                </Dialog.Actions>
-    
-            </Dialog>
-    
-        </Portal>
-    
-        )
+              <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
+      
+                  <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
+      
+                  <Dialog.Title>
+                      <Text style={{color:'#37474F'}}>
+                          {language === "en" ? "Something Went Wrong" : "May Nagkaproblema"}
+                      </Text>
+                      
+                  </Dialog.Title>
+                  
+                  <Dialog.Content>
+                      <Text style={{color:'#475569'}}>
+                       {language === "en" ? "An unexpected error occured. Please try again later" : "Nagkaroon ng hindi inaasahang error. Pakisubukang muli mamaya."}
+                        
+                      </Text>
+                  </Dialog.Content>
+      
+      
+      
+                  <Dialog.Actions>
+      
+                  <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+      
+                      <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                          OK
+                      </Text>
+      
+                  </TouchableOpacity>
+      
+                  </Dialog.Actions>
+      
+              </Dialog>
+      
+          </Portal>
+
+    )
 
   
     return (
@@ -239,13 +253,13 @@ const ExpandedExpenseReport = () => {
         {renderDeleteConfirmation()}
         {renderProcessDeletePost()}
         {renderError()}
-        <SafeAreaView style={{display:'flex',flexDirection:'column',flex:1,borderWidth:1,borderColor:'red',alignItems:'center'}}>
+        <SafeAreaView style={{display:'flex',flexDirection:'column',flex:1,borderWidth:0,borderColor:'red',alignItems:'center'}}>
 
             <ScrollView style={{width:'95%', borderWidth:0,borderColor:'blue',display:'flex',flexDirection:'column'}} contentContainerStyle={{alignItems:'center'}}>
                 
                 <View style={{width:'100%',maxHeight:50,height:50,
                 display:'flex',flexDirection:'row',
-                alignItems:'center',gap:10,marginBottom:10,borderWidth:1,justifyContent:'space-between'
+                alignItems:'center',gap:10,marginBottom:10,borderWidth:0,justifyContent:'space-between',borderBottomWidth:1,borderColor:'#e2e8f0'
 
                 }}>
 

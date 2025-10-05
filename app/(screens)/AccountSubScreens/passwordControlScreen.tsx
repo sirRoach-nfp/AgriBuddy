@@ -10,9 +10,10 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useUserContext } from '@/app/Context/UserContext'
 import { sendPasswordResetEmail } from 'firebase/auth'
 import { sendPaswordRequestToEmail } from '@/app/controllers/AccountAuth/Auth'
+import { useLanguage } from '@/app/Context/LanguageContex'
 
 const passwordControlScreen = () => {
-
+  const{language,setLanguage} = useLanguage()
   const {user} = useUserContext()
 
   const [currentPassword,setCurrentPassword] = useState("")
@@ -43,44 +44,48 @@ const passwordControlScreen = () => {
 
   //modal
 
-    const renderSuccess = () => (
-      <Portal>
-        
-        <Dialog visible={showSuccess} >
-  
-          <Dialog.Title>
-            <Text style={{color:'#37474F'}}>
-              Password Reset Link Sent!
-            </Text>
-          </Dialog.Title>
-  
-          <Dialog.Content>
-            <Text style={{color:'#475569'}}>
-              We’ve sent a password reset link to your email. Please check your inbox (and spam folder just in case) and follow the instructions to reset your password.
-            </Text>
-          </Dialog.Content>
-  
-  
-          <Dialog.Actions>
-  
-  
-  
-  
-            <TouchableOpacity onPress={() => setShowSuccess(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-  
-                <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                    Continue
-                </Text>
-  
-            </TouchableOpacity>
+  const renderSuccess = () => (
+    <Portal>
+      <Dialog visible={showSuccess}>
+        <Dialog.Title>
+          <Text style={{ color: "#37474F" }}>
+            {language === "en"
+              ? "Password Reset Link Sent!"
+              : "Naipadala na ang Password Reset Link!"}
+          </Text>
+        </Dialog.Title>
 
-  
-          </Dialog.Actions>
-  
-        </Dialog>
-  
-      </Portal>
-    )
+        <Dialog.Content>
+          <Text style={{ color: "#475569" }}>
+            {language === "en"
+              ? "We’ve sent a password reset link to your email. Please check your inbox (and spam folder just in case) and follow the instructions to reset your password."
+              : "Nagpadala kami ng password reset link sa iyong email. Pakisuri ang iyong inbox (at spam folder kung sakali) at sundin ang mga tagubilin upang i-reset ang iyong password."}
+          </Text>
+        </Dialog.Content>
+
+        <Dialog.Actions>
+          <TouchableOpacity
+            onPress={() => setShowSuccess(false)}
+            style={{
+              borderColor: "#607D8B",
+              borderWidth: 1,
+              alignSelf: "flex-start",
+              backgroundColor: "#607D8B",
+              paddingLeft: 20,
+              paddingRight: 20,
+              paddingTop: 5,
+              paddingBottom: 5,
+              borderRadius: 5,
+            }}
+          >
+            <Text style={{ color: "white", fontSize: 16, fontWeight: "500" }}>
+              {language === "en" ? "Continue" : "Magpatuloy"}
+            </Text>
+          </TouchableOpacity>
+        </Dialog.Actions>
+      </Dialog>
+    </Portal>
+  );
 
   
   const renderError = ()=>(
@@ -92,13 +97,16 @@ const passwordControlScreen = () => {
       
                   <Dialog.Title>
                       <Text style={{color:'#37474F'}}>
-                          Something went wrong
+                          {language === "en" ? "Something Went Wrong" : "May Nagkaproblema"}
                       </Text>
                       
                   </Dialog.Title>
                   
                   <Dialog.Content>
-                      <Text style={{color:'#475569'}}>An unexpected error occured. Please try again later</Text>
+                      <Text style={{color:'#475569'}}>
+                       {language === "en" ? "An unexpected error occured. Please try again later" : "Nagkaroon ng hindi inaasahang error. Pakisubukang muli mamaya."}
+                        
+                      </Text>
                   </Dialog.Content>
       
       
@@ -151,7 +159,11 @@ const passwordControlScreen = () => {
 
 
 
-            <Text style={{fontSize:20,fontWeight:600,color:'#37474F',marginLeft:20}}>Change Password Request</Text>
+            <Text style={{ fontSize: 20, fontWeight: "600", color: "#37474F", marginLeft: 20 }}>
+              {language === "en" 
+                ? "Change Password Request" 
+                : "Palitang Ang Password"}
+            </Text>
 
         </View>
 
@@ -159,46 +171,45 @@ const passwordControlScreen = () => {
 
 
             <View style={noteStyles.noteWrapper}>
-              <View style={{width:'100%',display:'flex',flexDirection:'row',alignItems:'center',paddingVertical:10}}>
-                  <MaterialIcons name="lock" size={25} color="#BFA76F" />
-                  <Text style={noteStyles.header}>Security Tips</Text>
-              </View>
-              
-
-              <View style={noteStyles.textWrapper}>
-                <Text style={noteStyles.textWrapper__bullet}>
-                  •
+              <View
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingVertical: 10,
+                }}
+              >
+                <MaterialIcons name="lock" size={25} color="#BFA76F" />
+                <Text style={noteStyles.header}>
+                  {language === "en" ? "Security Tips" : "Mga Tips sa Seguridad"}
                 </Text>
-                <Text style={noteStyles.textWrapper__text}>
-                  Use a unique password
-                </Text>
-
-              </View>
-
-              <View style={noteStyles.textWrapper}>
-                <Text style={noteStyles.textWrapper__bullet}>
-                  •
-                </Text>
-
-                <Text style={noteStyles.textWrapper__text}>
-                  Don't share your password with anyone
-                </Text>
-
               </View>
 
               <View style={noteStyles.textWrapper}>
-
-                <Text style={noteStyles.textWrapper__bullet}>
-                  •
-                </Text>
-
+                <Text style={noteStyles.textWrapper__bullet}>•</Text>
                 <Text style={noteStyles.textWrapper__text}>
-                  Change your password regularly
+                  {language === "en" ? "Use a unique password" : "Gumamit ng natatanging password"}
                 </Text>
+              </View>
 
-            </View>
+              <View style={noteStyles.textWrapper}>
+                <Text style={noteStyles.textWrapper__bullet}>•</Text>
+                <Text style={noteStyles.textWrapper__text}>
+                  {language === "en"
+                    ? "Don't share your password with anyone"
+                    : "Huwag ibahagi ang iyong password kanino man"}
+                </Text>
+              </View>
 
-  
+              <View style={noteStyles.textWrapper}>
+                <Text style={noteStyles.textWrapper__bullet}>•</Text>
+                <Text style={noteStyles.textWrapper__text}>
+                  {language === "en"
+                    ? "Change your password regularly"
+                    : "Palitan ang iyong password nang regular"}
+                </Text>
+              </View>
             </View>
           
             <View style={[fieldStyles.fieldWrapper,{marginBottom:10}]}>
@@ -224,7 +235,9 @@ const passwordControlScreen = () => {
                 }}
                 onPress={changePassword}
                 >
-                <Text style={{color:'white',fontSize:16, fontWeight:600}}>Send Reset Link</Text>
+                <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>
+                  {language === "en" ? "Send Reset Link" : "Ipadala ang Reset Link"}
+                </Text>
               </TouchableOpacity>
 
               
@@ -236,7 +249,9 @@ const passwordControlScreen = () => {
                 borderRadius:5,
                 borderWidth:2,
                 borderColor:'#e2e8f0'
-                }}>
+                }}
+                onPress={()=> router.back()}
+                >
                 <Text style={{color:'#37474F',fontSize:16, fontWeight:600}}>Didn't mean to reset?</Text>
               </TouchableOpacity>
 

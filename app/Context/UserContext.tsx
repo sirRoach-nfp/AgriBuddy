@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 
 export interface UserData {
   UserId:string;
@@ -36,6 +37,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log("storedData : ",storedData)
         if (storedData) {
           setUser(JSON.parse(storedData));
+          router.replace("/home");
+        }else {
+          // ✅ Redirect to login if no user data
+          router.replace("/(screens)/LoginPage");
         }
       } catch (error) {
         console.error("Error retrieving userData:", error);

@@ -9,6 +9,7 @@ import { router } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
+import { useLanguage } from '../Context/LanguageContex';
 
 
 
@@ -40,7 +41,7 @@ const DiseaseScreen = () => {
 
 
 
-
+    const {language} = useLanguage()
     const searchParams = useSearchParams();
     const diseaseId = searchParams.get('diseaseId')
 
@@ -133,7 +134,7 @@ const DiseaseScreen = () => {
                                 selectedOption === 'Symptoms' && styles.activeText,
                             ]}
                             >
-                            Symptoms
+                            {language === "en" ? "Symptoms" : "Sintomas"}
                             </Text>
                             {selectedOption === 'Symptoms' && (
                             <View style={styles.activeLine} />
@@ -149,7 +150,7 @@ const DiseaseScreen = () => {
                                 selectedOption === 'DiseaseDevelopment' && styles.activeText,
                             ]}
                             >
-                                Disease Development
+                               {language === "en" ? "Disease Development" : "Pag-unlad ng Sakit"}
                             </Text>
                             {selectedOption === 'DiseaseDevelopment' && (
                             <View style={styles.activeLine} />
@@ -165,7 +166,7 @@ const DiseaseScreen = () => {
                                 selectedOption === 'MethodsOfDispersal' && styles.activeText,
                             ]}
                             >
-                            Methods Of Dispersal
+                            {language === "en" ? "Methods of Dispersal" : "Mga Paraan ng Pagkalat"}
                             </Text>
                             {selectedOption === 'MethodsOfDispersal' && (
                             <View style={styles.activeLine} />
@@ -182,7 +183,7 @@ const DiseaseScreen = () => {
                                 selectedOption === 'ControlMeasures' && styles.activeText,
                             ]}
                             >
-                            Control Measures
+                            {language === "en" ? "Control Measures" : "Pamamaraan sa Pagkontrol"}
                             </Text>
                             {selectedOption === 'ControlMeasures' && (
                             <View style={styles.activeLine} />
@@ -304,7 +305,7 @@ const DiseaseScreen = () => {
                             <View style={[stylesAiles.containerWrapperHeader,{backgroundColor:'#DAEEF7',borderColor:'#53697E'}]}>
                     
                                 <AntDesign name="link" size={24} color="#53697E" />
-                                <Text style={[stylesAiles.subContainerHeaderPest,{color:'#53697E'}]}>Reference Links</Text>
+                                <Text style={[stylesAiles.subContainerHeaderPest,{color:'#53697E'}]}>{language === "en" ? "Reference Links" : "Mga Pinagkunan ng Impormasyon"}</Text>
                             </View>
 
 
@@ -353,8 +354,10 @@ const DiseaseScreen = () => {
                                         <AntDesign name="link" size={24} color="#64748B" />
                                         </View>
                                         
-                                        <Text style={stylesAiles.noDataPlaceholder__Primary}>No References Yet</Text>
-                                        <Text style={stylesAiles.noDataPlaceholder__Secondary}>Looks like we don’t have reference links for this pest Data at the moment.</Text>
+                                        <Text style={stylesAiles.noDataPlaceholder__Primary}>{language === "en" ? "No References Yet" : "Walang Reference Pangkasalukuyan"}t</Text>
+                                        <Text style={stylesAiles.noDataPlaceholder__Secondary}>{language === "en" 
+    ? "Looks like we don’t have reference links for this pest data at the moment." 
+    : "Mukhang wala pang reference links para sa datos ng sakit na ito sa kasalukuyan."}</Text>
                                     </View>
 
                                     )

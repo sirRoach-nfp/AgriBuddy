@@ -8,6 +8,8 @@ import { router, useFocusEffect } from 'expo-router'
 import ExpensesReportCard from '@/components/ExpensesComponents/ExpensesReportCard'
 import {fetchExpensesController } from '../controllers/ExpenseControllers/fetchExpenses'
 import { useUserContext } from '../Context/UserContext'
+import { useLanguage } from '../Context/LanguageContex'
+import { Timestamp } from 'firebase/firestore'
 
 
 
@@ -22,7 +24,7 @@ import { useUserContext } from '../Context/UserContext'
 
 
 interface expenseLogStructure{
-    date:Date,
+    date:Timestamp,
     expenseId:string,
     title:string,
     total: number,
@@ -32,6 +34,7 @@ interface expenseLogStructure{
 
 
 const expenses = () => {
+  const{language,setLanguage} = useLanguage()
   const {user} = useUserContext()
   const {width} = useWindowDimensions()
   const isSmallScreen = width < 480
@@ -67,7 +70,7 @@ const expenses = () => {
 
 
   return (
-    <SafeAreaView style={{flex:1,display:'flex',flexDirection:'column'}}>
+    <SafeAreaView style={{flex:1,display:'flex',flexDirection:'column',borderWidth:0,paddingHorizontal:10,paddingTop:10,}}>
 
       
 
@@ -75,16 +78,16 @@ const expenses = () => {
 
       <View style={HeaderStyles.innerHeaderWrapper}>
           <Text style={HeaderStyles.headerTextStyles}>
-            Expense Tracker
+            {language === "en" ? "Expense Tracker" : "Talaan ng Gastos"}
           </Text>
 
           <Text style={HeaderStyles.subtitleTextStyle}>
-            Track and manage your expenses
+            {language === "en" ? "Track and manage your expenses" : "Subaybayan at pamahalaan ang iyong gastos"}
           </Text>
       </View>
 
       <TouchableOpacity  onPress={navigateToCreateRecord} style={[ButtonStyles.CreateNewButton,{backgroundColor:'#607D8B'}]} >
-          <Text style={ButtonStyles.buttonTextCreate}>Create New Expense Record</Text>
+          <Text style={ButtonStyles.buttonTextCreate}>{language === "en" ? "Create New Expense Record" : "Gumawa ng Bagong Talaan ng Gastos"}</Text>
       </TouchableOpacity>
 
     

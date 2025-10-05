@@ -24,8 +24,10 @@ import { Picker } from '@react-native-picker/picker';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useLanguage } from '../Context/LanguageContex';
 
 const PostScreen = () => {
+    const {language} = useLanguage()
     const {user} = useUserContext();
 
 
@@ -56,113 +58,102 @@ const PostScreen = () => {
         <Portal>
             <Dialog visible={showConfirmation} onDismiss={()=>setShowConfirmation(false)}>
 
-
                 <Dialog.Title>
                     <Text style={{color:'#37474F'}}>
-                        Confirm Post Submission
+                        {language === "en" ? "Confirm Post Submission" : "Kumpirmahin ang Pag-submit ng Post"}
                     </Text>
-                    
                 </Dialog.Title>
                 
                 <Dialog.Content>
-                    <Text style={{color:'#475569'}}>Are you sure you want to post this discussion? Once submitted, it will be visible to others.</Text>
+                    <Text style={{color:'#475569'}}>
+                        {language === "en" 
+                            ? "Are you sure you want to post this discussion? Once submitted, it will be visible to others." 
+                            : "Sigurado ka bang i-post ang discussion na ito? Kapag naisubmit na, makikita ito ng iba."}
+                    </Text>
                 </Dialog.Content>
 
-
-
                 <Dialog.Actions>
-
-                <TouchableOpacity onPress={uploadPost} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-                    <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                        Post
-                    </Text>
-
-                </TouchableOpacity>
-
+                    <TouchableOpacity onPress={uploadPost} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+                        <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                            {language === "en" ? "Post" : "I-Post"}
+                        </Text>
+                    </TouchableOpacity>
                 </Dialog.Actions>
 
             </Dialog>
-
-
-
-
         </Portal>
 
     )
 
     const renderError = ()=>(
 
-    <Portal>
-        <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
-
-            <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
-
-            <Dialog.Title>
-                <Text style={{color:'#37474F'}}>
-                    Something went wrong
-                </Text>
-                
-            </Dialog.Title>
-            
-            <Dialog.Content>
-                <Text style={{color:'#475569'}}>An unexpected error occured. Please try again later</Text>
-            </Dialog.Content>
-
-
-
-            <Dialog.Actions>
-
-            <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-                <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                    OK
-                </Text>
-
-            </TouchableOpacity>
-
-            </Dialog.Actions>
-
-        </Dialog>
-
-    </Portal>
+        <Portal>
+              <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
+      
+                  <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
+      
+                  <Dialog.Title>
+                      <Text style={{color:'#37474F'}}>
+                          {language === "en" ? "Something Went Wrong" : "May Nagkaproblema"}
+                      </Text>
+                      
+                  </Dialog.Title>
+                  
+                  <Dialog.Content>
+                      <Text style={{color:'#475569'}}>
+                       {language === "en" ? "An unexpected error occured. Please try again later" : "Nagkaroon ng hindi inaasahang error. Pakisubukang muli mamaya."}
+                        
+                      </Text>
+                  </Dialog.Content>
+      
+      
+      
+                  <Dialog.Actions>
+      
+                  <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+      
+                      <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                          OK
+                      </Text>
+      
+                  </TouchableOpacity>
+      
+                  </Dialog.Actions>
+      
+              </Dialog>
+      
+          </Portal>
 
     )
 
     const renderSlowInternet = () => (
-            <Portal>
-                <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)}>
-    
-                    <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
-    
-                    <Dialog.Title>
-                        <Text style={{color:'#37474F'}}>
-                            Slow Connection
-                        </Text>
-                        
-                    </Dialog.Title>
-                    
-                    <Dialog.Content>
-                        <Text style={{color:'#475569'}}>Connection seems slow. Please try again.</Text>
-                    </Dialog.Content>
-    
-    
-    
-                    <Dialog.Actions>
-    
+        <Portal>
+            <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)}>
+
+                <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
+
+                <Dialog.Title>
+                    <Text style={{color:'#37474F'}}>
+                        {language === "en" ? "Slow Connection" : "Mabagal na Koneksyon"}
+                    </Text>
+                </Dialog.Title>
+                
+                <Dialog.Content>
+                    <Text style={{color:'#475569'}}>
+                        {language === "en" ? "Connection seems slow. Please try again." : "Mabagal ang koneksyon. Pakisubukang muli."}
+                    </Text>
+                </Dialog.Content>
+
+                <Dialog.Actions>
                     <TouchableOpacity onPress={()=> setShowInternetError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-    
                         <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                            OK
+                            {language === "en" ? "OK" : "Sige"}
                         </Text>
-    
                     </TouchableOpacity>
-    
-                    </Dialog.Actions>
-    
-                </Dialog>
-    
-            </Portal>
+                </Dialog.Actions>
+
+            </Dialog>
+        </Portal>
     )
     
 
@@ -171,45 +162,39 @@ const PostScreen = () => {
         <Portal>
             <Dialog visible={showProcess} onDismiss={()=>{}}>
 
-
                 <Dialog.Title>
-                    Posting Discussion
+                    <Text>
+                        {language === "en" ? "Posting Discussion" : "Nagpo-post ng Talakayan"}
+                    </Text>
                 </Dialog.Title>
-
 
                 {postLoading ? (
                     <Dialog.Content>
-                        <Text>Your discussion is being posted. Please wait...</Text>
+                        <Text>
+                            {language === "en" ? "Your discussion is being posted. Please wait..." : "Ipinopost ang iyong talakayan. Pakihintay..."}
+                        </Text>
                     </Dialog.Content>
                 ) : (
                     <Dialog.Content>
-                    <Text>Your discussion is Posted Successfully!</Text>
+                        <Text>
+                            {language === "en" ? "Your discussion is Posted Successfully!" : "Matagumpay na naipost ang iyong talakayan!"}
+                        </Text>
                     </Dialog.Content>
                 )}
-
-
 
                 {postLoading ? (
                     <ProgressBar indeterminate color={MD3Colors.error50} style={{marginBottom:20,width:'80%',marginLeft:'auto',marginRight:'auto',borderRadius:'50%'}} />
                 ) : (
                     <Dialog.Actions>
-
-                        <TouchableOpacity onPress={()=>{router.back()}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-                            <Text style={{color:'white'}}>
-                                Continue
+                        <TouchableOpacity onPress={()=>{router.back()}} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+                            <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                                {language === "en" ? "Continue" : "Tuloy"}
                             </Text>
-
                         </TouchableOpacity>
-
                     </Dialog.Actions>
                 )}
 
             </Dialog>
-
-
-
-
         </Portal>
     )
 
@@ -359,7 +344,7 @@ const PostScreen = () => {
                 
 
                 <View style={fieldStyles.fieldWrapper}>
-                    <Text style={fieldStyles.fieldWrapperLabel}>Title</Text>
+                    <Text style={fieldStyles.fieldWrapperLabel}>{language === "en" ? "Post Title" : "Pamagat ng Post"}</Text>
                     <TextInput onChange={(e)=>setTitle(e.nativeEvent.text)} placeholder="Title" style={fieldStyles.textInput} maxLength={80}></TextInput>
                     <Text style={{ fontSize: 13, color: title.length < 10 ? "red" : "green",alignSelf:'flex-end' }}>
                     {title.length}/10 min
@@ -398,7 +383,7 @@ const PostScreen = () => {
                 
 
                 <View style={fieldStyles.fieldWrapper}>
-                    <Text style={fieldStyles.fieldWrapperLabel}>Content</Text>
+                    <Text style={fieldStyles.fieldWrapperLabel}>{language === "en" ? "Post Content" : "Nilalaman ng Post"}</Text>
                     <TextInput onChange={(e)=>setBody(e.nativeEvent.text)} maxLength={10000} placeholder="Your Content....." numberOfLines={10} multiline={true} textAlignVertical="top" style={styles.bodyInput}></TextInput>
                     <Text style={{ fontSize: 13, color: body.length < 20 ? "red" : "green",alignSelf:'flex-end' }}>
                         {body.length}/20 min
@@ -413,7 +398,7 @@ const PostScreen = () => {
                 <View style={{width:'100%',borderWidth:0,marginTop:20}}>
                     <View style={fieldStyles.fieldDecorationWrapper}> 
                         <MaterialCommunityIcons name="image-plus" size={25} color="#607D8B" />
-                        <Text style={fieldStyles.fieldWrapperLabel}>Images (Optional, up to 3)</Text>
+                        <Text style={fieldStyles.fieldWrapperLabel}>{language === "en" ? "Images (Optional, up to 3)" : "Mga Larawan (Opsyonal, hanggang 3)"}</Text>
                     </View>
 
 
@@ -449,51 +434,36 @@ const PostScreen = () => {
 
 
                 <View style={noteStyles.noteWrapper}>
-                    <Text style={noteStyles.header}>Community Guidelines</Text>
-    
+                    <Text style={noteStyles.header}>
+                        {language === "en" ? "Community Guidelines" : "Patakaran ng Komunidad"}
+                    </Text>
+
                     <View style={noteStyles.textWrapper}>
-                        <Text style={noteStyles.textWrapper__bullet}>
-                        •
-                        </Text>
+                        <Text style={noteStyles.textWrapper__bullet}>•</Text>
                         <Text style={noteStyles.textWrapper__text}>
-                        Be respectful and helpful to fellow AgriBuddies
+                            {language === "en" ? "Be respectful and helpful to fellow AgriBuddies" : "Maging magalang at tumulong sa ibang AgriBuddies"}
                         </Text>
-    
                     </View>
-    
+
                     <View style={noteStyles.textWrapper}>
-                        <Text style={noteStyles.textWrapper__bullet}>
-                        •
-                        </Text>
-    
+                        <Text style={noteStyles.textWrapper__bullet}>•</Text>
                         <Text style={noteStyles.textWrapper__text}>
-                        Share accurate information and cite sources when possible
+                            {language === "en" ? "Share accurate information and cite sources when possible" : "I-share ang tamang impormasyon at banggitin ang sources kung puwede"}
                         </Text>
-    
                     </View>
-    
+
                     <View style={noteStyles.textWrapper}>
-    
-                        <Text style={noteStyles.textWrapper__bullet}>
-                        •
-                        </Text>
-    
+                        <Text style={noteStyles.textWrapper__bullet}>•</Text>
                         <Text style={noteStyles.textWrapper__text}>
-                        User relevant tag to help others find your discussion
+                            {language === "en" ? "Use relevant tag to help others find your discussion" : "Gamitin ang tamang tag para madaling mahanap ng iba ang discussion mo"}
                         </Text>
-    
                     </View>
-    
+
                     <View style={noteStyles.textWrapper}>
-    
-                        <Text style={noteStyles.textWrapper__bullet}>
-                        •
-                        </Text>
-    
+                        <Text style={noteStyles.textWrapper__bullet}>•</Text>
                         <Text style={noteStyles.textWrapper__text}>
-                        Include clear photos when asking about plant issues
+                            {language === "en" ? "Include clear photos when asking about plant issues" : "Maglagay ng malinaw na larawan kapag nagtatanong tungkol sa problema sa halaman"}
                         </Text>
-    
                     </View>
                 </View>
 

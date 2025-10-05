@@ -18,6 +18,7 @@ import DatePicker from 'react-native-date-picker';
 import { LineChart,PieChart } from 'react-native-chart-kit';
 import { router, useNavigation } from 'expo-router';
 import { useUserContext } from '../Context/UserContext';
+import { useLanguage } from '../Context/LanguageContex';
 
 interface PestLog {
     Date:string,
@@ -32,7 +33,7 @@ const DiseaseOccurrencesDetailed = () => {
 
 
 
-      
+    const{language,setLanguage} = useLanguage()
 
     const {user} = useUserContext();
 
@@ -459,7 +460,8 @@ const DiseaseOccurrencesDetailed = () => {
 
 
   const navigation = useNavigation()
-
+  const screenWidth = Dimensions.get('window').width;
+  const piePaddingLeftValue = ((screenWidth * 0.95) - 230) /2
 
   return (
     <PaperProvider>
@@ -482,11 +484,11 @@ const DiseaseOccurrencesDetailed = () => {
 
 
             <View style={{borderWidth:0,display:'flex',flexDirection:'row',alignItems:'center',gap:5}}>
-                <View style={{width:50,height:50,backgroundColor:"#607D8B",borderRadius:'50%',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-                    <Ionicons name="bug" size={24} color="white" />
+                <View style={{width:40,height:40,backgroundColor:"#607D8B",borderRadius:'50%',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+                    <Ionicons name="bug" size={20} color="white" />
                 </View>
 
-                <Text style={{fontSize:20,fontWeight:600,color:'#37474F'}}>Disease Management</Text>
+                <Text style={{fontSize:18,fontWeight:600,color:'#37474F'}}>{language === "en" ? "Disease Occurence Logs" : "Talaan ng Pagkakaroon ng Sakit"}</Text>
             </View>
 
 
@@ -501,7 +503,7 @@ const DiseaseOccurrencesDetailed = () => {
                 <View style={styleSummaryCard.Wrapper}>
                     <View style={styleSummaryCard.Header}>
                         <Text style={styleSummaryCard.HeaderText}>
-                            Most Frequent Disease
+                            {language === "en" ? "Most Frequent Disease" : "Sakit na Madalas Lumitaw"}
                         </Text>
 
 
@@ -561,7 +563,7 @@ const DiseaseOccurrencesDetailed = () => {
 
 
 
-                <View style={stylePie.wrapper}>
+            <View style={[stylePie.wrapper,{display:'none'}]}>
 
 
                     <View style={styleComparisonChart.headerWrapper}>
@@ -628,10 +630,86 @@ const DiseaseOccurrencesDetailed = () => {
                     </TouchableOpacity>
 
 
+            </View>
+
+
+
+            <View style={stylePie.wrapper}>
+                <View style={styleComparisonChart.headerWrapper}>
+                    <Text style={styleComparisonChart.headerText}>
+                    {language === "en" ? "Disease Distribution" : "Disease Spread sa Pananim"}
+                    </Text>
                 </View>
 
+                <View style={styleComparisonChart.chartWrapper}>
+                    {pieChartData && pieChartData.length > 0 && (
+                    <PieChart
+                        data={pieChartData}
+                        width={220} // smaller for balance
+                        height={220}
+                        chartConfig={{
+                        backgroundColor: "#ffffff",
+                        backgroundGradientFrom: "#ffffff",
+                        backgroundGradientTo: "#ffffff",
+                        decimalPlaces: 0,
+                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        }}
+                        style={{
+                            marginLeft: 0,
+                            alignSelf:'center',
+                            borderWidth:0  // reset any default offset
+                        }}
+                        accessor="population"
+                        backgroundColor="transparent"
+                        hasLegend={false} // 👈 disable default legend
+                        paddingLeft={String(piePaddingLeftValue)}
+                        absolute={false}
+                    />
+                    )}
+                </View>
 
+                {/* Custom Legends */}
+                <View style={styleComparisonChart.legendWrapper}>
+                    {pieChartData?.map((item: any, index: number) => (
+                    <View
+                        key={index}
+                        style={{ flexDirection: "row", alignItems: "center", marginBottom: 5 }}
+                    >
+                        <View
+                        style={{
+                            width: 15,
+                            height: 15,
+                            backgroundColor: item.color,
+                            marginRight: 5,
+                            borderRadius: 3,
+                            borderWidth: 1,
+                        }}
+                        />
+                        <Text>{item.name} ({item.population})</Text>
+                    </View>
+                    ))}
+                </View>
 
+                {/* Crop selection checkboxes */}
+                <View style={styleComparisonChart.controlWrapper}>
+                    {cropNameListData?.map((item, index) => (
+                    <View key={index} style={{ flexDirection: "row", alignItems: "center" }}>
+                        <Checkbox
+                        status={selectedCropForChart.includes(item) ? "checked" : "unchecked"}
+                        onPress={() => toggleCropSelectionChartOccurence(item)}
+                        />
+                        <Text style={{fontSize:16}}>{item}</Text>
+                    </View>
+                    ))}
+                </View>
+
+                <TouchableOpacity
+                    style={styleComparisonChart.button}
+                    onPress={() => displayPieChartOccurent(pestLogs, selectedCropForChart)}
+                >
+                    <Text style={styleComparisonChart.buttonText}>{language === "en" ? "Display Data" : "Ipakita ang Data"}</Text>
+                </TouchableOpacity>
+            </View>
 
 
 
@@ -645,7 +723,8 @@ const DiseaseOccurrencesDetailed = () => {
 
                     <View style={styleComparisonChart.headerWrapper}>
                         <Text style={styleComparisonChart.headerText}>
-                            Disease Occurrence Monthly
+                            
+                            {language === "en" ? "Disease Occurrence Monthly" : "Buwanang Pagkakaroon ng Sakit"}
                         </Text>
                     </View >
 
@@ -707,7 +786,7 @@ const DiseaseOccurrencesDetailed = () => {
                                     status={selectedPests.includes(item) ? 'checked' : 'unchecked'}
                                     onPress={() => togglePestSelection(item)}
                                 />
-                                <Text>{item}</Text>
+                                <Text style={{fontSize:16}}>{item}</Text>
                             </View>
                         ))}
                     </View>
@@ -715,7 +794,7 @@ const DiseaseOccurrencesDetailed = () => {
                         <TouchableOpacity style={styleComparisonChart.button}  onPress={testParam}>
 
                             <Text style={styleComparisonChart.buttonText}>
-                                Display Data
+                               {language === "en" ? "Display Data" : "Ipakita ang Data"}
                             </Text>
                          
 
@@ -804,7 +883,7 @@ const DiseaseOccurrencesDetailed = () => {
                                     status={selectedPestTempVOccurrences.includes(item) ? 'checked' : 'unchecked'}
                                     onPress={() => togglePestSelectionTempVOccurrences(item)}
                                 />
-                                <Text>{item}</Text>
+                                <Text style={{fontSize:16}}>{item}</Text>
                             </View>
                         ))}
                     </View>
@@ -997,7 +1076,7 @@ const styleComparisonChart = StyleSheet.create({
     //text 
 
     headerText:{
-        fontSize:16,
+        fontSize:17,
         fontWeight:500,
         color:'#37474F'
     }
@@ -1032,7 +1111,7 @@ const styleSummaryCard = StyleSheet.create({
         alignItems:'center'
     },
     HeaderText:{
-        fontSize:16,
+        fontSize:17,
         fontWeight:500,
         color:'#37474F'
     },

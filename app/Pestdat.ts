@@ -114,6 +114,12 @@ const cropsImages: CropsImage = {
     loamy: require('../assets/images/Soil/loam.jpg'),
     sandy: require('../assets/images/Soil/sandy.jpg'),
     clay: require('../assets/images/Soil/clay.jpg'),
+    silty:require('../assets/images/Soil/silty-soil.jpg'),
+    peaty:require('../assets/images/Soil/peaty-soil.jpg'),
+    sandyLoam:require('../assets/images/Soil/sandy-loam.jpg'),
+    clayLoam:require('../assets/images/Soil/clay-loam.jpg'),
+    siltyLoam:require('../assets/images/Soil/silty-loam.jpg'),
+    sandyClayLoam:require('../assets/images/Soil/sandy-clay.jpg'),
     // Add more images...
   };
 

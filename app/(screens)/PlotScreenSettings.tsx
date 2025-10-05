@@ -12,6 +12,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import { Image } from 'react-native';
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from 'expo-file-system';
+import { useLanguage } from '../Context/LanguageContex'
 
 interface PestLog {
     Date:string,
@@ -36,26 +37,26 @@ interface DiseaseLog{
 
 }
 const PlotScreenSettings = () => {
+    const{language,setLanguage} = useLanguage()
+
+    const {user} = useUserContext()
+    const searchParams = useSearchParams();
+    const plotRefIdParam = searchParams.get('plotAssocId')
+    const plotNameParam = searchParams.get('currentPlotName')
+    const isCurrentCrop = searchParams.get('currentCrop')
+    const PlotCoverParam = searchParams.get('PlotCover')
+    const [imageUri,setImageUri] = useState<File | String>('')
+    const [plotRefId,setPlotRefId] = useState("")
+    const [showError,setShowError] = useState<boolean>(false)
 
 
-  const {user} = useUserContext()
-  const searchParams = useSearchParams();
-  const plotRefIdParam = searchParams.get('plotAssocId')
-  const plotNameParam = searchParams.get('currentPlotName')
-  const isCurrentCrop = searchParams.get('currentCrop')
-  const PlotCoverParam = searchParams.get('PlotCover')
-  const [imageUri,setImageUri] = useState<File | String>('')
-  const [plotRefId,setPlotRefId] = useState("")
- const [showError,setShowError] = useState<boolean>(false)
+    const[associatedCrops,setAssociatedCrops]= useState<string[]>([])
+    const[associatedCropsDisease,setAssociatedCropsDisease] = useState<string[]>([])
+    const [pestLogs,setPestLogs] = useState<PestLog[]>([]);
+    const [diseaseLogs,setDiseaseLogs] = useState<DiseaseLog[]>([])
 
-
-  const[associatedCrops,setAssociatedCrops]= useState<string[]>([])
-  const[associatedCropsDisease,setAssociatedCropsDisease] = useState<string[]>([])
-  const [pestLogs,setPestLogs] = useState<PestLog[]>([]);
-  const [diseaseLogs,setDiseaseLogs] = useState<DiseaseLog[]>([])
-
-  const [fertilizerLogs,setFertilizerLogs] = useState<FertilizerLog[]>([]);
-  const [fertilizerCropNames,setFertilizerCropNames] = useState<string[]>([])
+    const [fertilizerLogs,setFertilizerLogs] = useState<FertilizerLog[]>([]);
+    const [fertilizerCropNames,setFertilizerCropNames] = useState<string[]>([])
 
  
 
@@ -690,100 +691,111 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
 
     const renderDeleteRecordDataConfirmation = (selectedCrops:string[]) => (
 
-    <Portal>
-
-        <Dialog visible={showDeleteRecordDataConfirmation} onDismiss={()=>{setShowDeleteRecordDataConfirmation(false)}}>
-
-
+        <Portal>
+        <Dialog
+            visible={showDeleteRecordDataConfirmation}
+            onDismiss={() => {
+            setShowDeleteRecordDataConfirmation(false);
+            }}
+        >
             <Dialog.Title>
-                Delete Crop Data?
+            {language === "en" ? "Delete Crop Data?" : "Burahin ang Crop Data?"}
             </Dialog.Title>
 
-
             <Dialog.Content>
-                {
-                    selectedCrops.map((crop,index)=>(
-                        <Text key={index}>
-                            This will permanently remove all records related to the selected crop(s) [{crop}] from pest logs. This action cannot be undone. Are you sure you want to proceed?
-                         
-                        </Text>
-
-                    ))
-                }
-
+            {selectedCrops.map((crop, index) => (
+                <Text key={index}>
+                {language === "en"
+                    ? `This will permanently remove all records related to the selected crop(s) [${crop}] from pest logs. This action cannot be undone. Are you sure you want to proceed?`
+                    : `Permanenteng matatanggal ang lahat ng records na may kaugnayan sa napiling crop(s) [${crop}] mula sa pest logs. Hindi na ito maaaring ibalik. Sigurado ka bang gusto mong magpatuloy?`}
+                </Text>
+            ))}
             </Dialog.Content>
 
-
             <Dialog.Actions>
-                <TouchableOpacity onPress={()=>{removeSelectedCropData()}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-                    <Text style={{color:'white'}}>
-                        Continue
-                    </Text>
-
-                </TouchableOpacity>
+            <TouchableOpacity
+                onPress={() => {
+                removeSelectedCropData();
+                }}
+                style={{
+                borderWidth: 0,
+                alignSelf: "flex-start",
+                backgroundColor: "#253D2C",
+                paddingLeft: 20,
+                paddingRight: 20,
+                paddingTop: 5,
+                paddingBottom: 5,
+                borderRadius: 5,
+                }}
+            >
+                <Text style={{ color: "white" }}>
+                {language === "en" ? "Continue" : "Magpatuloy"}
+                </Text>
+            </TouchableOpacity>
             </Dialog.Actions>
-
         </Dialog>
-    </Portal>
+        </Portal>
     )
+
     const renderDeletePlotDataConfirmation = () => (
 
         <Portal>
-    
+
             <Dialog visible={showDeletePlotConfirmation} onDismiss={()=>{setShowDeletePlotConfirmation(false)}}>
-    
-    
+
                 <Dialog.Title>
-                    Confirm Plot deletion
+                    {language === "en" ? "Confirm Plot Deletion" : "Kumpirmahin ang Pag-delete ng Plot"}
                 </Dialog.Title>
-    
-    
+
                 <Dialog.Content>
                     <Text>
-                         Do you really want to delete this plot? it will also remove all the logs saved to this plot.
+                        {language === "en" 
+                        ? "Do you really want to delete this plot? It will also remove all the logs saved to this plot." 
+                        : "Sigurado ka bang gusto mong i-delete ang plot na ito? Mababura rin ang lahat ng logs na naka-save dito."}
                     </Text>
-                   
                 </Dialog.Content>
 
-           
-    
-    
                 <Dialog.Actions>
                     <TouchableOpacity onPress={()=>{deletePlot(plotRefIdParam as string)}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-    
+
                         <Text style={{color:'white'}}>
-                            Continue
+                            {language === "en" ? "Continue" : "Magpatuloy"}
                         </Text>
-    
+
                     </TouchableOpacity>
                 </Dialog.Actions>
-    
+
             </Dialog>
         </Portal>
     )
+
+
     const renderProcessDeletePlot = () => (
 
         <Portal>
             <Dialog visible={showDeletePlotProcess} onDismiss={()=>{}}>
 
-
                 <Dialog.Title>
-                    Deleting Plot
+                    {language === "en" ? "Deleting Plot" : "Binubura ang Plot"}
                 </Dialog.Title>
-
 
                 {loadingForDeletePlot? (
                     <Dialog.Content>
-                        <Text>Your Plot Is Being Deleted Please wait...</Text>
+                        <Text>
+                            {language === "en" 
+                            ? "Your plot is being deleted. Please wait..." 
+                            : "Binubura ang iyong plot. Mangyaring maghintay..."}
+                        </Text>
                     </Dialog.Content>
                 ) : (
                     <Dialog.Content>
-                    <Text>Your Plot was deleted successfully!</Text>
+                        <Text>
+                            {language === "en" 
+                            ? "Your plot was deleted successfully!" 
+                            : "Matagumpay na nabura ang iyong plot!"}
+                        </Text>
                     </Dialog.Content>
                 )}
-
-
 
                 {loadingForDeletePlot ? (
                     <ProgressBar indeterminate color={MD3Colors.error50} style={{marginBottom:20,width:'80%',marginLeft:'auto',marginRight:'auto',borderRadius:'50%'}} />
@@ -793,7 +805,7 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
                         <TouchableOpacity onPress={()=>{router.replace('/(main)/account')}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
 
                             <Text style={{color:'white'}}>
-                                Continue
+                                {language === "en" ? "Continue" : "Magpatuloy"}
                             </Text>
 
                         </TouchableOpacity>
@@ -802,32 +814,36 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
                 )}
 
             </Dialog>
-
-
         </Portal>
     )
+
+
     const renderProcessDeleteRecordData = () => (
 
         <Portal>
             <Dialog visible={showDeleteRecordDataProcess} onDismiss={()=>{}}>
 
-
                 <Dialog.Title>
-                    Deleting Selected Crop Logs
+                    {language === "en" ? "Deleting Selected Crop Logs" : "Binubura ang Napiling Crop Logs"}
                 </Dialog.Title>
 
-
-                {loadingForDeleteRecordData? (
+                {loadingForDeleteRecordData ? (
                     <Dialog.Content>
-                        <Text>Please wait while the selected crop data is being removed from Pest logs...</Text>
+                        <Text>
+                            {language === "en" 
+                            ? "Please wait while the selected crop data is being removed from pest logs..." 
+                            : "Mangyaring maghintay habang binubura ang napiling crop data mula sa pest logs..."}
+                        </Text>
                     </Dialog.Content>
                 ) : (
                     <Dialog.Content>
-                    <Text>The crop data has been successfully removed from pest logs.</Text>
+                        <Text>
+                            {language === "en" 
+                            ? "The crop data has been successfully removed from pest logs." 
+                            : "Matagumpay na nabura ang crop data mula sa pest logs."}
+                        </Text>
                     </Dialog.Content>
                 )}
-
-
 
                 {loadingForDeleteRecordData ? (
                     <ProgressBar indeterminate color={MD3Colors.error50} style={{marginBottom:20,width:'80%',marginLeft:'auto',marginRight:'auto',borderRadius:'50%'}} />
@@ -837,7 +853,7 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
                         <TouchableOpacity onPress={()=>setShowRecordDataProcess(false)} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
 
                             <Text style={{color:'white'}}>
-                                Continue
+                                {language === "en" ? "Continue" : "Magpatuloy"}
                             </Text>
 
                         </TouchableOpacity>
@@ -846,215 +862,241 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
                 )}
 
             </Dialog>
-
-
         </Portal>
     )
     const renderSaveEditConfirmation = () => (
         <Portal>
-
             <Dialog visible={showSaveEditConfirmation} onDismiss={()=>{}}>
 
-
                 <Dialog.Title>
-                    Save Changes?
+                    {language === "en" ? "Save Changes?" : "I-save ang mga Pagbabago?"}
                 </Dialog.Title>
 
-
                 <Dialog.Content>
-                    <Text>Are you sure you want to save the changes made to the plot name and thumbnail?
-
+                    <Text>
+                        {language === "en" 
+                        ? "Are you sure you want to save the changes made to the plot name and thumbnail?" 
+                        : "Sigurado ka bang gusto mong i-save ang mga pagbabagong ginawa sa pangalan at thumbnail ng plot?"}
                     </Text>
-
                 </Dialog.Content>
 
-
                 <Dialog.Actions>
-
-
-                    <TouchableOpacity onPress={()=>setShowEditConfirmation(false)} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+                    <TouchableOpacity 
+                    onPress={()=>setShowEditConfirmation(false)} 
+                    style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}
+                    >
                         <Text style={{color:'white'}}>
-                            Cancel
+                            {language === "en" ? "Cancel" : "Kanselahin"}
                         </Text>
                     </TouchableOpacity>
 
-
-                    <TouchableOpacity onPress={()=>{handleSaveEdit()}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-                    <Text style={{color:'white'}}>
-                        Continue
-                    </Text>
-
+                    <TouchableOpacity 
+                    onPress={()=>{handleSaveEdit()}} 
+                    style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}
+                    >
+                        <Text style={{color:'white'}}>
+                            {language === "en" ? "Continue" : "Magpatuloy"}
+                        </Text>
                     </TouchableOpacity>
-
-
                 </Dialog.Actions>
 
             </Dialog>
         </Portal>
     )
+
     const renderSaveEditProcess = ()=>(
         <Portal>
             <Dialog visible={showSaveEditProcess} onDismiss={()=>{}}>
 
-
                 <Dialog.Title>
-                    Saving Changes
+                    {language === "en" ? "Saving Changes" : "Sini-save ang mga Pagbabago"}
                 </Dialog.Title>
 
-
-                {loadingForSaveEditProcess? (
+                {loadingForSaveEditProcess ? (
                     <Dialog.Content>
-                        <Text>Please wait while your changes are being saved...</Text>
+                        <Text>
+                            {language === "en" 
+                            ? "Please wait while your changes are being saved..." 
+                            : "Maghintay habang sine-save ang iyong mga pagbabago..."}
+                        </Text>
                     </Dialog.Content>
                 ) : (
                     <Dialog.Content>
-                    <Text>Your plot name and thumbnail have been successfully updated.</Text>
+                        <Text>
+                            {language === "en" 
+                            ? "Your plot name and thumbnail have been successfully updated." 
+                            : "Matagumpay na na-update ang pangalan at thumbnail ng iyong plot."}
+                        </Text>
                     </Dialog.Content>
                 )}
 
-
-
                 {loadingForSaveEditProcess ? (
-                    <ProgressBar indeterminate color={MD3Colors.error50} style={{marginBottom:20,width:'80%',marginLeft:'auto',marginRight:'auto',borderRadius:'50%'}} />
+                    <ProgressBar 
+                    indeterminate 
+                    color={MD3Colors.error50} 
+                    style={{marginBottom:20,width:'80%',marginLeft:'auto',marginRight:'auto',borderRadius:'50%'}} 
+                    />
                 ) : (
                     <Dialog.Actions>
-
-                        <TouchableOpacity onPress={()=>setShowEditProcess(false)} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
+                        <TouchableOpacity 
+                        onPress={()=>setShowEditProcess(false)} 
+                        style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}
+                        >
                             <Text style={{color:'white'}}>
-                                Continue
+                                {language === "en" ? "Continue" : "Magpatuloy"}
                             </Text>
-
                         </TouchableOpacity>
-
                     </Dialog.Actions>
                 )}
 
             </Dialog>
-
-
         </Portal>
     )
+
     const renderDeleteRecordDataConfirmationVFertilizer = (selectedCrops:string[]) => (
 
         <Portal>
-    
             <Dialog visible={showDeleteRecordDataConfirmationForFertilizerRecord} onDismiss={()=>{setShowDeleteRecordDataConfirmationForFertilizerRecord(false)}}>
-    
-    
+
                 <Dialog.Title>
-                    Delete Crop Data?
+                    {language === "en" ? "Delete Crop Data?" : "Burahin ang Crop Data?"}
                 </Dialog.Title>
-    
-    
+
                 <Dialog.Content>
                     {
                         selectedCrops.map((crop,index)=>(
-                            <Text>
-                                This will permanently remove all records related to the selected crop(s) [{crop}] from fertilizer logs. This action cannot be undone. Are you sure you want to proceed?
-                             
+                            <Text key={index}>
+                                {language === "en" 
+                                ? `This will permanently remove all records related to the selected crop(s) [${crop}] from fertilizer logs. This action cannot be undone. Are you sure you want to proceed?` 
+                                : `Permanenteng matatanggal ang lahat ng records na may kinalaman sa crop(s) [${crop}] mula sa fertilizer logs. Hindi na ito maibabalik. Sigurado ka bang gusto mong magpatuloy?`}
                             </Text>
-    
                         ))
                     }
-    
                 </Dialog.Content>
-    
-    
+
                 <Dialog.Actions>
-                    <TouchableOpacity onPress={()=>{removeSelectedCropDataFromFertilizerLog()}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-    
+                    <TouchableOpacity 
+                    onPress={()=>{removeSelectedCropDataFromFertilizerLog()}} 
+                    style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}
+                    >
                         <Text style={{color:'white'}}>
-                            Continue
+                            {language === "en" ? "Continue" : "Magpatuloy"}
                         </Text>
-    
                     </TouchableOpacity>
                 </Dialog.Actions>
-    
+
             </Dialog>
         </Portal>
     )
     const renderProcessDeleteRecordDataVFertilizer = () => (
 
         <Portal>
-            <Dialog visible={showDeleteRecordDataProcessForFertilizerRecord} onDismiss={()=>{}}>
-
-
+            <Dialog
+                visible={showDeleteRecordDataProcessForFertilizerRecord}
+                onDismiss={() => {}}
+            >
                 <Dialog.Title>
-                    Deleting Selected Crop Logs
+                {language === "en"
+                    ? "Deleting Selected Crop Logs"
+                    : "Tinatanggal ang mga Napiling Talaan ng Pananim"}
                 </Dialog.Title>
 
-
-                {loadingForDeleteRecordDataFertilizer? (
-                    <Dialog.Content>
-                        <Text>Please wait while the selected crop data is being removed from Fertilizer logs...</Text>
-                    </Dialog.Content>
+                {loadingForDeleteRecordDataFertilizer ? (
+                <Dialog.Content>
+                    <Text>
+                    {language === "en"
+                        ? "Please wait while we remove the selected crop records from your Fertilizer logs..."
+                        : "Mangyaring maghintay habang tinatanggal ang mga napiling talaan ng pananim mula sa iyong Fertilizer logs..."}
+                    </Text>
+                </Dialog.Content>
                 ) : (
-                    <Dialog.Content>
-                    <Text>The crop data has been successfully removed from Fertilizer logs.</Text>
-                    </Dialog.Content>
+                <Dialog.Content>
+                    <Text>
+                    {language === "en"
+                        ? "The selected crop records have been successfully deleted from your Fertilizer logs."
+                        : "Matagumpay na natanggal ang mga napiling talaan ng pananim mula sa iyong Fertilizer logs."}
+                    </Text>
+                </Dialog.Content>
                 )}
-
-
 
                 {loadingForDeleteRecordData ? (
-                    <ProgressBar indeterminate color={MD3Colors.error50} style={{marginBottom:20,width:'80%',marginLeft:'auto',marginRight:'auto',borderRadius:'50%'}} />
+                <ProgressBar
+                    indeterminate
+                    color={MD3Colors.error50}
+                    style={{
+                    marginBottom: 20,
+                    width: "80%",
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    borderRadius: 50,
+                    }}
+                />
                 ) : (
-                    <Dialog.Actions>
-
-                        <TouchableOpacity onPress={()=>setShowDeleteRecordDataProcessForFertilizerRecord(false)} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-                            <Text style={{color:'white'}}>
-                                Continue
-                            </Text>
-
-                        </TouchableOpacity>
-
-                    </Dialog.Actions>
+                <Dialog.Actions>
+                    <TouchableOpacity
+                    onPress={() =>
+                        setShowDeleteRecordDataProcessForFertilizerRecord(false)
+                    }
+                    style={{
+                        borderWidth: 0,
+                        alignSelf: "flex-start",
+                        backgroundColor: "#253D2C",
+                        paddingHorizontal: 20,
+                        paddingVertical: 5,
+                        borderRadius: 5,
+                    }}
+                    >
+                    <Text style={{ color: "white" }}>
+                        {language === "en" ? "Continue" : "Magpatuloy"}
+                    </Text>
+                    </TouchableOpacity>
+                </Dialog.Actions>
                 )}
-
             </Dialog>
-
-
         </Portal>
     )
     const renderDeletePlotError = () => (
 
 
         <Portal>
-
-            <Dialog visible={showDeletePlotError} onDismiss={()=>{}}>
-
-
+            <Dialog visible={showDeletePlotError} onDismiss={() => {}}>
                 <Dialog.Title>
-                    <Text>
-                        Cannot Delete Plot
-                    </Text>
-                    
+                <Text>
+                    {language === "en"
+                    ? "Cannot Delete Plot"
+                    : "Hindi Maaaring Burahin ang Plot"}
+                </Text>
                 </Dialog.Title>
 
-
                 <Dialog.Content>
-                    <Text>This plot cannot be deleted because a crop is currently assigned to it. Please remove the crop before attempting to delete the plot.</Text>
-
+                <Text>
+                    {language === "en"
+                    ? "This plot cannot be deleted because a crop is currently assigned to it. Please remove the crop before attempting to delete the plot."
+                    : "Hindi maaaring burahin ang plot na ito dahil may nakatalagang pananim dito. Mangyaring alisin muna ang pananim bago subukang burahin ang plot."}
+                </Text>
                 </Dialog.Content>
 
-
                 <Dialog.Actions>
-
-
-                    <TouchableOpacity onPress={()=>{setDeletePlotError(false)}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-                    <Text style={{color:'white'}}>
-                        Continue
+                <TouchableOpacity
+                    onPress={() => {
+                    setDeletePlotError(false);
+                    }}
+                    style={{
+                    borderWidth: 0,
+                    alignSelf: "flex-start",
+                    backgroundColor: "#253D2C",
+                    paddingLeft: 20,
+                    paddingRight: 20,
+                    paddingTop: 5,
+                    paddingBottom: 5,
+                    borderRadius: 5,
+                    }}
+                >
+                    <Text style={{ color: "white" }}>
+                    {language === "en" ? "Continue" : "Magpatuloy"}
                     </Text>
-
-                    </TouchableOpacity>
-
-
+                </TouchableOpacity>
                 </Dialog.Actions>
-
             </Dialog>
         </Portal>
 
@@ -1065,89 +1107,116 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
 
     const renderDeleteRecordDataConfirmationForDisease = (selectedCrops:string[]) => (
         <Portal>
+        <Dialog
+            visible={showDeleteRecordDataConfirmationForDisease}
+            onDismiss={() => {
+            setShowDeleteRecordDataConfirmationForDisease(false);
+            }}
+        >
+            <Dialog.Title>
+            <Text>
+                {language === "en" ? "Delete Crop Data?" : "Burahin ang Talaan ng Pananim?"}
+            </Text>
+            </Dialog.Title>
 
-            <Dialog visible={showDeleteRecordDataConfirmationForDisease} onDismiss={()=>{setShowDeleteRecordDataConfirmationForDisease(false)}}>
+            <Dialog.Content>
+            {selectedCrops.map((crop, index) => (
+                <Text key={index}>
+                {language === "en"
+                    ? `This will permanently remove all records related to the selected crop(s) [${crop}] from Disease logs. This action cannot be undone. Are you sure you want to proceed?`
+                    : `Permanente nitong tatanggalin ang lahat ng talaan na may kaugnayan sa napiling pananim [${crop}] mula sa Disease logs. Hindi na ito maaaring ibalik. Sigurado ka bang gusto mong magpatuloy?`}
+                </Text>
+            ))}
+            </Dialog.Content>
 
-
-                <Dialog.Title>
-                    <Text>
-                    Delete Crop Data?
-                    </Text>
-                </Dialog.Title>
-
-
-                <Dialog.Content>
-                    {
-                        selectedCrops.map((crop,index)=>(
-                            <Text key={index}>
-                                This will permanently remove all records related to the selected crop(s) [{crop}] from Disease logs. This action cannot be undone. Are you sure you want to proceed?
-                            
-                            </Text>
-
-                        ))
-                    }
-
-                </Dialog.Content>
-
-
-                <Dialog.Actions>
-                    <TouchableOpacity onPress={()=>{removeSelectedCropDataVDisease()}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-                        <Text style={{color:'white'}}>
-                            Continue
-                        </Text>
-
-                    </TouchableOpacity>
-                </Dialog.Actions>
-
-            </Dialog>
+            <Dialog.Actions>
+            <TouchableOpacity
+                onPress={() => {
+                removeSelectedCropDataVDisease();
+                }}
+                style={{
+                borderWidth: 0,
+                alignSelf: "flex-start",
+                backgroundColor: "#253D2C",
+                paddingLeft: 20,
+                paddingRight: 20,
+                paddingTop: 5,
+                paddingBottom: 5,
+                borderRadius: 5,
+                }}
+            >
+                <Text style={{ color: "white" }}>
+                {language === "en" ? "Continue" : "Magpatuloy"}
+                </Text>
+            </TouchableOpacity>
+            </Dialog.Actions>
+        </Dialog>
         </Portal>
     )
 
     const renderProcessDeleteRecordDataForDisease = () => (
         <Portal>
-            <Dialog visible={showDeleteRecordDataProcessForDisease} onDismiss={()=>{}}>
-
-
+            <Dialog visible={showDeleteRecordDataProcessForDisease} onDismiss={() => {}}>
                 <Dialog.Title>
-                    <Text>
-                        Deleting Selected Crop Logs
-                    </Text>
-                    
+                <Text>
+                    {language === "en"
+                    ? "Deleting Selected Crop Logs"
+                    : "Tinatanggal ang Napiling Talaan ng Pananim"}
+                </Text>
                 </Dialog.Title>
 
-
-                {loadingForDeleteRecordData? (
-                    <Dialog.Content>
-                        <Text>Please wait while the selected crop data is being removed from Disease logs...</Text>
-                    </Dialog.Content>
+                {loadingForDeleteRecordData ? (
+                <Dialog.Content>
+                    <Text>
+                    {language === "en"
+                        ? "Please wait while the selected crop data is being removed from Disease logs..."
+                        : "Mangyaring maghintay habang tinatanggal ang napiling talaan ng pananim mula sa Disease logs..."}
+                    </Text>
+                </Dialog.Content>
                 ) : (
-                    <Dialog.Content>
-                        <Text>The crop data has been successfully removed from Disease logs.</Text>
-                    </Dialog.Content>
+                <Dialog.Content>
+                    <Text>
+                    {language === "en"
+                        ? "The crop data has been successfully removed from Disease logs."
+                        : "Matagumpay nang natanggal ang talaan ng pananim mula sa Disease logs."}
+                    </Text>
+                </Dialog.Content>
                 )}
-
-
 
                 {loadingForDeleteRecordData ? (
-                    <ProgressBar indeterminate color={MD3Colors.error50} style={{marginBottom:20,width:'80%',marginLeft:'auto',marginRight:'auto',borderRadius:'50%'}} />
+                <ProgressBar
+                    indeterminate
+                    color={MD3Colors.error50}
+                    style={{
+                    marginBottom: 20,
+                    width: "80%",
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    borderRadius: "50%",
+                    }}
+                />
                 ) : (
-                    <Dialog.Actions>
-
-                        <TouchableOpacity onPress={()=>setShowRecordDataProcess(false)} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-                            <Text style={{color:'white'}}>
-                                Continue
-                            </Text>
-
-                        </TouchableOpacity>
-
-                    </Dialog.Actions>
+                <Dialog.Actions>
+                    <TouchableOpacity
+                    onPress={() => setShowRecordDataProcess(false)}
+                    style={{
+                        borderWidth: 0,
+                        alignSelf: "flex-start",
+                        backgroundColor: "#253D2C",
+                        paddingLeft: 20,
+                        paddingRight: 20,
+                        paddingTop: 5,
+                        paddingBottom: 5,
+                        borderRadius: 5,
+                    }}
+                    >
+                    <Text style={{ color: "white" }}>
+                        {language === "en" ? "Continue" : "Magpatuloy"}
+                    </Text>
+                    </TouchableOpacity>
+                </Dialog.Actions>
                 )}
-
             </Dialog>
-
-
         </Portal>
     )
 
@@ -1156,38 +1225,41 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
     const renderError = ()=>(
 
         <Portal>
-            <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
-
-                <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
-
-                <Dialog.Title>
-                    <Text style={{color:'#37474F'}}>
-                        Something went wrong
-                    </Text>
-                    
-                </Dialog.Title>
-                
-                <Dialog.Content>
-                    <Text style={{color:'#475569'}}>An unexpected error occured. Please try again later</Text>
-                </Dialog.Content>
-
-
-
-                <Dialog.Actions>
-
-                <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-                    <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                        OK
-                    </Text>
-
-                </TouchableOpacity>
-
-                </Dialog.Actions>
-
-            </Dialog>
-
-        </Portal>
+              <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
+      
+                  <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
+      
+                  <Dialog.Title>
+                      <Text style={{color:'#37474F'}}>
+                          {language === "en" ? "Something Went Wrong" : "May Nagkaproblema"}
+                      </Text>
+                      
+                  </Dialog.Title>
+                  
+                  <Dialog.Content>
+                      <Text style={{color:'#475569'}}>
+                       {language === "en" ? "An unexpected error occured. Please try again later" : "Nagkaroon ng hindi inaasahang error. Pakisubukang muli mamaya."}
+                        
+                      </Text>
+                  </Dialog.Content>
+      
+      
+      
+                  <Dialog.Actions>
+      
+                  <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+      
+                      <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                          OK
+                      </Text>
+      
+                  </TouchableOpacity>
+      
+                  </Dialog.Actions>
+      
+              </Dialog>
+      
+          </Portal>
 
     )
 
@@ -1245,19 +1317,21 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
                     <TextInput value={plotName} onChange={(e)=>setPlotName(e.nativeEvent.text)} placeholder="Title" style={styles.titleInput}></TextInput>
 
 
-                    <TouchableOpacity onPress={()=> setShowEditConfirmation(true)} style={{alignSelf:'flex-start',borderWidth:0,paddingVertical:5,paddingHorizontal:10,borderRadius:5,backgroundColor:'#297340',elevation:2}}><Text style={{color:"white"}}>Update Plot Information</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={()=> setShowEditConfirmation(true)} style={{alignSelf:'flex-start',borderWidth:0,paddingVertical:8,paddingHorizontal:10,borderRadius:5,backgroundColor:'#607D8B',elevation:2}}>
+                        <Text style={{color:"white",fontSize:16,fontWeight:500}}>{language === "en" ? "Update Plot Information" : "I-update ang Impormasyon ng Plot"}</Text>
+                    </TouchableOpacity>
                 </View>
 
 
 
                 <View style={stylesDataRemove.wrapper}>
                     <View style={stylesDataRemove.wrapperHeader}>
-                        <Text style={{fontWeight:500,fontSize:16,color:'#37474F',letterSpacing:.5}}>Delete Crop Pest Logs</Text>
+                        <Text style={{fontWeight:600,fontSize:18,color:'#37474F',letterSpacing:0}}>{language === "en" ? "Delete Crop Pest Logs" : "Burahin ang Pest Logs ng Pananim"}</Text>
                     </View>
 
                     <View style={stylesDataRemove.wrapperControl}>
                     {associatedCrops.length === 0 ? (
-                        <Text style={{marginLeft:'auto',marginRight:'auto',fontWeight:500,fontSize:13}}>No associated crops available.</Text>
+                        <Text style={{marginLeft:'auto',marginRight:'auto',fontWeight:500,fontSize:13}}> {language === "en" ? "No associated crops available." : "Walang kaugnay na pananim na available."}</Text>
                     ) : (
                         associatedCrops.map((item, index) => (
                         <View key={index} style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -1266,15 +1340,15 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
                             onPress={() => toggleCropSelectionRemoval(item)}
                             key={index}
                             />
-                            <Text>{item}</Text>
+                            <Text style={{fontSize:17}}>{item}</Text>
                         </View>
                         ))
                     )}
                     </View>
 
                     <View style={stylesDataRemove.wrapperButton}>
-                        <TouchableOpacity onPress={()=>{if(selectedCropForRemoval.length === 0){return};  setShowDeleteRecordDataConfirmation(true)}} style={{alignSelf:'flex-start',borderWidth:0,paddingVertical:5,paddingHorizontal:10,borderRadius:5,backgroundColor:'red',elevation:2}}>
-                            <Text style={{color:'white'}}>Delete Data</Text>
+                        <TouchableOpacity onPress={()=>{if(selectedCropForRemoval.length === 0){return};  setShowDeleteRecordDataConfirmation(true)}} style={{alignSelf:'flex-start',borderWidth:0,paddingVertical:7,paddingHorizontal:10,borderRadius:5,backgroundColor:'red',elevation:2}}>
+                            <Text style={{color:'white',fontSize:15,fontWeight:500}}>{language === "en" ? "Delete Data" : "Burahin ang Data"}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -1283,12 +1357,12 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
 
                  <View style={stylesDataRemove.wrapper}>
                     <View style={stylesDataRemove.wrapperHeader}>
-                        <Text style={{fontWeight:500,fontSize:16,color:'#37474F',letterSpacing:.5}}>Delete Crop Disease Logs</Text>
+                        <Text style={{fontWeight:600,fontSize:18,color:'#37474F',letterSpacing:0}}>{language === "en" ? "Delete Crop Disease Logs" : "Burahin ang Disease Logs ng Pananim"}</Text>
                     </View>
 
                     <View style={stylesDataRemove.wrapperControl}>
                     {associatedCropsDisease.length === 0 ? (
-                        <Text style={{marginLeft:'auto',marginRight:'auto',fontWeight:500,fontSize:13}}>No associated crops available.</Text>
+                        <Text style={{marginLeft:'auto',marginRight:'auto',fontWeight:500,fontSize:13}}>{language === "en" ? "No associated crops available." : "Walang kaugnay na pananim na available."}</Text>
                     ) : (
                         associatedCropsDisease.map((item, index) => (
                         <View key={index} style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -1297,15 +1371,15 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
                             status={SelectedCropForRemovalVDisease.includes(item) ? 'checked' : 'unchecked'}
                             onPress={() => toggleCropSelectionRemovalForDisease(item)}
                             />
-                            <Text>{item}</Text>
+                            <Text style={{fontSize:17}}>{item}</Text>
                         </View>
                         ))
                     )}
                     </View>
 
                     <View style={stylesDataRemove.wrapperButton}>
-                        <TouchableOpacity onPress={()=>{if(SelectedCropForRemovalVDisease.length === 0){return};  setShowDeleteRecordDataConfirmationForDisease(true)}} style={{alignSelf:'flex-start',borderWidth:0,paddingVertical:5,paddingHorizontal:10,borderRadius:5,backgroundColor:'red',elevation:2}}>
-                            <Text style={{color:'white'}}>Delete Data</Text>
+                        <TouchableOpacity onPress={()=>{if(SelectedCropForRemovalVDisease.length === 0){return};  setShowDeleteRecordDataConfirmationForDisease(true)}} style={{alignSelf:'flex-start',borderWidth:0,paddingVertical:7,paddingHorizontal:10,borderRadius:5,backgroundColor:'red',elevation:2}}>
+                            <Text style={{color:'white',fontSize:15,fontWeight:500}}>{language === "en" ? "Delete Data" : "Burahin ang Data"}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -1313,12 +1387,12 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
 
                 <View style={stylesDataRemove.wrapper}>
                     <View style={stylesDataRemove.wrapperHeader}>
-                        <Text style={{fontWeight:500,fontSize:16,color:'#37474F',letterSpacing:.5}}>Delete Fertilizer Logs</Text>
+                        <Text style={{fontWeight:600,fontSize:18,color:'#37474F',letterSpacing:0}}>{language === "en" ? "Delete Fertilizer Logs" : "Burahin ang Fertilizer Logs"}</Text>
                     </View>
 
                     <View style={stylesDataRemove.wrapperControl}>
                     {fertilizerCropNames?.length === 0 ? (
-                        <Text style={{marginLeft:'auto',marginRight:'auto',fontWeight:500,fontSize:13,color:'#333333'}}>No associated crops available.</Text>
+                        <Text style={{marginLeft:'auto',marginRight:'auto',fontWeight:500,fontSize:13,color:'#333333'}}>{language === "en" ? "No associated crops available." : "Walang kaugnay na pananim na available."}</Text>
                     ) : (
                         fertilizerCropNames?.map((item, index) => (
                         <View key={index} style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -1327,15 +1401,15 @@ const toggleCropSelectionRemovalVFertilizer = (crop:string)=>{
                             status={SelectedCropForRemovalCropsVFertilizer.includes(item) ? 'checked' : 'unchecked'}
                             onPress={() => toggleCropSelectionRemovalVFertilizer(item)}
                             />
-                            <Text>{item}</Text>
+                            <Text style={{fontSize:17}}>{item}</Text>
                         </View>
                         ))
                     )}
                     </View>
 
                     <View style={stylesDataRemove.wrapperButton}>
-                        <TouchableOpacity onPress={()=>{if(SelectedCropForRemovalCropsVFertilizer.length === 0){return};  setShowDeleteRecordDataConfirmationForFertilizerRecord(true)}} style={{alignSelf:'flex-start',borderWidth:0,paddingVertical:5,paddingHorizontal:10,borderRadius:5,backgroundColor:'red',elevation:2}}>
-                            <Text style={{color:'white'}}>Delete Data</Text>
+                        <TouchableOpacity onPress={()=>{if(SelectedCropForRemovalCropsVFertilizer.length === 0){return};  setShowDeleteRecordDataConfirmationForFertilizerRecord(true)}} style={{alignSelf:'flex-start',borderWidth:0,paddingVertical:7,paddingHorizontal:10,borderRadius:5,backgroundColor:'red',elevation:2}}>
+                            <Text style={{color:'white',fontSize:15,fontWeight:500}}>{language === "en" ? "Delete Data" : "Burahin ang Data"}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -1430,7 +1504,7 @@ const styles = StyleSheet.create({
         //gap:5
     },
     mainContainer:{
-        borderWidth:1,
+        borderWidth:0,
         flex:1,
         display:'flex',
         flexDirection:'column',

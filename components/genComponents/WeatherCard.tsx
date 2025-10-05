@@ -131,7 +131,7 @@ const WeatherCard = () => {
         try {
           setLoading(true);
           const response = await fetch(
-            'https://api.open-meteo.com/v1/forecast?latitude=15.3066&longitude=120.8564&hourly=temperature_2m,weathercode&timezone=Asia/Manila'
+            'https://api.open-meteo.com/v1/forecast?latitude=15.310017&longitude=120.904434&hourly=temperature_2m,weathercode&timezone=Asia/Manila'
           );
           const data = await response.json();
       
@@ -202,7 +202,7 @@ const WeatherCard = () => {
                 
                 
             <View style = {styles.topPart}>
-                <Text style={styles.locationText}> San Antonio</Text>
+                <Text style={styles.locationText}> San Isidro</Text>
                 <Text style={styles.dateText}> {currentDate}</Text>
             </View>
 

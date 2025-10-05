@@ -19,6 +19,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import ImageViewing from "react-native-image-viewing";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { useLanguage } from '../Context/LanguageContex';
 
 interface DiscussionData {
     Author:string,
@@ -53,7 +54,7 @@ return date.toLocaleDateString("en-US", { month: "long", day: "numeric" }); // F
 
 
 const DisussionScreen = () => {
-
+  const {language} = useLanguage()
   const navigateToComment = (RefId:string) => {
 
     const queryString = `?PostRefId=${encodeURIComponent(RefId)}`
@@ -419,50 +420,51 @@ useEffect(() => {
 
   const renderProcess = () => (
     
-            <Portal>
-                <Dialog visible={showDeleteProcess} onDismiss={()=>{}}>
-    
-    
-                    <Dialog.Title>
-                        Deleting Your Comment
-                    </Dialog.Title>
-    
-    
-                    {loadingDelete ? (
-                        <Dialog.Content>
-                            <Text>Your comment is being deleted Please wait...</Text>
-                        </Dialog.Content>
-                    ) : (
-                        <Dialog.Content>
-                        <Text>Your comment is deleted Successfully!</Text>
-                        </Dialog.Content>
-                    )}
-    
-    
-    
-                    {loadingDelete ? (
-                        <ProgressBar indeterminate color={MD3Colors.error50} style={{marginBottom:20,width:'80%',marginLeft:'auto',marginRight:'auto',borderRadius:'50%'}} />
-                    ) : (
-                        <Dialog.Actions>
-    
-                            <TouchableOpacity onPress={()=>{setShowDeleteProcess(false)}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-    
-                                <Text style={{color:'white'}}>
-                                    Continue
-                                </Text>
-    
-                            </TouchableOpacity>
-    
-                        </Dialog.Actions>
-                    )}
-    
+    <Portal>
+        <Dialog visible={showDeleteProcess} onDismiss={()=>{}}>
 
-                </Dialog>
-    
-    
-    
-    
-            </Portal>
+            <Dialog.Title>
+                <Text>
+                    {language === "en" ? "Deleting Your Comment" : "Binubura ang Iyong Komento"}
+                </Text>
+            </Dialog.Title>
+
+            {loadingDelete ? (
+                <Dialog.Content>
+                    <Text style={{fontSize:16}}>
+                        {language === "en" 
+                        ? "Your comment is being deleted. Please wait..." 
+                        : "Binubura ang iyong komento. Mangyaring maghintay..."}
+                    </Text>
+                </Dialog.Content>
+            ) : (
+                <Dialog.Content>
+                    <Text style={{fontSize:16}}>
+                        {language === "en" 
+                        ? "Your comment is deleted Successfully!" 
+                        : "Matagumpay na nabura ang iyong komento!"}
+                    </Text>
+                </Dialog.Content>
+            )}
+
+            {loadingDelete ? (
+                <ProgressBar indeterminate color={MD3Colors.error50} style={{marginBottom:20,width:'80%',marginLeft:'auto',marginRight:'auto',borderRadius:'50%'}} />
+            ) : (
+                <Dialog.Actions>
+
+                    <TouchableOpacity onPress={()=>{setShowDeleteProcess(false)}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+
+                        <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                            {language === "en" ? "Continue" : "Magpatuloy"}
+                        </Text>
+
+                    </TouchableOpacity>
+
+                </Dialog.Actions>
+            )}
+
+        </Dialog>
+    </Portal>
     )
 
 
@@ -473,24 +475,34 @@ useEffect(() => {
 
             <Dialog visible={showDeleteConfirmation} onDismiss={()=>{setShowDeleteConfirmation(false)}}>
 
-
                 <Dialog.Title>
-                    Are you sure you want to delete this comment?
+                    <Text>
+                        {language === "en" 
+                            ? "Are you sure you want to delete this comment?" 
+                            : "Sigurado ka bang gusto mong burahin ang komento na ito?"}
+                    </Text>
                 </Dialog.Title>
 
-
                 <Dialog.Content>
-                    <Text>
-                        This action cannot be undone
+                    <Text style={{fontSize:16}}>
+                        {language === "en" 
+                            ? "This action cannot be undone" 
+                            : "Ang aksyong ito ay hindi na maibabalik"}
                     </Text>
                 </Dialog.Content>
 
+                <Dialog.Actions style={{display:'flex',flexDirection:'row',justifyContent:'space-between'}}>
+                    <TouchableOpacity onPress={()=>{setShowDeleteConfirmation(false)}} style={{borderColor:' #607D8B',borderWidth:1,alignSelf:'flex-start',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
 
-                <Dialog.Actions>
-                    <TouchableOpacity onPress={()=>{deleteComment(discussionid as string,commentId as string,selectedIndex)}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-        
-                        <Text style={{color:'white'}}>
-                            Continue
+                        <Text style={{color:'#607D8B',fontSize:16,fontWeight:500}}>
+                            {language === "en" ? "Cancel" : "I-Kansela"}
+                        </Text>
+
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>{deleteComment(discussionid as string,commentId as string,selectedIndex)}} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+
+                        <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                            {language === "en" ? "Continue" : "Magpatuloy"}
                         </Text>
 
                     </TouchableOpacity>
@@ -505,75 +517,74 @@ useEffect(() => {
         <Portal>
             <Dialog visible={showDeletePostProcess} onDismiss={()=>{}}>
 
-
                 <Dialog.Title>
-                    Deleting Your Post
+                    <Text>
+                        {language === "en" 
+                            ? "Deleting Your Post" 
+                            : "Binubura ang Iyong Post"}
+                    </Text>
                 </Dialog.Title>
-
 
                 {deletePostLoading ? (
                     <Dialog.Content>
-                        <Text>Your Post is being deleted Please wait...</Text>
+                        <Text>
+                            {language === "en" 
+                                ? "Your Post is being deleted Please wait..." 
+                                : "Ang iyong post ay binubura, mangyaring maghintay..."}
+                        </Text>
                     </Dialog.Content>
                 ) : (
                     <Dialog.Content>
-                    <Text>Your Post is deleted Successfully!</Text>
+                        <Text>
+                            {language === "en" 
+                                ? "Your Post is deleted Successfully!" 
+                                : "Matagumpay na nabura ang iyong post!"}
+                        </Text>
                     </Dialog.Content>
                 )}
-
-
 
                 {deletePostLoading ? (
                     <ProgressBar indeterminate color={MD3Colors.error50} style={{marginBottom:20,width:'80%',marginLeft:'auto',marginRight:'auto',borderRadius:'50%'}} />
                 ) : (
                     <Dialog.Actions>
-
                         <TouchableOpacity onPress={()=>{router.push('/(main)/records')}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
                             <Text style={{color:'white'}}>
-                                Continue
+                                {language === "en" ? "Continue" : "Magpatuloy"}
                             </Text>
-
                         </TouchableOpacity>
-
                     </Dialog.Actions>
                 )}
 
-
             </Dialog>
-
-
-
-
         </Portal>
     )
 
     const renderDeletePostConfirmation = (discussionid:string,discussionRefId:string) => (
 
         <Portal>
-
             <Dialog visible={showDeletePostConfirmation} onDismiss={()=>{setShowDeletePostConfirmation(false)}}>
 
-
                 <Dialog.Title>
-                    Are you sure you want to delete this Post?
+                    <Text>
+                        {language === "en" 
+                            ? "Are you sure you want to delete this Post?" 
+                            : "Sigurado ka bang gusto mong burahin ang post na ito?"}
+                    </Text>
                 </Dialog.Title>
-
 
                 <Dialog.Content>
                     <Text>
-                        This action cannot be undone
+                        {language === "en" 
+                            ? "This action cannot be undone" 
+                            : "Ang aksyong ito ay hindi na maibabalik"}
                     </Text>
                 </Dialog.Content>
 
-
                 <Dialog.Actions>
                     <TouchableOpacity onPress={()=>{setShowDeletePostConfirmation(false); deleteDiscussion(discussionid,discussionRefId)}} style={{backgroundColor:'red',paddingVertical:5,paddingHorizontal:10,borderRadius:5,elevation:1}} >
-        
                         <Text style={{color:'white'}}>
-                            Continue
+                            {language === "en" ? "Continue" : "Magpatuloy"}
                         </Text>
-
                     </TouchableOpacity>
                 </Dialog.Actions>
 
@@ -582,78 +593,75 @@ useEffect(() => {
     )
 
     const renderSlowInternet = () => (
-                <Portal>
-                    <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)}>
-        
-                        <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
-        
-                        <Dialog.Title>
-                            <Text style={{color:'#37474F'}}>
-                                Slow Connection
-                            </Text>
-                            
-                        </Dialog.Title>
-                        
-                        <Dialog.Content>
-                            <Text style={{color:'#475569'}}>Connection seems slow. Please try again.</Text>
-                        </Dialog.Content>
-        
-        
-        
-                        <Dialog.Actions>
-        
+            <Portal>
+                <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)}>
+    
+                    <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
+    
+                    <Dialog.Title>
+                        <Text style={{color:'#37474F'}}>
+                            {language === "en" ? "Slow Connection" : "Mabagal na Koneksyon"}
+                        </Text>
+                    </Dialog.Title>
+                    
+                    <Dialog.Content>
+                        <Text style={{color:'#475569'}}>
+                            {language === "en" ? "Connection seems slow. Please try again." : "Mabagal ang koneksyon. Pakisubukang muli."}
+                        </Text>
+                    </Dialog.Content>
+    
+                    <Dialog.Actions>
                         <TouchableOpacity onPress={()=> setShowInternetError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-        
                             <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                                OK
+                                {language === "en" ? "OK" : "Sige"}
                             </Text>
-        
                         </TouchableOpacity>
-        
-                        </Dialog.Actions>
-        
-                    </Dialog>
-        
-                </Portal>
+                    </Dialog.Actions>
+    
+                </Dialog>
+            </Portal>
     )
 
 
     const renderError = ()=>(
     
         <Portal>
-            <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
-    
-                <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
-    
-                <Dialog.Title>
-                    <Text style={{color:'#37474F'}}>
-                        Something went wrong
-                    </Text>
+                <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
+        
+                    <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
+        
+                    <Dialog.Title>
+                        <Text style={{color:'#37474F'}}>
+                            {language === "en" ? "Something Went Wrong" : "May Nagkaproblema"}
+                        </Text>
+                        
+                    </Dialog.Title>
                     
-                </Dialog.Title>
-                
-                <Dialog.Content>
-                    <Text style={{color:'#475569'}}>An unexpected error occured. Please try again later</Text>
-                </Dialog.Content>
-    
-    
-    
-                <Dialog.Actions>
-    
-                <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-    
-                    <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                        OK
-                    </Text>
-    
-                </TouchableOpacity>
-    
-                </Dialog.Actions>
-    
-            </Dialog>
-    
-        </Portal>
-    
+                    <Dialog.Content>
+                        <Text style={{color:'#475569'}}>
+                        {language === "en" ? "An unexpected error occured. Please try again later" : "Nagkaroon ng hindi inaasahang error. Pakisubukang muli mamaya."}
+                        
+                        </Text>
+                    </Dialog.Content>
+        
+        
+        
+                    <Dialog.Actions>
+        
+                    <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+        
+                        <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                            OK
+                        </Text>
+        
+                    </TouchableOpacity>
+        
+                    </Dialog.Actions>
+        
+                </Dialog>
+        
+            </Portal>
+
     )
 
     /*<--- Delete leftover logic [LEGACY] */
@@ -1038,7 +1046,7 @@ useEffect(() => {
 
 
                             <View style={stylesDiscussionContent.bodyWrapper}>
-                                <Text style={{fontSize:16,color:'#475569'}}>{discussionData?.Content}</Text>
+                                <Text style={{fontSize:17,color:'#475569'}}>{discussionData?.Content}</Text>
                                 <View style={{borderColor:'#D5F6E5',marginVertical:10,borderWidth:1,alignSelf:'flex-start',backgroundColor:'#D5F6E5',paddingVertical:2,paddingHorizontal:10,borderRadius:20,display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
                                     <Text style={{fontSize:16,color:'#518A69'}}>{discussionData?.Tag}</Text>
 
@@ -1090,7 +1098,7 @@ useEffect(() => {
                                         </View>
                     
                                         <View style={stylesReply.replyContent}>
-                                            <Text style={{fontSize:15,color:'#475569'}} >{comment?.Content}</Text>
+                                            <Text style={{fontSize:16,color:'#475569'}} >{comment?.Content}</Text>
                                         </View>
 
                                         <View style={stylesReply.actionsWrapper}>
@@ -1122,9 +1130,7 @@ useEffect(() => {
 
 
 
-                        <TouchableOpacity onPress={()=>console.log(discussionData)}>
-                            <Text>Test Data</Text>
-                        </TouchableOpacity>
+               
 
                     </ScrollView>
 

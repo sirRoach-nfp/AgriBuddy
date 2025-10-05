@@ -9,12 +9,13 @@ import Entypo from '@expo/vector-icons/Entypo';
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import {router} from 'expo-router'
+import { Timestamp } from 'firebase/firestore';
 
 
 
 
 interface Props{
-    date:Date,
+    date:Timestamp,
     expenseId:string,
     title:string,
     total: number,
@@ -30,6 +31,18 @@ const ExpensesReportCard = ({title,date,total,amountItems,expenseId}:Props) => {
         router.push(`/(screens)/ExpandedExpenseReport${queryString}` as any)
     }
 
+  function formatFirestoreDate(timestamp: Timestamp): string {
+      if (!timestamp) return "";
+      console.log("raw timestamp : ",timestamp)
+      const date = timestamp.toDate(); // Convert Firestore Timestamp to JS Date
+      const options: Intl.DateTimeFormatOptions = {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+      };
+
+      return date.toLocaleDateString("en-US", options);
+  }
 
 
   return (
@@ -42,7 +55,7 @@ const ExpensesReportCard = ({title,date,total,amountItems,expenseId}:Props) => {
 
         <View style={styles.subInfoInnerWrapper}>
             <AntDesign name="calendar" size={20} color="#607D8B" />
-            <Text style={textStyle.subText}>{}</Text>
+            <Text style={textStyle.subText}>{formatFirestoreDate(date)}</Text>
         </View>
         <View style={styles.subInfoInnerWrapper}>
             <Feather name="package" size={20} color="#607D8B" />

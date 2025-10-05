@@ -97,18 +97,14 @@ const ExpandedFertilizerLog = () => {
 
 
             <View style={styles.contentWrapper}>
-                <Text style={styles.contentHeader}>Location And Crop Association</Text>
+                <Text style={styles.contentHeader}>Crop Association</Text>
 
                 <View style={styles.contentSubContainer}>
                     <Text style={styles.contentText}>Crop Name</Text>
                     <Text style={styles.contentText}>{cropName}</Text>
                 </View>
 
-                <View style={styles.contentSubContainer}>
-                    <Text style={styles.contentText}>Plot Name</Text>
-                    <Text style={styles.contentText}>Test Right</Text>
-                </View>
-
+       
 
 
             </View>
@@ -138,7 +134,9 @@ const styles = StyleSheet.create({
         width:'100%',
         display:'flex',
         flexDirection:'column',
-        //borderWidth:1,
+        borderBottomWidth:1,
+        paddingBottom:15,
+        borderColor:'#e2e8f0',
         gap:10,
         marginBottom:15
     },
@@ -159,6 +157,8 @@ const styles = StyleSheet.create({
         width:'100%',
         maxHeight:50,
         //borderWidth:1,
+        borderBottomWidth:1,
+        borderColor:'#e2e8f0',
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
@@ -171,16 +171,16 @@ const styles = StyleSheet.create({
     mainWrapper:{
         width:'100%',
         flex:1,
-        //borderWidth:1,
+        borderWidth:0,
         display:'flex',
         flexDirection:'column',
         alignItems:'center',
         justifyContent:'center',
     },
     scrollContainer:{
-        width:'95%',
+        width:'90%',
         flex:1,
         //borderWidth:1,
-        paddingTop:10
+        paddingTop:25
     }
 })

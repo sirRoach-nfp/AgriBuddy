@@ -42,8 +42,8 @@ export const uploadReport = async({
             _reportTitle:reportTitle,
             _contentTitle: contentTitle || null,
             _contentBody: contentBody,
-            _postRefId:postRefId,
-            _replyRefId: replyRefId || null,
+            _postRefId:postRefId.trim(),
+            _replyRefId: replyRefId?.trim() || null,
             _author: author,
             CreatedAt:createdAt,
 

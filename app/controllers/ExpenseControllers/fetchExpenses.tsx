@@ -4,7 +4,7 @@ import { addDoc, arrayUnion, collection, doc, getDoc, Timestamp, updateDoc } fro
 
 
 interface expenseLogStructure{
-    date:Date,
+    date:Timestamp,
     expenseId:string,
     title:string,
     total: number,

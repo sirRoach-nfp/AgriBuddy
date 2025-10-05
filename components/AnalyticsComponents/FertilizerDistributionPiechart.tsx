@@ -1,8 +1,10 @@
+
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Picker } from '@react-native-picker/picker';
 import { PieChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
+import { useLanguage } from '@/app/Context/LanguageContex';
 
 
 
@@ -31,7 +33,8 @@ type PieDataEntry = {
 
 
 const FertilizerDistributionPiechart: React.FC<Props> = ({ data,yearDataFilter }) => {
-    const months = [
+  const{language,setLanguage} = useLanguage()   
+  const months = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
       ];
@@ -67,34 +70,71 @@ const colorMap: Record<string, string> = {
     const [pieData,setPieData] = useState<PieDataEntry[]>([]);
 
     //functions
-    const generateFullPieData = (logs:any) => {
-        const entries : any[]  = [];
-      
-        logs.forEach((log:any) => {
-          const { fertilizerType, fertilizerAmmount, DateApplied } = log;
-          const date = new Date(DateApplied);
-          const amount = parseFloat(fertilizerAmmount) || 0;
-          const month = date.getMonth();
-          const year = date.getFullYear();
-      
-          entries.push({
-            name: `${fertilizerType} (${amount} KG)`,
-            amount,
-            color: colorMap[fertilizerType] || colorMap.default,
-            legendFontColor: '#333',
-            legendFontSize: 15,
-            month,
-            year
-          });
-        });
-      
-        return entries;
-      };
     
+  
+  const generateFullPieData = (logs:any) => {
+      const entries : any[]  = [];
+    
+      logs.forEach((log:any) => {
+        const { fertilizerType, fertilizerAmmount, DateApplied } = log;
+        const date = new Date(DateApplied);
+        const amount = parseFloat(fertilizerAmmount) || 0;
+        const month = date.getMonth();
+        const year = date.getFullYear();
+    
+        entries.push({
+          name: `${fertilizerType} (${amount} KG)`,
+          amount,
+          color: colorMap[fertilizerType] || colorMap.default,
+          legendFontColor: '#333',
+          legendFontSize: 15,
+          month,
+          year
+        });
+      });
+    
+      return entries;
+    };
+      
+  /*
+  const generateFullPieData = (logs: any[]) => {
+    const grouped: Record<string, any> = {};
 
+    logs.forEach((log: any) => {
+      const { fertilizerType, fertilizerAmmount, DateApplied } = log;
+      const amount = parseFloat(fertilizerAmmount) || 0;
+      const date = new Date(DateApplied);
+      const month = date.getMonth();
+      const year = date.getFullYear();
+
+      if (grouped[fertilizerType]) {
+        // Sum the amounts for the same fertilizer type
+        grouped[fertilizerType].amount += amount;
+      } else {
+        // Keep the structure of your original entry
+        grouped[fertilizerType] = {
+          name: `${fertilizerType} (${amount} KG)`,
+          amount,
+          color: colorMap[fertilizerType] || colorMap.default,
+          legendFontColor: '#333',
+          legendFontSize: 15,
+          month,
+          year
+        };
+      }
+    });
+
+    // Update the name to reflect the total amount per fertilizer type
+    return Object.values(grouped).map((entry) => ({
+      ...entry,
+      name: `${entry.name.split(' ')[0]} (${entry.amount} KG)`
+    }));
+};
+*/
  useEffect(()=>{
 
     const generatedData =generateFullPieData(data)
+    console.log("Passed data to this component is : ",data)
     console.log("Generated data for pie chart is : ",generatedData)
     setPieData(generatedData)
  },[])
@@ -104,6 +144,8 @@ const colorMap: Record<string, string> = {
     const filtered = pieData.filter(item => item.year === parseInt(year));
     return groupPieData(filtered);
   };
+
+  /* Legacy
 
   const getFilteredPieChartData = (month: number, year: string) => {
     console.log("Selected Month : ",month, "Selected Year : ",year)
@@ -132,8 +174,38 @@ const colorMap: Record<string, string> = {
     });
     return Object.values(grouped);
   };
+  */
 
+const getFilteredPieChartData = (month: number, year: string) => {
+  // Filter data by month and year
+  const filtered = pieData.filter(
+    (item) => item.month === month && item.year === parseInt(year)
+  );
 
+  return groupPieData(filtered);
+};
+
+// Refactored grouping function
+const groupPieData = (data: PieDataEntry[]) => {
+  const grouped: Record<string, PieDataEntry> = {};
+
+  data.forEach((item) => {
+    // Extract fertilizer type from the name (assumes format: "TYPE (X KG)")
+    const fertilizerType = item.name.split(' ')[0];
+
+    if (grouped[fertilizerType]) {
+      grouped[fertilizerType].amount += item.amount;
+    } else {
+      grouped[fertilizerType] = { ...item, name: fertilizerType };
+    }
+  });
+
+  // Update the name to include the total amount
+  return Object.values(grouped).map((entry) => ({
+    ...entry,
+    name: `${entry.name} (${entry.amount} KG)`
+  }));
+};
 
   const piePaddingLeftValue = ((screenWidth * 0.95) - 230) /2
 
@@ -141,7 +213,7 @@ const colorMap: Record<string, string> = {
     <View style={styles.componentMainWrapper}>
 
         <View style={styles.componentHeaderWrapper}>
-            <Text style={styles.componentHeaderText}>Fertilizer Type Breakdown</Text>
+            <Text style={styles.componentHeaderText}>{language === "en" ? "Fertilizer Type Breakdown" : "Talaan ng Pataba Bawat Uri"}</Text>
 
 
             <View style={styles.segmentContainer}>
@@ -306,7 +378,7 @@ const colorMap: Record<string, string> = {
                 </>
                 ) : (
                 <View style={{ alignItems: 'center', justifyContent: 'center', height: 220 }}>
-                    <Text style={{ color: '#888', fontSize: 16 }}>No data available for this month.</Text>
+                    <Text style={{ color: '#888', fontSize: 16 }}>{language === "en" ? "No data available for this month." : "Walang data para sa buwang ito."}</Text>
                 </View>
                 );
             })()}
@@ -439,7 +511,7 @@ const styles = StyleSheet.create({
 
     //text
     componentHeaderText:{
-        fontSize:20,
+        fontSize:18,
         fontWeight:600,
         marginBottom:10,
         color:'#37474F'

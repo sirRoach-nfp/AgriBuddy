@@ -2,6 +2,7 @@ import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import React, { useEffect, useState } from 'react'
 import { Checkbox } from 'react-native-paper';
 import { BarChart } from 'react-native-chart-kit';
+import { useLanguage } from '@/app/Context/LanguageContex';
 
 
 
@@ -19,7 +20,7 @@ interface cropsDat{
     data: FertilizerLogEntry[];
 }
 const FertilizerUsageByCrop:React.FC<cropsDat> = ({cropNames,data}) => {
-
+  const{language,setLanguage} = useLanguage() 
 
 
   const [selectedCrops,setSelectedCrops] = useState<string[]>([]);  
@@ -120,7 +121,7 @@ const FertilizerUsageByCrop:React.FC<cropsDat> = ({cropNames,data}) => {
 
         <View style={styles.componentHeaderWrapper}> 
             <Text style={styles.componentHeaderText}>
-                Fertilizer Usage By Crop
+                {language === "en" ? "Fertilizer Usage By Crop" : "Paggamit ng Pataba Kada Pananim"}
             </Text>
      
         </View>

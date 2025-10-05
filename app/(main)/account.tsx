@@ -31,6 +31,8 @@ import AccountControlComponent from '@/components/AccountScreenComponents/Accoun
 import {fonts} from '../utils/typography'
 import Feather from '@expo/vector-icons/Feather';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import LanguageSwitchComponent from '@/components/AccountScreenComponents/LanguageSwitchComponent';
+import { useLanguage } from '../Context/LanguageContex';
 
 interface CurrentCrops{
 
@@ -86,7 +88,7 @@ interface userData{
 
 
 const account = () => {
-
+  const{language,setLanguage} = useLanguage()
   const navigateToPost = (RefId:string,SignatureId:string) =>{
 
     const queryString= `?PostRefId=${encodeURIComponent(RefId)}&SignatureId=${SignatureId}`
@@ -146,20 +148,42 @@ const account = () => {
 
   const [userData, setUserData] = useState(null);
 
-  const renderAddPlotConfirmationDialog = (plotLength:any) => (
+  const renderAddPlotConfirmationDialog = (plotLength: any) => (
     <Portal>
-    <Dialog visible={confirmationForAddPlotVisible} onDismiss={()=>{}}>
-      <Dialog.Title>Plot Creation</Dialog.Title>
-      <Dialog.Content>
-        <Text>Create another plot?</Text>
-      </Dialog.Content>
-      <Dialog.Actions>
-        <Button onPress={hideAddPlotConfirmation}>Cancel</Button>
-        <Button onPress={() => createNewPlot(plotLength,user?.PlotsRefId as string,user?.RecordsRefId as string)}>Confirm</Button>
-      </Dialog.Actions>
-    </Dialog>
-  </Portal>
-  )
+      <Dialog visible={confirmationForAddPlotVisible} onDismiss={() => {}}>
+        <Dialog.Title>
+          {language === "en" ? "Plot Creation" : "Paglikha ng Plot"}
+        </Dialog.Title>
+
+        <Dialog.Content>
+          <Text>
+            {language === "en"
+              ? "Create another plot?"
+              : "Gumawa ng panibagong plot?"}
+          </Text>
+        </Dialog.Content>
+
+        <Dialog.Actions>
+          <Button onPress={hideAddPlotConfirmation}>
+            {language === "en" ? "Cancel" : "Kanselahin"}
+          </Button>
+
+          <Button
+            onPress={() =>
+              createNewPlot(
+                plotLength,
+                user?.PlotsRefId as string,
+                user?.RecordsRefId as string
+              )
+            }
+          >
+            {language === "en" ? "Confirm" : "Kumpirmahin"}
+          </Button>
+        </Dialog.Actions>
+      </Dialog>
+    </Portal>
+  );
+
   
   
   
@@ -342,7 +366,9 @@ const account = () => {
               </View>
 
               <View style={styles.profileInfoWrapper}>
-                  <Text style={{color:'#607D8B',fontWeight:'700',fontSize:18}}>Welcome Back!</Text>
+                  <Text style={{ color: "#607D8B", fontWeight: "700", fontSize: 18 }}>
+                    {language === "en" ? "Welcome Back!" : "Welcome Back ulit!"}
+                  </Text>
                   <Text numberOfLines={1} ellipsizeMode="tail" style={{color:'#64748B'}}>{user?.Email}</Text>
               </View>
 
@@ -409,7 +435,9 @@ const account = () => {
                 <View style={{width:30,height:30,borderWidth:0,borderRadius:50,backgroundColor:'#607D8B',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
                   <Entypo name="location-pin" size={20} color="white" />
                 </View>
-                <Text style={styles.plotHeaderText}>Your Farm Plots</Text> 
+                <Text style={styles.plotHeaderText}>
+                  {language === "en" ? "Your Farm Plots" : "Mga Plot Mo"}
+                </Text>
 
                 <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:'auto'}} onPress={showAddPlotConfirmation}><Ionicons name="add-outline" size={30} color="black" /></TouchableOpacity>
                 
@@ -428,7 +456,11 @@ const account = () => {
                       ))
 
                   ) : (
-                    <Text style={{textAlign:'center'}}>You currently have no plot to display, Press the add button to create a new plot</Text>
+                    <Text style={{textAlign: 'center'}}>
+                      {language === "en" 
+                        ? "You currently have no plot to display, Press the add button to create a new plot" 
+                        : "Wala ka pang plot na maipapakita, Pindutin ang add button para makagawa ng bagong plot"}
+                    </Text>
                   )
 
 
@@ -446,7 +478,7 @@ const account = () => {
 
             </View>
 
-
+            
    
             <View style={styles.discussionContainerWrapper}>
 
@@ -456,7 +488,9 @@ const account = () => {
                     <MaterialIcons name="mode-comment" size={15} color="white" />
 
                   </View>
-                  <Text style={styles.discussionHeaderText}>My Discussions</Text>
+                  <Text style={styles.discussionHeaderText}>
+                    {language === "en" ? "My Discussions" : "Mga Diskusyon Ko"}
+                  </Text>
                 </View>
 
                 {discussions && discussions.length>0 ? (
@@ -509,9 +543,9 @@ const account = () => {
 
             </View>
 
-
+          <LanguageSwitchComponent/>
           <AccountControlComponent/>
-
+          
         </ScrollView>
 
         

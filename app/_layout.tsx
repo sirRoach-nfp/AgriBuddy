@@ -13,7 +13,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 SplashScreen.preventAutoHideAsync();
 import { CropProvider } from './Context/CropContext';
 import { UserProvider } from './Context/UserContext';
-
+import { LanguageProvider } from './Context/LanguageContex';
 
 
 
@@ -45,6 +45,7 @@ export default function RootLayout() {
     
 
       <CropProvider>
+        <LanguageProvider>
         <SafeAreaProvider>
 
 
@@ -73,7 +74,7 @@ export default function RootLayout() {
 
 
         </SafeAreaProvider>
-      
+        </LanguageProvider>
       </CropProvider>
 
       

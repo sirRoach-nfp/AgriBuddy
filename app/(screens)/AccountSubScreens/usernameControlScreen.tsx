@@ -11,12 +11,12 @@ import { auth, db } from '@/app/firebaseconfig'
 import { updateProfile } from 'firebase/auth'
 import { useUserContext } from '@/app/Context/UserContext'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-
+import { useLanguage } from '@/app/Context/LanguageContex'
 
 import { UserData } from '@/app/Context/UserContext'
 const usernameControlScreen = () => {
 
-
+  const{language,setLanguage} = useLanguage()
   //user context
 
   const {user,storeUserData} = useUserContext()
@@ -55,13 +55,15 @@ const usernameControlScreen = () => {
 
         <Dialog.Title>
           <Text style={{color:'#37474F'}}>
-            Update Your Username?
+            {language === "en" ? "Update Your Username?" : "Palitan ang Username"}
           </Text>
         </Dialog.Title>
 
         <Dialog.Content>
           <Text style={{color:'#475569'}}>
-            Are you sure you want to update your username? This action will change how your name appears across the app.
+            {language === "en" ? "Are you sure you want to update your username? This action will change how your name appears across the app." 
+            : "Sigurado ka bang gusto mong i-update ang iyong username? Magbabago nito kung paano lalabas ang iyong pangalan sa buong app."}
+            
           </Text>
         </Dialog.Content>
 
@@ -72,7 +74,7 @@ const usernameControlScreen = () => {
           <TouchableOpacity onPress={() => setShowConfirmation(false)} style={{borderColor:'#475569',borderWidth:1,alignSelf:'flex-start',backgroundColor:'transparent',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
 
               <Text style={{color:'#475569',fontSize:16,fontWeight:500}}>
-                  Cancel
+                {language === "en" ? "Cancel" : "Kanselahin"}
               </Text>
 
           </TouchableOpacity>
@@ -82,7 +84,7 @@ const usernameControlScreen = () => {
           <TouchableOpacity onPress={() => updateUsername()} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
 
               <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                  Continue
+                  {language === "en" ? "Continue" : "Magpatuloy"}
               </Text>
 
           </TouchableOpacity>
@@ -108,13 +110,15 @@ const usernameControlScreen = () => {
         {process? (
           <Dialog.Title>
             <Text style={{color:'#37474F'}}>
-              Updating Username
+              
+              {language === "en" ? "Updating Username" : "Ina-update ang Username"}
             </Text>
           </Dialog.Title>
         ) : (
           <Dialog.Title>
             <Text style={{color:'#37474F'}}>
-              Username Updated
+              
+              {language === "en" ? "Username Updated" : "Na-update na ang Username"}
             </Text>
           </Dialog.Title>
         )}
@@ -125,13 +129,16 @@ const usernameControlScreen = () => {
         {process ? (
         <Dialog.Content>
           <Text style={{color:'#475569'}}>
-            Please wait while we update your username. This may take a few seconds.
+            {language === "en" ? "Please wait while we update your username. This may take a few seconds." 
+            : "Mangyaring maghintay habang ina-update ang iyong username. Maaaring ilang segundo itong tumagal."}
+            
           </Text>
         </Dialog.Content>
         ) : (
         <Dialog.Content>
           <Text style={{color:'#475569'}}>
-            Your username has been successfully updated.
+            {language === "en" ? "Your username has been successfully updated." 
+            : "Matagumpay na na-update ang iyong username."}
           </Text>
         </Dialog.Content>
         )}
@@ -149,7 +156,7 @@ const usernameControlScreen = () => {
             <TouchableOpacity onPress={() => setShowProcessDialog(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
 
                 <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                    Continue
+                    {language === "en" ? "Continue" : "Magpatuloy"}
                 </Text>
 
             </TouchableOpacity>
@@ -198,13 +205,16 @@ const usernameControlScreen = () => {
       
                   <Dialog.Title>
                       <Text style={{color:'#37474F'}}>
-                          Something went wrong
+                          {language === "en" ? "Something Went Wrong" : "May Nagkaproblema"}
                       </Text>
                       
                   </Dialog.Title>
                   
                   <Dialog.Content>
-                      <Text style={{color:'#475569'}}>An unexpected error occured. Please try again later</Text>
+                      <Text style={{color:'#475569'}}>
+                       {language === "en" ? "An unexpected error occured. Please try again later" : "Nagkaroon ng hindi inaasahang error. Pakisubukang muli mamaya."}
+                        
+                      </Text>
                   </Dialog.Content>
       
       
@@ -225,7 +235,7 @@ const usernameControlScreen = () => {
       
           </Portal>
       
-          )
+  )
   
 
 
@@ -336,7 +346,9 @@ const usernameControlScreen = () => {
 
 
 
-            <Text style={{fontSize:20,fontWeight:600,color:'#37474F',marginLeft:20}}>Change Username</Text>
+            <Text style={{fontSize:20,fontWeight:600,color:'#37474F',marginLeft:20}}>
+              {language === "en" ? "Change Username" : "Palitan Ang Iyong Username"}
+            </Text>
 
         </View>
 
@@ -351,8 +363,8 @@ const usernameControlScreen = () => {
               </View>
 
               <View style={decorators.userNameWrapper__infoWrapper}>
-                <Text style={decorators.userNameWrapper__infoWrapper__secondary}>Current Username</Text>
-                <Text style={decorators.userNameWrapper__infoWrapper__primary}>SacabambaspisDev</Text>
+                <Text style={decorators.userNameWrapper__infoWrapper__secondary}>{language === "en" ? "Current Username" : "Kasalukuyang Username"}</Text>
+                <Text style={decorators.userNameWrapper__infoWrapper__primary}>{user?.Username}</Text>
               </View>
 
             </View>
@@ -360,7 +372,8 @@ const usernameControlScreen = () => {
 
             <View style={[fieldStyles.fieldWrapper,{marginBottom:10}]}>
               <Text style={fieldStyles.fieldWrapperLabel}>
-                New Username
+                
+                {language === "en" ? "New Username" : "Bagong Username"}
               </Text>
 
               <TextInput style={fieldStyles.textInput} placeholder='Enter New Username' onChange={(e)=>setNewUsername(e.nativeEvent.text)}/>
@@ -368,7 +381,8 @@ const usernameControlScreen = () => {
 
             <View style={fieldStyles.fieldWrapper}>
               <Text style={fieldStyles.fieldWrapperLabel}>
-                Confirm New Username
+                
+                {language === "en" ? "Confirm New Username" : "Kumpirmahin ang Bagong Username"}
               </Text>
 
               <TextInput style={fieldStyles.textInput} placeholder='Confirm New Username' onChange={(e)=>setConfirmNewUsername(e.nativeEvent.text)}/>
@@ -386,7 +400,7 @@ const usernameControlScreen = () => {
                 }}
                 onPress={()=>setShowConfirmation(true)}
                 >
-                <Text style={{color:'white',fontSize:16, fontWeight:600}}>Update Username</Text>
+                <Text style={{color:'white',fontSize:16, fontWeight:600}}>{language === "en" ? "Update Username" : "I-update ang Username"}</Text>
               </TouchableOpacity>
 
               
@@ -405,52 +419,45 @@ const usernameControlScreen = () => {
             </View>
 
             <View style={noteStyles.noteWrapper}>
-                <Text style={noteStyles.header}>Username Guidelines</Text>
+              <Text style={noteStyles.header}>
+                {language === "en" ? "Username Guidelines" : "Mga Patakaran sa Username"}
+              </Text>
 
-                <View style={noteStyles.textWrapper}>
-                  <Text style={noteStyles.textWrapper__bullet}>
-                    •
-                  </Text>
-                  <Text style={noteStyles.textWrapper__text}>
-                    Must be atleast 3 characters long
-                  </Text>
+              <View style={noteStyles.textWrapper}>
+                <Text style={noteStyles.textWrapper__bullet}>•</Text>
+                <Text style={noteStyles.textWrapper__text}>
+                  {language === "en"
+                    ? "Must be at least 3 characters long"
+                    : "Dapat hindi bababa sa 3 karakter ang haba"}
+                </Text>
+              </View>
 
-                </View>
+              <View style={noteStyles.textWrapper}>
+                <Text style={noteStyles.textWrapper__bullet}>•</Text>
+                <Text style={noteStyles.textWrapper__text}>
+                  {language === "en"
+                    ? "Can contain letters, numbers, and underscores"
+                    : "Maaaring maglaman ng mga letra, numero, at underscore"}
+                </Text>
+              </View>
 
-                <View style={noteStyles.textWrapper}>
-                  <Text style={noteStyles.textWrapper__bullet}>
-                    •
-                  </Text>
+              <View style={noteStyles.textWrapper}>
+                <Text style={noteStyles.textWrapper__bullet}>•</Text>
+                <Text style={noteStyles.textWrapper__text}>
+                  {language === "en"
+                    ? "Cannot contain spaces"
+                    : "Hindi maaaring maglaman ng espasyo"}
+                </Text>
+              </View>
 
-                  <Text style={noteStyles.textWrapper__text}>
-                    Can contain letters, numbers, and underscores
-                  </Text>
-
-                </View>
-
-                <View style={noteStyles.textWrapper}>
-
-                  <Text style={noteStyles.textWrapper__bullet}>
-                    •
-                  </Text>
-
-                  <Text style={noteStyles.textWrapper__text}>
-                    Cannot contain spaces
-                  </Text>
-
-                </View>
-
-                <View style={noteStyles.textWrapper}>
-
-                  <Text style={noteStyles.textWrapper__bullet}>
-                    •
-                  </Text>
-
-                  <Text style={noteStyles.textWrapper__text}>
-                    Must be unique
-                  </Text>
-
-                </View>
+              <View style={noteStyles.textWrapper}>
+                <Text style={noteStyles.textWrapper__bullet}>•</Text>
+                <Text style={noteStyles.textWrapper__text}>
+                  {language === "en"
+                    ? "Must be unique"
+                    : "Dapat ay natatangi"}
+                </Text>
+              </View>
             </View>
             
 

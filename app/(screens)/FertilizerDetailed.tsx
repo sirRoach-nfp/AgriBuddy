@@ -12,6 +12,7 @@ import { useSearchParams } from 'expo-router/build/hooks'
 import FertilizerDistributionPiechart from '@/components/AnalyticsComponents/FertilizerDistributionPiechart'
 import FertilizerUsageByCrop from '@/components/AnalyticsComponents/FertilizerUsageByCrop'
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useLanguage } from '../Context/LanguageContex'
 
 interface FertilizerLog{
     DateApplied:string,
@@ -35,7 +36,7 @@ const formatDateToMonthDay = (dateString: string): string => {
 
 
 const FertilizerDetailed = () => {
-
+    const{language,setLanguage} = useLanguage() 
     const months = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
@@ -213,7 +214,7 @@ const fetchFertilizerLogRecord = async(plotId:string) =>{
                     selectedOption === 'analytics' && styles.activeText,
                 ]}
                 >
-                Usage Analytics
+                {language === "en" ? "Usage Analytics" : "Analytics ng Paggamit"}
                 </Text>
                 {selectedOption === 'analytics' && (
                 <View style={styles.activeLine} />
@@ -229,7 +230,8 @@ const fetchFertilizerLogRecord = async(plotId:string) =>{
                     selectedOption === 'logs' && styles.activeText,
                 ]}
                 >
-                Logs
+             
+                {language === "en" ? "Logs" : "Mga Tala"}
                 </Text>
                 {selectedOption === 'logs' && (
                 <View style={styles.activeLine} />
@@ -274,7 +276,8 @@ const fetchFertilizerLogRecord = async(plotId:string) =>{
                 <View style={stylesLogs.logsContainerHeader}>
 
                                 <Text style={{fontSize:17,fontWeight:600, color:'#37474F',letterSpacing:.5}}>
-                                    Usage Logs 
+                                 
+                                    {language === "en" ? "Usage Logs" : "Tala ng Paggamit"}
                                 </Text>
                                 <View style={{borderWidth:1,borderRadius:5,borderColor:'#E2E8f0'}}>
                                     <Picker
@@ -312,7 +315,7 @@ const fetchFertilizerLogRecord = async(plotId:string) =>{
 
 
                     {filteredLogs && filteredLogs.length>0 && filteredLogs.map((log,index)=>(
-                        <View style={{borderColor:'#e2e8f0',borderRadius:5,marginBottom:0,width:'95%',paddingVertical:10,paddingHorizontal:10,borderWidth:1,display:'flex',flexDirection:'column',alignItems:'flex-start',justifyContent:'space-between'}}>
+                        <View style={{borderColor:'#e2e8f0',borderRadius:5,marginBottom:10,width:'95%',paddingVertical:10,paddingHorizontal:10,borderWidth:1,display:'flex',flexDirection:'column',alignItems:'flex-start',justifyContent:'space-between'}}>
                             <Text style={{fontSize:15,color:'#475569'}}>{formatDateToMonthDay(log.DateApplied)}</Text>
                             <Text style={{fontSize:16,fontWeight:500, color:"#37474F"}}>{log.fertilizerAmmount}kg Of {log.fertilizerType}</Text>
                             <Text style={{fontSize:16,color:'#64748B'}}>On {log.cropName}</Text>

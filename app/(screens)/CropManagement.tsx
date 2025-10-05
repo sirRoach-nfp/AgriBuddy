@@ -123,12 +123,15 @@ import { hide } from 'expo-splash-screen'
 import { useUserContext } from '../Context/UserContext'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Feather from '@expo/vector-icons/Feather';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import Entypo from '@expo/vector-icons/Entypo';
+import { useLanguage } from '../Context/LanguageContex';
 
 
 
 
 const CropManagement = () => {
-
+  const {language} = useLanguage()
   const {user,logout} = useUserContext();
 
   //firebase datas
@@ -1035,29 +1038,55 @@ const CropManagement = () => {
 
 
   const renderDialog = (plotId:any,plotName:any,cropId:any,cropName:any,cropSessionId:any) => (
-    <Portal>
-      <Dialog visible={dialogVisible} onDismiss={hideDialog}>
-        <Dialog.Title>Assign to Plot?</Dialog.Title>
-        <Dialog.Content>
-          <Text>Assign to plot #{selectedPlot}?</Text>
-        </Dialog.Content>
-        <Dialog.Actions>
-          <Button onPress={hideDialog}>Cancel</Button>
-          <Button onPress={() =>setPlotFun(plotId,plotName,cropId,cropName,cropSessionId)}>Ok</Button>
-        </Dialog.Actions>
-      </Dialog>
-    </Portal>
+  <Portal>
+    <Dialog visible={dialogVisible} onDismiss={hideDialog}>
+      <Dialog.Title>
+        {language === "en" ? "Assign to Plot?" : "Italaga sa Plot?"}
+      </Dialog.Title>
+
+      <Dialog.Content>
+        <Text>
+          {language === "en"
+            ? `Assign to plot #${selectedPlot}?`
+            : `Italaga sa plot #${selectedPlot}?`}
+        </Text>
+      </Dialog.Content>
+
+      <Dialog.Actions>
+        <Button onPress={hideDialog}>
+          {language === "en" ? "Cancel" : "Kanselahin"}
+        </Button>
+        <Button
+          onPress={() => setPlotFun(plotId, plotName, cropId, cropName, cropSessionId)}
+        >
+          {language === "en" ? "OK" : "Sige"}
+        </Button>
+      </Dialog.Actions>
+    </Dialog>
+  </Portal>
   );
   const renderConfirmationDeletion = (plotAssoc:any,sessionId:any) => (
     <Portal>
       <Dialog visible={dialogDeleteVisible} onDismiss={hideDeleteDialog}>
-        <Dialog.Title>Remove Crop?</Dialog.Title>
+        <Dialog.Title>
+          {language === "en" ? "Remove Crop?" : "Alisin ang Pananim?"}
+        </Dialog.Title>
+
         <Dialog.Content>
-          <Text>Do you really want to remove {cropName} from your tracklist?</Text>
+          <Text>
+            {language === "en"
+              ? `Do you really want to remove ${cropName} from your tracklist?`
+              : `Gusto mo bang alisin ang ${cropName} mula sa iyong talaan ng mga pananim?`}
+          </Text>
         </Dialog.Content>
+
         <Dialog.Actions>
-          <Button onPress={hideDeleteDialog}>Cancel</Button>
-          <Button onPress={() => deleteCurrentCrop(plotAssoc,sessionId)}>Confirm</Button>
+          <Button onPress={hideDeleteDialog}>
+            {language === "en" ? "Cancel" : "Kanselahin"}
+          </Button>
+          <Button onPress={() => deleteCurrentCrop(plotAssoc, sessionId)}>
+            {language === "en" ? "Confirm" : "Kumpirmahin"}
+          </Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>
@@ -1065,76 +1094,73 @@ const CropManagement = () => {
 
   const renderError = ()=>(
 
-  <Portal>
-      <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
-
-          <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
-
-          <Dialog.Title>
-              <Text style={{color:'#37474F'}}>
-                  Something went wrong
-              </Text>
-              
-          </Dialog.Title>
-          
-          <Dialog.Content>
-              <Text style={{color:'#475569'}}>An unexpected error occured. Please try again later</Text>
-          </Dialog.Content>
-
-
-
-          <Dialog.Actions>
-
-          <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-              <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                  OK
-              </Text>
-
-          </TouchableOpacity>
-
-          </Dialog.Actions>
-
-      </Dialog>
-
-  </Portal>
+    <Portal>
+            <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
+    
+                <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
+    
+                <Dialog.Title>
+                    <Text style={{color:'#37474F'}}>
+                        {language === "en" ? "Something Went Wrong" : "May Nagkaproblema"}
+                    </Text>
+                    
+                </Dialog.Title>
+                
+                <Dialog.Content>
+                    <Text style={{color:'#475569'}}>
+                    {language === "en" ? "An unexpected error occured. Please try again later" : "Nagkaroon ng hindi inaasahang error. Pakisubukang muli mamaya."}
+                    
+                    </Text>
+                </Dialog.Content>
+    
+    
+    
+                <Dialog.Actions>
+    
+                <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+    
+                    <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                        OK
+                    </Text>
+    
+                </TouchableOpacity>
+    
+                </Dialog.Actions>
+    
+            </Dialog>
+    
+        </Portal>
 
   )
 
   const renderSlowInternet = () => (
-          <Portal>
-              <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)}>
-  
-                  <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
-  
-                  <Dialog.Title>
-                      <Text style={{color:'#37474F'}}>
-                          Slow Connection
-                      </Text>
-                      
-                  </Dialog.Title>
-                  
-                  <Dialog.Content>
-                      <Text style={{color:'#475569'}}>Connection seems slow. Please try again.</Text>
-                  </Dialog.Content>
-  
-  
-  
-                  <Dialog.Actions>
-  
-                  <TouchableOpacity onPress={()=> setShowInternetError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-  
-                      <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                          OK
-                      </Text>
-  
-                  </TouchableOpacity>
-  
-                  </Dialog.Actions>
-  
-              </Dialog>
-  
-          </Portal>
+    <Portal>
+        <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)}>
+
+            <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
+
+            <Dialog.Title>
+                <Text style={{color:'#37474F'}}>
+                    {language === "en" ? "Slow Connection" : "Mabagal na Koneksyon"}
+                </Text>
+            </Dialog.Title>
+            
+            <Dialog.Content>
+                <Text style={{color:'#475569'}}>
+                    {language === "en" ? "Connection seems slow. Please try again." : "Mabagal ang koneksyon. Pakisubukang muli."}
+                </Text>
+            </Dialog.Content>
+
+            <Dialog.Actions>
+                <TouchableOpacity onPress={()=> setShowInternetError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+                    <Text style={{color:'white',fontSize:16,fontWeight:500}}>
+                        {language === "en" ? "OK" : "Sige"}
+                    </Text>
+                </TouchableOpacity>
+            </Dialog.Actions>
+
+        </Dialog>
+    </Portal>
   )
 
 
@@ -1156,46 +1182,77 @@ const CropManagement = () => {
   }
   const renderConfirmationLogEntry= (cropName:any,plotAssoc:any) => (
     <Portal>
-    <Dialog visible={dialogEntryVisible} onDismiss={hideEntryPosteDialog}>
-      <Dialog.Title>Log Entry?</Dialog.Title>
-      <Dialog.Content>
-        <Text>Do you really want to log this entry to your plot record?</Text>
-      </Dialog.Content>
-      <Dialog.Actions>
-        <Button onPress={hideEntryPosteDialog}>Cancel</Button>
-        <Button onPress={() => logData(cropName,plotAssoc) }>Confirm</Button>
-      </Dialog.Actions>
-    </Dialog>
-  </Portal>
+      <Dialog visible={dialogEntryVisible} onDismiss={hideEntryPosteDialog}>
+        <Dialog.Title>
+          {language === "en" ? "Log Entry?" : "I-log ang Entry?"}
+        </Dialog.Title>
+
+        <Dialog.Content>
+          <Text>
+            {language === "en"
+              ? "Do you really want to log this entry to your plot record?"
+              : "Sigurado ka bang gusto mong i-log ang entry na ito sa iyong talaan ng plot?"}
+          </Text>
+        </Dialog.Content>
+
+        <Dialog.Actions>
+          <Button onPress={hideEntryPosteDialog}>
+            {language === "en" ? "Cancel" : "Kanselahin"}
+          </Button>
+          <Button onPress={() => logData(cropName, plotAssoc)}>
+            {language === "en" ? "Confirm" : "Kumpirmahin"}
+          </Button>
+        </Dialog.Actions>
+      </Dialog>
+    </Portal>
   )
   const renderSuccessLogEntry= () => (
     <Portal>
-    <Dialog visible={dialogEntrySuccessVisible} onDismiss={() => {}}>
-      <Dialog.Title>Log Entry Success !</Dialog.Title>
-      <Dialog.Content>
-        <Text>Your Log Entry is successfully logged</Text>
-      </Dialog.Content>
-      <Dialog.Actions>
+      <Dialog visible={dialogEntrySuccessVisible} onDismiss={() => {}}>
+        <Dialog.Title>
+          {language === "en" ? "Log Entry Success!" : "Matagumpay ang Pag-log ng Entry!"}
+        </Dialog.Title>
 
-        <Button onPress={hideEntrySuccessDialog}>Continue</Button>
-      </Dialog.Actions>
-    </Dialog>
-  </Portal>
+        <Dialog.Content>
+          <Text>
+            {language === "en"
+              ? "Your log entry has been successfully recorded."
+              : "Matagumpay na naitala ang iyong log entry."}
+          </Text>
+        </Dialog.Content>
+
+        <Dialog.Actions>
+          <Button onPress={hideEntrySuccessDialog}>
+            {language === "en" ? "Continue" : "Magpatuloy"}
+          </Button>
+        </Dialog.Actions>
+      </Dialog>
+    </Portal>
   )
   const renderDeleteSuccess = () => (
 
-   <Portal>
+    <Portal>
       <Dialog visible={dialogRemoveVisible} onDismiss={() => {}}>
         <Dialog.Icon icon="check" />
-        <Dialog.Title>Remove Success</Dialog.Title>
+        <Dialog.Title>
+          {language === "en" ? "Remove Success" : "Matagumpay na Naalis"}
+        </Dialog.Title>
+
         <Dialog.Content>
-          <Text>{cropName} is successfully removed from your tracklist?</Text>
+          <Text>
+            {language === "en"
+              ? `${cropName} has been successfully removed from your tracklist.`
+              : `Matagumpay na naalis ang ${cropName} mula sa iyong tracklist.`}
+          </Text>
         </Dialog.Content>
+
         <Dialog.Actions>
-          <Button onPress={()=> {router.back()}}>Go back</Button>
+          <Button onPress={() => {router.back()}}>
+            {language === "en" ? "Go Back" : "Bumalik"}
+          </Button>
         </Dialog.Actions>
       </Dialog>
-  </Portal>
+    </Portal>
 
   )
   const deleteCurrentCrop = async(plotAssoc:any,sessionId:any)=>{
@@ -1448,7 +1505,7 @@ const CropManagement = () => {
                   selectedOption === 'CareGuide' && styles.activeText,
                 ]}
               >
-                Care Guide
+                {language === "en" ? "Care Guide" : "Pangangalaga"}
               </Text>
               {selectedOption === 'CareGuide' && <View style={styles.activeLine} />}
             </TouchableOpacity>
@@ -1463,7 +1520,7 @@ const CropManagement = () => {
                   selectedOption === 'Management' && styles.activeText,
                 ]}
               >
-                Management
+                {language === "en" ? "Logs" : "Pagtatala"}
               </Text>
               {selectedOption === 'Management' && <View style={styles.activeLine} />}
             </TouchableOpacity>
@@ -1478,7 +1535,8 @@ const CropManagement = () => {
                   selectedOption === 'PestAndDiseases' && styles.activeText,
                 ]}
               >
-                Pest And Diseases
+                
+                {language === "en" ? "Pest And Diseases" : "Peste At Sakit"}
               </Text>
               {selectedOption === 'PestAndDiseases' && <View style={styles.activeLine} />}
             </TouchableOpacity>
@@ -1529,12 +1587,129 @@ const CropManagement = () => {
               
             </View>
 
-            <View style={styles.counterWrapper}>
-              
               
 
+              <View style={{
+                  borderWidth:1,
+                  padding:8,
+                  display:'flex',
+                  flexDirection:'row',
+                  backgroundColor:'#FAFAFA',
+                  borderRadius:16,
+                  borderColor:'#e2e8f0',
+                  alignItems:'center',
+                  gap:8,
+              }}>
+                  <View style={{
+                      width:40,
+                      height:40,
+                      borderWidth:0,
+                      backgroundColor:'#E3E3E3',
+                      borderRadius:8,
+                      display:'flex',
+                      flexDirection:'column',
+                      alignItems:'center',
+                      justifyContent:'center'
+                  }}>
+                      <Feather name="tag" size={20} color="#475569" />
+                  </View>
 
-            </View>
+                  <View style={{
+                      display:'flex',
+                      flexDirection:'column',
+                  }}>
+                      <Text style={{fontSize:15,fontWeight:600,color:'#475569'}}>
+                          {language === "en" ? "Family" : "Pangkat ng Halaman"}
+                      </Text>
+                      <Text style={{fontSize:16,fontWeight:400,color:'#787C88'}}>
+                          {cropData?.family}
+                      </Text>
+                  </View>
+              </View>
+
+
+
+              <View style={{
+                  borderWidth:1,
+                  padding:8,
+                  display:'flex',
+                  flexDirection:'row',
+                  backgroundColor:'#FAFAFA',
+                  borderRadius:16,
+                  borderColor:'#e2e8f0',
+                  alignItems:'center',
+                  gap:8,
+              }}>
+                  <View style={{
+                      width:40,
+                      height:40,
+                      borderWidth:0,
+                      backgroundColor:'#E3E3E3',
+                      borderRadius:8,
+                      display:'flex',
+                      flexDirection:'column',
+                      alignItems:'center',
+                      justifyContent:'center'
+                  }}>
+              
+                      <Entypo name="cycle" size={20} color="#475569" />
+                  </View>
+
+                  <View style={{
+                      display:'flex',
+                      flexDirection:'column',
+                  }}>
+                      <Text style={{fontSize:15,fontWeight:600,color:'#475569'}}>
+                          {language === "en" ? "Maturity Period" : "Panahon ng Paglaki"}
+                      </Text>
+                      <Text style={{fontSize:16,fontWeight:400,color:'#787C88'}}>
+                          {cropData?.growthTime}
+                      </Text>
+                  </View>
+              </View>
+
+
+
+
+              <View style={{
+                  borderWidth:1,
+                  padding:8,
+                  display:'flex',
+                  flexDirection:'row',
+                  backgroundColor:'#FAFAFA',
+                  borderRadius:16,
+                  borderColor:'#e2e8f0',
+                  alignItems:'center',
+                  gap:8,
+              }}>
+                  <View style={{
+                      width:40,
+                      height:40,
+                      borderWidth:0,
+                      backgroundColor:'#E3E3E3',
+                      borderRadius:8,
+                      display:'flex',
+                      flexDirection:'column',
+                      alignItems:'center',
+                      justifyContent:'center'
+                  }}>
+                      <FontAwesome6 name="mound" size={20} color="#475569" />
+                  
+                  </View>
+
+                  <View style={{
+                      display:'flex',
+                      flexDirection:'column',
+                  }}>
+                      <Text style={{fontSize:15,fontWeight:600,color:'#475569'}}>
+                          {language === "en" ? "Optimal Soil pH" : "Pinakamainam na pH ng Lupa"}
+                      </Text>
+                      <Text style={{fontSize:16,fontWeight:400,color:'#787C88'}}>
+                          {cropData?.soilPh}
+                      </Text>
+                  </View>
+              </View>
+
 
 
 
@@ -1635,7 +1810,7 @@ const CropManagement = () => {
 
                 <View style={stylesRecords.inputHeader}>
                   <View style={stylesRecords.iconWrapper}></View>
-                  <Text style={stylesRecords.inputText}>Spotted Pests</Text>
+                  <Text style={stylesRecords.inputText}>{language === "en" ? "Spotted Pests" : "Mga Napansing Peste"}</Text>
                 </View>
 
                 <View style={{flex:1,borderWidth:0,width:'100%',padding:0}}>
@@ -1695,7 +1870,7 @@ const CropManagement = () => {
 
                 <View style={stylesRecords.inputHeader}>
                   <View style={stylesRecords.iconWrapper}></View>
-                  <Text style={stylesRecords.inputText}>Spotted Disease</Text>
+                  <Text style={stylesRecords.inputText}>{language === "en" ? "Spotted Diseases" : "Mga Napansing Sakit"}</Text>
                 </View>
 
                 <View style={{flex:1,borderWidth:0,width:'100%',padding:0}}>
@@ -1791,7 +1966,7 @@ const CropManagement = () => {
 
                 <View style={stylesRecords.inputHeaderNormal}>
                   <View style={stylesRecords.iconWrapper}></View>
-                  <Text style={stylesRecords.inputText}>Applied Fertilizer</Text>
+                  <Text style={stylesRecords.inputText}>{language === "en" ? "Applied Fertilizer" : "Ginamit na Pataba"}</Text>
                 </View>
 
                 <View style={{flex:1,borderWidth:0,width:'100%',paddingVertical:5}}>
@@ -1821,7 +1996,7 @@ const CropManagement = () => {
 
                 <View style={{width:'100%',borderColor:'red',paddingVertical:5,display:"flex",flexDirection:'column'}}>
                     <View style={{width:'100%',paddingVertical:3,borderColor:'red',borderWidth:0,display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
-                      <Text style={{fontSize:15,fontWeight:500,letterSpacing:.5}}>Application Method : </Text>
+                      <Text style={{fontSize:15,fontWeight:500,letterSpacing:.5}}>{language === "en" ? "Application Method:" : "Paraan ng Paglalapat:"}</Text>
 
 
                     </View>
@@ -1932,7 +2107,7 @@ const CropManagement = () => {
               
               <View style={stylesAiles.containerWrapperHeader}>
                   <MaterialIcons name="pest-control" size={24} color="#842C2B" />
-                  <Text style={stylesAiles.subContainerHeaderPest}>Common Pests</Text>
+                  <Text style={stylesAiles.subContainerHeaderPest}>{language === "en" ? "Common Pests" : "Karaniwang Peste"}</Text>
               </View>
 
 
@@ -1984,7 +2159,7 @@ const CropManagement = () => {
           <View style={stylesAiles.containerWrappperPest}>
               <View style={stylesAiles.containerWrapperHeader}>
                   <MaterialIcons name="pest-control" size={24} color="#842C2B" />
-                  <Text style={stylesAiles.subContainerHeaderPest}>Common Disease</Text>
+                  <Text style={stylesAiles.subContainerHeaderPest}>{language === "en" ? "Common Diseases" : "Karaniwang Sakit"}</Text>
               </View>
 
 
@@ -2052,7 +2227,7 @@ const CropManagement = () => {
               <View style={[stylesAiles.containerWrapperHeader,{backgroundColor:'#DAEEF7',borderColor:'#53697E'}]}>
       
                   <AntDesign name="link" size={24} color="#53697E" />
-                  <Text style={[stylesAiles.subContainerHeaderPest,{color:'#53697E'}]}>Reference Links</Text>
+                  <Text style={[stylesAiles.subContainerHeaderPest,{color:'#53697E'}]}>{language === "en" ? "Reference Links" : "Mga Pinagkunan ng Impormasyon"}</Text>
               </View>
 
 
@@ -2100,8 +2275,10 @@ const CropManagement = () => {
                           <AntDesign name="link" size={24} color="#64748B" />
                         </View>
                         
-                        <Text style={stylesAiles.noDataPlaceholder__Primary}>No References Yet</Text>
-                        <Text style={stylesAiles.noDataPlaceholder__Secondary}>Looks like we don’t have reference links for this crop at the moment.</Text>
+                        <Text style={stylesAiles.noDataPlaceholder__Primary}>{language === "en" ? "No References Yet" : "Walang Reference Pangkasalukuyan"}</Text>
+                        <Text style={stylesAiles.noDataPlaceholder__Secondary}> {language === "en" 
+    ? "Looks like we don’t have reference links for this crop at the moment." 
+    : "Mukhang wala pang reference links para sa pananim na ito sa kasalukuyan."}</Text>
                       </View>
 
                       )
@@ -2449,7 +2626,7 @@ const stylesRecords = StyleSheet.create({
     backgroundColor:'#37474F'
   },
   inputText:{
-    fontSize:16,
+    fontSize:17,
     fontWeight:600,
     color:'#37474F',
     marginRight:10,
@@ -2560,13 +2737,14 @@ const styles = StyleSheet.create({
     paddingHorizontal:10,
     backgroundColor:'white',
     borderRadius:5,
-    borderColor:'#E2e8f0'
+    borderColor:'#E2e8f0',
+    gap:8,
 
   },
   nameWrapper:{
     display:'flex',
-    flexDirection:'row',
-    alignItems:'center',
+    flexDirection:'column',
+   
     //elevation:4,
     //borderWidth:1,
     flexWrap:'wrap'
@@ -2575,16 +2753,16 @@ const styles = StyleSheet.create({
   },
 
   scientificName:{
-    color:'#333333',
-    fontSize:16,
+    color:"#475569",
+    fontSize:17,
     fontStyle:'italic',
     fontWeight:400
   },
 
 
   cropName:{
-    color:'#37474F',
-    fontSize:30,
+    color:"#475569",
+    fontSize:32,
     fontWeight:600,
     marginRight:5
   },

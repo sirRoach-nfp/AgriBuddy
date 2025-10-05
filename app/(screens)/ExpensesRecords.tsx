@@ -20,6 +20,7 @@ import { uploadExpenseController } from '../controllers/ExpenseControllers/uploa
 import { Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper'
 import { router } from 'expo-router'
 import { useUserContext } from '../Context/UserContext'
+import { useLanguage } from '../Context/LanguageContex'
 
 
 
@@ -33,7 +34,7 @@ interface ItemObject{
 }
 
 const ExpensesRecords = () => {
-
+   const{language,setLanguage} = useLanguage()
    const {user} = useUserContext();
 
 
@@ -170,26 +171,26 @@ const ExpensesRecords = () => {
         <Portal>
             <Dialog visible={showConfirmation} onDismiss={()=>setShowConfirmation(false)}>
 
-
                 <Dialog.Title>
                     <Text style={{color:'#37474F'}}>
-                        Upload Expense?
+                        {language === "en" ? "Upload Expense?" : "I-upload ang Gastos?"}
                     </Text>
-                    
                 </Dialog.Title>
                 
                 <Dialog.Content>
-                    <Text style={{color:'#475569'}}>Double-check the details. Do you want to upload this expense record now?</Text>
+                    <Text style={{color:'#475569'}}>
+                        {language === "en" 
+                            ? "Double-check the details. Do you want to upload this expense record now?" 
+                            : "Suriin ang mga detalye. Gusto mo bang i-upload ang tala ng gastos ngayon?"}
+                    </Text>
                 </Dialog.Content>
-
-
 
                 <Dialog.Actions>
 
                 <TouchableOpacity onPress={uploadExpenseRecordToStorage} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
 
                     <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                        Post
+                        {language === "en" ? "Post" : "I-upload"}
                     </Text>
 
                 </TouchableOpacity>
@@ -197,37 +198,37 @@ const ExpensesRecords = () => {
                 </Dialog.Actions>
 
             </Dialog>
-
-
-
-
         </Portal>
 
     )
-
-
      const renderProcess = () => (
 
         <Portal>
             <Dialog visible={showProcess} onDismiss={()=>{}}>
 
-
                 <Dialog.Title>
-                    Uploading Expense...
+                    <Text>
+                        {language === "en" ? "Uploading Expense..." : "Ina-upload ang Gastos..."}
+                    </Text>
                 </Dialog.Title>
-
 
                 {postLoading ? (
                     <Dialog.Content>
-                        <Text>This may take a few seconds. Don’t close the app</Text>
+                        <Text>
+                            {language === "en" 
+                                ? "This may take a few seconds. Don’t close the app" 
+                                : "Maaaring tumagal ng ilang segundo. Huwag isara ang app"}
+                        </Text>
                     </Dialog.Content>
                 ) : (
                     <Dialog.Content>
-                    <Text>The record is now saved to your expenses!</Text>
+                        <Text>
+                            {language === "en" 
+                                ? "The record is now saved to your expenses!" 
+                                : "Nai-save na ang tala sa iyong mga gastos!"}
+                        </Text>
                     </Dialog.Content>
                 )}
-
-
 
                 {postLoading ? (
                     <ProgressBar indeterminate color={MD3Colors.error50} style={{marginBottom:20,width:'80%',marginLeft:'auto',marginRight:'auto',borderRadius:'50%'}} />
@@ -237,7 +238,7 @@ const ExpensesRecords = () => {
                         <TouchableOpacity onPress={()=>{router.back()}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
 
                             <Text style={{color:'white'}}>
-                                Continue
+                                {language === "en" ? "Continue" : "Tuloy"}
                             </Text>
 
                         </TouchableOpacity>
@@ -246,12 +247,11 @@ const ExpensesRecords = () => {
                 )}
 
             </Dialog>
-
-
-
-
         </Portal>
     )
+
+
+
     useEffect(() => {
     console.log("showProcess changed to:", showProcess);
     }, [showProcess]);
@@ -267,15 +267,26 @@ const ExpensesRecords = () => {
 
         
         <ScrollView style={{flex:1,borderWidth:0,display:'flex',flexDirection:'column',gap:20,borderColor:'red'}} contentContainerStyle={{alignItems:'center'}}>
-            <View style={{width:'100%',maxHeight:50,height:50,
+            <View style={{width:'100%',
            display:'flex',flexDirection:'row',
-            alignItems:'center',gap:10,marginBottom:10
+            alignItems:'center',gap:10,marginBottom:10,borderBottomWidth:1,paddingHorizontal:10,
+            borderColor:'#e2e8f0',backgroundColor:'white'
 
             }}>
 
-                <Ionicons name="arrow-back" size={25} color="#607D8B" />
+                <TouchableOpacity style={{
+                    borderWidth:0,
+                    display:'flex',
+                    flexDirection:'column',
+                    alignItems:'center',
+                    justifyContent:'center',
+                    padding:8,
+                }} onPress={()=> router.back()}>
+                    <Ionicons name="arrow-back" size={25} color="#607D8B" />
+                </TouchableOpacity>
+                
                 <Text style={textStyles.headerTitle}>
-                    Create New Record
+                   {language === "en" ? "Create New Record" : "Gumawa ng Bagong Talaan"}
                 </Text>
             </View>
 
@@ -289,13 +300,13 @@ const ExpensesRecords = () => {
                   
                 }}>
 
-                    <Text style={textStyles.formHeaderMain}>Basic Information</Text>
+                    <Text style={textStyles.formHeaderMain}>{language === "en" ? "Basic Information" : "Pangunahing Impormasyon"}</Text>
 
                 </View>
 
                 <View style={formWrapperStyles.formFieldsWrapper}>
                     <Text style={textStyles.formFieldDesc}>
-                        Expense Title *
+                        {language === "en" ? "Expense Title" : "Pamagat ng Gastos"} *
                     </Text>
 
                     <TextInput style={{borderWidth:1,borderRadius:3,fontSize:15,minHeight:20,
@@ -362,7 +373,7 @@ const ExpensesRecords = () => {
 
                 <View style={formItemWrapperStyles.headerWrapperInner}>
 
-                    <Text style={textStyles.headerTitle}>Items & Expenses</Text>
+                    <Text style={textStyles.headerTitle}>{language === "en" ? "Items & Expenses" : "Mga Binili at Gastos"}</Text>
 
                     <TouchableOpacity onPress={addNewItem}
                         style={{width:50,height:40,borderWidth:1,borderRadius:5,display:'flex',alignItems:'center',justifyContent:'center',borderColor:'#607D8B'}}
@@ -382,7 +393,7 @@ const ExpensesRecords = () => {
 
                     <View style={[formWrapperStyles.formFieldsWrapper,{paddingVertical:10}]}>
                         <Text style={textStyles.formFieldDesc}>
-                            Item Name
+                            {language === "en" ? "Item Name" : "Pangalan ng Produkto"}
                         </Text>
 
                         <TextInput value={content.itemName}  onChangeText={(text) => handleOnChangeForItems(content.id,'itemName',text)}  style={{borderWidth:1,borderRadius:3,fontSize:15,minHeight:20, 
@@ -394,7 +405,8 @@ const ExpensesRecords = () => {
 
                     <View style={[formWrapperStyles.formFieldsWrapper,{paddingVertical:10}]}>
                         <Text style={textStyles.formFieldDesc}>
-                            Quantity
+                            
+                            {language === "en" ? "Quantity" : "Bilang"}
                         </Text>
 
                         <TextInput value={content.itemQuantity.toString()} onChangeText={(text) => handleOnChangeForItems(content.id,'itemQuantity',Number(text))}  style={{borderWidth:1,borderRadius:3,fontSize:15,minHeight:20,
@@ -406,7 +418,8 @@ const ExpensesRecords = () => {
 
                     <View style={[formWrapperStyles.formFieldsWrapper,{paddingVertical:10}]}>
                         <Text style={textStyles.formFieldDesc}>
-                            Price
+                      
+                            {language === "en" ? "Price" : "Presyo"}
                         </Text>
 
                         <TextInput value={content.itemPrice.toString()} onChangeText={(text) => handleOnChangeForItems(content.id,'itemPrice',Number(text))} style={{borderWidth:1,borderRadius:3,fontSize:15,minHeight:20,
@@ -439,7 +452,7 @@ const ExpensesRecords = () => {
 
             <View style={formItemWrapperStyles.itemWrapperMainOuter}>
                 <View style={formItemWrapperStyles.headerWrapperInner}>
-                    <Text style={textStyles.headerTitle}>Expense Summary</Text>
+                    <Text style={textStyles.headerTitle}>{language === "en" ? "Expense Summary" : "Buod Ng Gastos"}</Text>
                 </View>
 
                 <View style={{width:'100%',borderWidth:0,borderColor:'red',paddingHorizontal:10,paddingVertical:20}}>
@@ -484,7 +497,7 @@ const ExpensesRecords = () => {
                                 fontFamily:'ui-sans-serif',
                                 fontSize:15,
                                 fontWeight:700
-                            }}>Save Record</Text>
+                            }}>{language === "en" ? "Save Record" : "I-save ang Rekord"}</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={{borderWidth:1,paddingVertical:10,display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center',borderColor:'#E2E8F0',borderRadius:3}}>
@@ -493,7 +506,7 @@ const ExpensesRecords = () => {
                                 fontFamily:'ui-sans-serif',
                                 fontSize:15,
                                 fontWeight:600
-                            }}>Cancel</Text>
+                            }} onPress={()=> router.back()}>Cancel</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -589,9 +602,9 @@ const formWrapperStyles = StyleSheet.create({
 const textStyles = StyleSheet.create({
     headerTitle:{
         color:'#37474F',
-        fontSize:20,
+        fontSize:18,
         fontWeight:700,
-        fontFamily:'ui-sans-serif',
+      
     },
 
 
@@ -599,8 +612,8 @@ const textStyles = StyleSheet.create({
 
     formHeaderMain:{
         color:'#37474F',
-        fontSize:22,
-        fontWeight:700,
+        fontSize:18,
+        fontWeight:800,
          fontFamily:'ui-sans-serif',
     },
 

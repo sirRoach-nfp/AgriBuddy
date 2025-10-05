@@ -10,7 +10,7 @@ import { signOut } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { auth } from '@/app/firebaseconfig';
 import { useUserContext } from '@/app/Context/UserContext';
-
+import { LanguageProvider, useLanguage } from '@/app/Context/LanguageContex';
 
 
 
@@ -20,7 +20,7 @@ import { useUserContext } from '@/app/Context/UserContext';
 const AccountControlComponent = () => {
 
    const {user,logout} = useUserContext();
-
+  const {language,setLanguage} = useLanguage()
   const logoutAccount = async () => {
     try {
       console.log("Logging out...");
@@ -59,7 +59,7 @@ const AccountControlComponent = () => {
             <View style={styles.headerSection__iconWrapper}>
                 <AntDesign name="setting" size={20} color="white" />
             </View>
-            <Text style={styles.headerSection__primary}>Account Settings</Text>
+            <Text style={styles.headerSection__primary}>{language === "en" ? "Account Settings" : "Setting ng Account"}</Text>
         </View>
       
 
@@ -75,11 +75,11 @@ const AccountControlComponent = () => {
 
             <View style={styles.accountControls__itemWrapper__textWrapper}>
                 <Text style={styles.accountControls__itemWrapper__textWrapper__primary}>
-                    Change Username
+                    {language === "en" ? "Change Username" : "Palitan ang Username"}
                 </Text>
 
                 <Text style={styles.accountControls__itemWrapper__textWrapper__secondary}>
-                    Update your display name
+                 {language === "en" ? "Update your display name" : "I-update ang iyong Display Name"}
                 </Text>
             </View>
 
@@ -100,11 +100,11 @@ const AccountControlComponent = () => {
 
             <View style={styles.accountControls__itemWrapper__textWrapper}>
                 <Text style={styles.accountControls__itemWrapper__textWrapper__primary}>
-                    Change Password
+                    {language === "en" ? "Change Password" : "Palitan ang Password"}
                 </Text>
 
                 <Text style={styles.accountControls__itemWrapper__textWrapper__secondary}>
-                    Update your account password
+                    {language === "en" ? "Update your account password" : "I-update ang Password ng Account"}
                 </Text>
             </View>
 
