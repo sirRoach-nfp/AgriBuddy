@@ -309,7 +309,7 @@ const groupPieData = (data: PieDataEntry[]) => {
 
 
                             <Text style={{fontSize:14,color:"#333"}}>
-                                {item.amount} {item.name}
+                              {item.name}
                             </Text>
 
                           </View>
@@ -368,7 +368,7 @@ const groupPieData = (data: PieDataEntry[]) => {
 
 
                           <Text style={{fontSize:14,color:"#333"}}>
-                              {item.amount} {item.name}
+                              {item.name}
                           </Text>
 
                         </View>

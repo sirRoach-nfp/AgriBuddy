@@ -657,7 +657,7 @@ const PlotManagementScreen = () => {
                                 </View>
                         ) : (
 
-                            <TouchableOpacity style={{borderRadius:5,paddingVertical:8,paddingHorizontal:16,backgroundColor:'#607D8B',display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center',gap:5}}>
+                            <TouchableOpacity onPress={()=> router.push('/(main)/crops')} style={{borderRadius:5,paddingVertical:8,paddingHorizontal:16,backgroundColor:'#607D8B',display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center',gap:5}}>
                                 <FontAwesome6 name="add" size={16} color="white" />
                                <Text style={{color:'white',fontWeight:600,fontSize:14}}>
                                     {language === "en" ? "Plant New Crop" : "Maglagay ng bagong tanim"}
