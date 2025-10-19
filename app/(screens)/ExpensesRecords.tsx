@@ -17,11 +17,11 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 //controller
 import { uploadExpenseController } from '../controllers/ExpenseControllers/uploadExpenses'
-import { Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper'
+import { Button, Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper'
 import { router } from 'expo-router'
 import { useUserContext } from '../Context/UserContext'
 import { useLanguage } from '../Context/LanguageContex'
-
+import {globalStyles} from '../../assets/globalStyle'
 
 
 
@@ -40,7 +40,7 @@ const ExpensesRecords = () => {
 
    const [date,setNewDate] = useState(new Date());
    const [itemCart,setItemCart] = useState<ItemObject[]>([])
-   const [title,setTitle] = useState<String>()
+   const [title,setTitle] = useState<String>("")
    const [description,setDescription] = useState<String>()
    const [total,setTotal] = useState<Number>(0)
 
@@ -152,7 +152,7 @@ const ExpensesRecords = () => {
 
     //helpers
 
-    const isReadyToUpload = Boolean(title && description && itemCart);
+    const isReadyToUpload = Boolean(title  && itemCart);
 
     useEffect(()=>{
 
@@ -169,7 +169,7 @@ const ExpensesRecords = () => {
     const renderPostConfirmation = ()=>(
 
         <Portal>
-            <Dialog visible={showConfirmation} onDismiss={()=>setShowConfirmation(false)}>
+            <Dialog visible={showConfirmation} onDismiss={()=>setShowConfirmation(false)} style={globalStyles.dialogContainer}>
 
                 <Dialog.Title>
                     <Text style={{color:'#37474F'}}>
@@ -178,7 +178,7 @@ const ExpensesRecords = () => {
                 </Dialog.Title>
                 
                 <Dialog.Content>
-                    <Text style={{color:'#475569'}}>
+                    <Text style={{fontSize:16,color:'#475569'}}>
                         {language === "en" 
                             ? "Double-check the details. Do you want to upload this expense record now?" 
                             : "Suriin ang mga detalye. Gusto mo bang i-upload ang tala ng gastos ngayon?"}
@@ -186,14 +186,20 @@ const ExpensesRecords = () => {
                 </Dialog.Content>
 
                 <Dialog.Actions>
-
-                <TouchableOpacity onPress={uploadExpenseRecordToStorage} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-                    <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                        {language === "en" ? "Post" : "I-upload"}
-                    </Text>
-
-                </TouchableOpacity>
+                    <Button onPress={()=>setShowConfirmation(false)}             
+                        mode="outlined"
+                        style={globalStyles.buttonSecondary}
+                        labelStyle={globalStyles.buttonLabelSecondary}>
+                        {language === "en" ? "Cancel" : "Kanselahin"}
+                    </Button>
+                    <Button
+                    mode="contained"
+                    onPress={uploadExpenseRecordToStorage}
+                    style={[globalStyles.buttonPrimary, { alignSelf: 'flex-start' }]}
+                    labelStyle={globalStyles.buttonLabelPrimary}
+                    >
+                    {language === "en" ? "Post" : "I-upload"}
+                    </Button>
 
                 </Dialog.Actions>
 
@@ -204,7 +210,7 @@ const ExpensesRecords = () => {
      const renderProcess = () => (
 
         <Portal>
-            <Dialog visible={showProcess} onDismiss={()=>{}}>
+            <Dialog visible={showProcess} onDismiss={()=>{}} style={globalStyles.dialogContainer}>
 
                 <Dialog.Title>
                     <Text>
@@ -235,13 +241,14 @@ const ExpensesRecords = () => {
                 ) : (
                     <Dialog.Actions>
 
-                        <TouchableOpacity onPress={()=>{router.back()}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-                            <Text style={{color:'white'}}>
-                                {language === "en" ? "Continue" : "Tuloy"}
-                            </Text>
-
-                        </TouchableOpacity>
+                    <Button
+                    mode="contained"
+                    onPress={() => router.back()}
+                    style={[globalStyles.buttonPrimary, { backgroundColor: '#253D2C', alignSelf: 'flex-start' }]}
+                    labelStyle={globalStyles.buttonLabelPrimary}
+                    >
+                    {language === "en" ? "Continue" : "Tuloy"}
+                    </Button>
 
                     </Dialog.Actions>
                 )}
@@ -314,6 +321,9 @@ const ExpensesRecords = () => {
                     }} onChange={(e)=> {setTitle(e.nativeEvent.text)}}>
 
                     </TextInput>
+                    <Text style={{ fontSize: 13, color: title?.length < 10 ? "red" : "green",alignSelf:'flex-end' }}>
+                    {title?.length}/10 min
+                    </Text>
                 </View>
 
 
@@ -409,11 +419,27 @@ const ExpensesRecords = () => {
                             {language === "en" ? "Quantity" : "Bilang"}
                         </Text>
 
-                        <TextInput value={content.itemQuantity.toString()} onChangeText={(text) => handleOnChangeForItems(content.id,'itemQuantity',Number(text))}  style={{borderWidth:1,borderRadius:3,fontSize:15,minHeight:20,
-                            paddingTop:5,paddingBottom:5,borderColor:'#E2E8F0',paddingLeft:5,paddingRight:5
-                        }} keyboardType="numeric">
-
-                        </TextInput>
+                        <TextInput
+                        value={content.itemQuantity.toString()}
+                        onChangeText={(text) => {
+                            // Remove any non-digit characters
+                            const sanitized = text.replace(/[^0-9]/g, '');
+                            // Call your handler with the sanitized numeric value
+                            handleOnChangeForItems(content.id, 'itemQuantity', Number(sanitized || 0));
+                        }}
+                        style={{
+                            borderWidth: 1,
+                            borderRadius: 3,
+                            fontSize: 15,
+                            minHeight: 20,
+                            paddingTop: 5,
+                            paddingBottom: 5,
+                            borderColor: '#E2E8F0',
+                            paddingLeft: 5,
+                            paddingRight: 5,
+                        }}
+                        keyboardType="numeric"
+                        />
                     </View>
 
                     <View style={[formWrapperStyles.formFieldsWrapper,{paddingVertical:10}]}>
@@ -422,11 +448,26 @@ const ExpensesRecords = () => {
                             {language === "en" ? "Price" : "Presyo"}
                         </Text>
 
-                        <TextInput value={content.itemPrice.toString()} onChangeText={(text) => handleOnChangeForItems(content.id,'itemPrice',Number(text))} style={{borderWidth:1,borderRadius:3,fontSize:15,minHeight:20,
-                            paddingTop:5,paddingBottom:5,borderColor:'#E2E8F0',paddingLeft:5,paddingRight:5
-                        }} keyboardType="numeric">
-
-                        </TextInput>
+                        <TextInput
+                        value={content.itemPrice.toString()}
+                        onChangeText={(text) => {
+                            // Remove all characters except digits and a single decimal point
+                            const sanitized = text.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+                            handleOnChangeForItems(content.id, 'itemPrice', Number(sanitized || 0));
+                        }}
+                        style={{
+                            borderWidth: 1,
+                            borderRadius: 3,
+                            fontSize: 15,
+                            minHeight: 20,
+                            paddingTop: 5,
+                            paddingBottom: 5,
+                            borderColor: '#E2E8F0',
+                            paddingLeft: 5,
+                            paddingRight: 5,
+                        }}
+                        keyboardType="numeric"
+                        />
                     </View>
 
 

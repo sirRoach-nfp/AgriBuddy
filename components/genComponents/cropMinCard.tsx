@@ -2,7 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { Image } from 'react-native';
 import { router } from 'expo-router';
-
+import { useLanguage } from '../../app/Context/LanguageContex';
 interface optimalSeasonType{
     end:number,
     start:number
@@ -17,7 +17,7 @@ type CropMinCardProps = {
   
 
 const CropMinCard = ({commonName,scientificName,imgUrl,cropId,optimalSeason}: CropMinCardProps) => {
-
+    const {language} = useLanguage()
 
 
   const navigateToView = () => {
@@ -60,12 +60,12 @@ const CropMinCard = ({commonName,scientificName,imgUrl,cropId,optimalSeason}: Cr
                 {isSuitable ?(
                     <>
                         <View style={styles.statusIndi}></View>
-                        <Text style={styles.statusText}>Ideal Season</Text>
+                        <Text style={styles.statusText}>{language === "en" ? "Ideal Season" : "Pinakamainam na Panahon"}</Text>
                     </>
                 ) : (
                     <>
                         <View style={[styles.statusIndi,{backgroundColor:'#FFC107'}]}></View>
-                        <Text style={styles.statusText}>Not Ideal Season</Text>
+                        <Text style={styles.statusText}>{language === "en" ? "Not Ideal Season" : "Hindi Angkop na Panahon"}</Text>
                     </>
                 )}
 

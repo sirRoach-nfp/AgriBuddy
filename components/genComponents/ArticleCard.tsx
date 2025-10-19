@@ -1,7 +1,9 @@
 import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { router } from 'expo-router'
-
+import { globalStyles } from '@/assets/globalStyle'
+import { Button } from 'react-native-paper'
+import { useLanguage } from '../../app/Context/LanguageContex';
 
 interface ArticleData {
     cover:string,
@@ -9,6 +11,7 @@ interface ArticleData {
     articleId:string
 }
 const ArticleCard = ({articleId,title,cover}:ArticleData) => {
+  const {language} = useLanguage()
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
@@ -30,16 +33,19 @@ const ArticleCard = ({articleId,title,cover}:ArticleData) => {
         >
           {title}
         </Text>
+          <View style={{marginVertical:4,borderTopWidth:1,borderColor:'#e2e8f0'}}>
 
-      <TouchableOpacity style={styles.buttonReadMore} 
+          </View>
+        <Button
+          mode="contained"
           onPress={() => {
             router.push(`/(screens)/ArticleMainScreen?articleId=${encodeURIComponent(articleId)}`);
           }}
-      >
-        <Text style={styles.buttonReadMoreText}>
-          Read More
-        </Text>
-      </TouchableOpacity>
+          style={[globalStyles.buttonPrimary,{marginVertical:4}]}
+          labelStyle={globalStyles.buttonLabelPrimary}
+        >
+          {language === "en" ? "Read More" : "Basahin"}
+        </Button>
       </View>
 
 
@@ -52,7 +58,7 @@ export default ArticleCard
 const styles = StyleSheet.create({
 
     container : {
-        flex:1,
+      
         width:'100%',
         borderWidth:1,
         height:300,

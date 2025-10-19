@@ -2,7 +2,7 @@ import { ActivityIndicator, StyleSheet, Text, Touchable, TouchableOpacity, View 
 import React, { useCallback, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { FlatList, ScrollView } from 'react-native-gesture-handler'
-import { Avatar, Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper';
+import { Avatar, Button, Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper';
 import { useSearchParams } from 'expo-router/build/hooks';
 import { arrayRemove, collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { db } from '../firebaseconfig';
@@ -20,7 +20,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import ImageViewing from "react-native-image-viewing";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useLanguage } from '../Context/LanguageContex';
-
+import {globalStyles} from '../../assets/globalStyle'
 interface DiscussionData {
     Author:string,
     AuthorUid:string,
@@ -400,19 +400,40 @@ useEffect(() => {
         console.log("passed index :",index)
         
         const replyRef = doc(db,'Discussions',discussionId,'Comments',commentId)
-        await deleteDoc(replyRef)
+        //await deleteDoc(replyRef)
         
+        const simulateSlowInternet = false;
 
-        setComments(prev => prev.filter((_, index) => index !== 0));
+        if(simulateSlowInternet){
+            await new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 2000));
+        }else{
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error("timeout")), 20000)
+            );
+            await Promise.race([deleteDoc(replyRef), timeoutPromise])
+            setComments(prev => prev.filter((_, index) => index !== 0));
 
 
-        console.log(comments)
-        setLoadingDelete(false)
-        setSelectedCommentIndex(-1)
-        setSelectedCommentId("")
+            console.log(comments)
+            setLoadingDelete(false)
+            setSelectedCommentIndex(-1)
+            setSelectedCommentId("")
+        }
+
      
         
-    }catch(err){console.error(err)}
+    }catch(err:any){
+        console.error(err)
+        setShowDeleteProcess(false)
+        setLoadingDelete(false)
+
+        if (err.message === "timeout") {
+        setShowInternetError(true);
+        } else {
+        setShowError(true);
+        }
+
+    }
   }
 
 
@@ -421,10 +442,10 @@ useEffect(() => {
   const renderProcess = () => (
     
     <Portal>
-        <Dialog visible={showDeleteProcess} onDismiss={()=>{}}>
+        <Dialog visible={showDeleteProcess} onDismiss={()=>{}} style={globalStyles.dialogContainer}>
 
             <Dialog.Title>
-                <Text>
+                <Text style={{color:'#37474F'}}>
                     {language === "en" ? "Deleting Your Comment" : "Binubura ang Iyong Komento"}
                 </Text>
             </Dialog.Title>
@@ -439,7 +460,7 @@ useEffect(() => {
                 </Dialog.Content>
             ) : (
                 <Dialog.Content>
-                    <Text style={{fontSize:16}}>
+                    <Text style={{fontSize:16,color:'#475569'}}>
                         {language === "en" 
                         ? "Your comment is deleted Successfully!" 
                         : "Matagumpay na nabura ang iyong komento!"}
@@ -452,13 +473,14 @@ useEffect(() => {
             ) : (
                 <Dialog.Actions>
 
-                    <TouchableOpacity onPress={()=>{setShowDeleteProcess(false)}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-                        <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                            {language === "en" ? "Continue" : "Magpatuloy"}
-                        </Text>
-
-                    </TouchableOpacity>
+                    <Button
+                    mode="contained"
+                    onPress={() => setShowDeleteProcess(false)}
+                    style={[globalStyles.buttonPrimary]}
+                    labelStyle={globalStyles.buttonLabelPrimary}
+                    >
+                    {language === "en" ? "Continue" : "Magpatuloy"}
+                    </Button>
 
                 </Dialog.Actions>
             )}
@@ -473,10 +495,10 @@ useEffect(() => {
 
         <Portal>
 
-            <Dialog visible={showDeleteConfirmation} onDismiss={()=>{setShowDeleteConfirmation(false)}}>
+            <Dialog visible={showDeleteConfirmation} onDismiss={()=>{setShowDeleteConfirmation(false)}} style={globalStyles.dialogContainer}>
 
                 <Dialog.Title>
-                    <Text>
+                    <Text style={{color:'#37474F'}}>
                         {language === "en" 
                             ? "Are you sure you want to delete this comment?" 
                             : "Sigurado ka bang gusto mong burahin ang komento na ito?"}
@@ -484,7 +506,7 @@ useEffect(() => {
                 </Dialog.Title>
 
                 <Dialog.Content>
-                    <Text style={{fontSize:16}}>
+                    <Text style={{fontSize:16,color:'#475569'}}>
                         {language === "en" 
                             ? "This action cannot be undone" 
                             : "Ang aksyong ito ay hindi na maibabalik"}
@@ -492,20 +514,23 @@ useEffect(() => {
                 </Dialog.Content>
 
                 <Dialog.Actions style={{display:'flex',flexDirection:'row',justifyContent:'space-between'}}>
-                    <TouchableOpacity onPress={()=>{setShowDeleteConfirmation(false)}} style={{borderColor:' #607D8B',borderWidth:1,alignSelf:'flex-start',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+                    <Button
+                    mode="outlined"
+                    onPress={() => setShowDeleteConfirmation(false)}
+                    style={[globalStyles.buttonSecondary]}
+                    labelStyle={globalStyles.buttonLabelSecondary}
+                    >
+                    {language === "en" ? "Cancel" : "I-Kansela"}
+                    </Button>
 
-                        <Text style={{color:'#607D8B',fontSize:16,fontWeight:500}}>
-                            {language === "en" ? "Cancel" : "I-Kansela"}
-                        </Text>
-
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={()=>{deleteComment(discussionid as string,commentId as string,selectedIndex)}} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-                        <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                            {language === "en" ? "Continue" : "Magpatuloy"}
-                        </Text>
-
-                    </TouchableOpacity>
+                    <Button
+                    mode="contained"
+                    onPress={() => deleteComment(discussionid as string, commentId as string, selectedIndex)}
+                    style={[globalStyles.buttonPrimary]}
+                    labelStyle={globalStyles.buttonLabelPrimary}
+                    >
+                    {language === "en" ? "Continue" : "Magpatuloy"}
+                    </Button>
                 </Dialog.Actions>
 
             </Dialog>
@@ -515,10 +540,10 @@ useEffect(() => {
     const renderProcessDeletePost = () => (
     
         <Portal>
-            <Dialog visible={showDeletePostProcess} onDismiss={()=>{}}>
+            <Dialog visible={showDeletePostProcess} onDismiss={()=>{}} style={globalStyles.dialogContainer}>
 
                 <Dialog.Title>
-                    <Text>
+                    <Text style={{color:'#37474F'}}>
                         {language === "en" 
                             ? "Deleting Your Post" 
                             : "Binubura ang Iyong Post"}
@@ -527,7 +552,7 @@ useEffect(() => {
 
                 {deletePostLoading ? (
                     <Dialog.Content>
-                        <Text>
+                        <Text style={{fontSize:16,color:'#475569'}}>
                             {language === "en" 
                                 ? "Your Post is being deleted Please wait..." 
                                 : "Ang iyong post ay binubura, mangyaring maghintay..."}
@@ -535,7 +560,7 @@ useEffect(() => {
                     </Dialog.Content>
                 ) : (
                     <Dialog.Content>
-                        <Text>
+                        <Text style={{fontSize:16,color:'#475569'}}>
                             {language === "en" 
                                 ? "Your Post is deleted Successfully!" 
                                 : "Matagumpay na nabura ang iyong post!"}
@@ -547,11 +572,14 @@ useEffect(() => {
                     <ProgressBar indeterminate color={MD3Colors.error50} style={{marginBottom:20,width:'80%',marginLeft:'auto',marginRight:'auto',borderRadius:'50%'}} />
                 ) : (
                     <Dialog.Actions>
-                        <TouchableOpacity onPress={()=>{router.push('/(main)/records')}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-                            <Text style={{color:'white'}}>
-                                {language === "en" ? "Continue" : "Magpatuloy"}
-                            </Text>
-                        </TouchableOpacity>
+                        <Button
+                            mode="contained"
+                            onPress={() => router.push('/(main)/records')}
+                            style={[globalStyles.buttonPrimary, { backgroundColor: '#253D2C', alignSelf: 'flex-start' }]}
+                            labelStyle={globalStyles.buttonLabelPrimary}
+                        >
+                            {language === "en" ? "Continue" : "Magpatuloy"}
+                        </Button>
                     </Dialog.Actions>
                 )}
 
@@ -562,10 +590,10 @@ useEffect(() => {
     const renderDeletePostConfirmation = (discussionid:string,discussionRefId:string) => (
 
         <Portal>
-            <Dialog visible={showDeletePostConfirmation} onDismiss={()=>{setShowDeletePostConfirmation(false)}}>
+            <Dialog visible={showDeletePostConfirmation} onDismiss={()=>{setShowDeletePostConfirmation(false)}} style={globalStyles.dialogContainer}>
 
                 <Dialog.Title>
-                    <Text>
+                    <Text style={{color:'#37474F'}}>
                         {language === "en" 
                             ? "Are you sure you want to delete this Post?" 
                             : "Sigurado ka bang gusto mong burahin ang post na ito?"}
@@ -573,7 +601,7 @@ useEffect(() => {
                 </Dialog.Title>
 
                 <Dialog.Content>
-                    <Text>
+                    <Text style={{fontSize:16,color:'#475569'}}>
                         {language === "en" 
                             ? "This action cannot be undone" 
                             : "Ang aksyong ito ay hindi na maibabalik"}
@@ -581,11 +609,25 @@ useEffect(() => {
                 </Dialog.Content>
 
                 <Dialog.Actions>
-                    <TouchableOpacity onPress={()=>{setShowDeletePostConfirmation(false); deleteDiscussion(discussionid,discussionRefId)}} style={{backgroundColor:'red',paddingVertical:5,paddingHorizontal:10,borderRadius:5,elevation:1}} >
-                        <Text style={{color:'white'}}>
-                            {language === "en" ? "Continue" : "Magpatuloy"}
-                        </Text>
-                    </TouchableOpacity>
+                    <Button
+                        mode="outlined"
+                        onPress={() => setShowDeletePostConfirmation(false)}
+                        style={[globalStyles.buttonSecondary]}
+                        labelStyle={globalStyles.buttonLabelSecondary}
+                        >
+                        {language === "en" ? "Cancel" : "I-Kansela"}
+                    </Button>
+                    <Button
+                    mode="contained"
+                    onPress={() => {
+                        setShowDeletePostConfirmation(false);
+                        deleteDiscussion(discussionid, discussionRefId);
+                    }}
+                    style={[globalStyles.buttonPrimary, { backgroundColor: 'red', alignSelf: 'flex-start', elevation: 1 }]}
+                    labelStyle={globalStyles.buttonLabelPrimary}
+                    >
+                    {language === "en" ? "Continue" : "Magpatuloy"}
+                    </Button>
                 </Dialog.Actions>
 
             </Dialog>
@@ -594,7 +636,7 @@ useEffect(() => {
 
     const renderSlowInternet = () => (
             <Portal>
-                <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)}>
+                <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)} style={globalStyles.dialogContainer}>
     
                     <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
     
@@ -605,17 +647,20 @@ useEffect(() => {
                     </Dialog.Title>
                     
                     <Dialog.Content>
-                        <Text style={{color:'#475569'}}>
+                        <Text style={{fontSize:16,color:'#475569'}}>
                             {language === "en" ? "Connection seems slow. Please try again." : "Mabagal ang koneksyon. Pakisubukang muli."}
                         </Text>
                     </Dialog.Content>
     
                     <Dialog.Actions>
-                        <TouchableOpacity onPress={()=> setShowInternetError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-                            <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                                {language === "en" ? "OK" : "Sige"}
-                            </Text>
-                        </TouchableOpacity>
+                        <Button
+                        mode="contained"
+                        onPress={() => setShowInternetError(false)}
+                        style={[globalStyles.buttonPrimary]}
+                        labelStyle={globalStyles.buttonLabelPrimary}
+                        >
+                        {language === "en" ? "OK" : "Sige"}
+                        </Button>
                     </Dialog.Actions>
     
                 </Dialog>
@@ -626,7 +671,7 @@ useEffect(() => {
     const renderError = ()=>(
     
         <Portal>
-                <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
+                <Dialog visible={showError} onDismiss={()=>setShowError(false)} style={globalStyles.dialogContainer}>
         
                     <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
         
@@ -638,7 +683,7 @@ useEffect(() => {
                     </Dialog.Title>
                     
                     <Dialog.Content>
-                        <Text style={{color:'#475569'}}>
+                        <Text style={{fontSize:16,color:'#475569'}}>
                         {language === "en" ? "An unexpected error occured. Please try again later" : "Nagkaroon ng hindi inaasahang error. Pakisubukang muli mamaya."}
                         
                         </Text>
@@ -648,13 +693,14 @@ useEffect(() => {
         
                     <Dialog.Actions>
         
-                    <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-        
-                        <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                            OK
-                        </Text>
-        
-                    </TouchableOpacity>
+                    <Button
+                    mode="contained"
+                    onPress={() => setShowError(false)}
+                    style={[globalStyles.buttonPrimary, { alignSelf: 'flex-start' }]}
+                    labelStyle={globalStyles.buttonLabelPrimary}
+                    >
+                    OK
+                    </Button>
         
                     </Dialog.Actions>
         
@@ -844,60 +890,68 @@ useEffect(() => {
         try {
             console.log("Passed data: discussionId >", discussionId, "<> discussionRecordRefId >", discussionRecordRefId);
 
-            const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error("timeout")), 20000)
-            );
-            const discussionRef = doc(db, "Discussions", discussionId);
 
-            // Wrap the whole deletion process inside a promise
-            const deleteProcess = (async () => {
-            // Step 1: Delete all replies from the subcollection
-            const repliesRef = collection(discussionRef, "Comments");
-            const repliesSnapshot = await getDocs(repliesRef);
-
-            const deleteRepliesPromises = repliesSnapshot.docs.map((reply) =>
-                deleteDoc(doc(repliesRef, reply.id))
-            );
-
-            await Promise.all(deleteRepliesPromises);
-            console.log("All replies deleted successfully");
-
-            // Step 2: Delete the discussion document
-            await deleteDoc(discussionRef);
-            console.log("Discussion deleted successfully");
-
-            // Step 3: Remove discussion reference from user's DiscussionRecords
-            const discussionRecordRef = doc(db, "DiscussionRecords", user?.DiscussionRecordRefId as string);
-            const discussionRecorSnap = await getDoc(discussionRecordRef);
-
-            if (discussionRecorSnap.exists()) {
-                let recordsArray = discussionRecorSnap.data().Discussions || [];
-                console.log("Discussion Records Array before remove : ", recordsArray);
-
-                const discussionRecordIndex = recordsArray.findIndex(
-                (discussion: any) => discussion.discussionId === discussionId
+            const simulateSlowInternet = false; // set to true to force timeout
+            if (simulateSlowInternet) {
+                await new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 2000)); // 2s fake delay
+            }else{
+                const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error("timeout")), 20000)
                 );
-                console.log("Index of discussion record to remove : ", discussionRecordIndex);
+                const discussionRef = doc(db, "Discussions", discussionId);
 
-                if (discussionRecordIndex !== -1) {
-                const updatedRecord = [
-                    ...recordsArray.slice(0, discussionRecordIndex),
-                    ...recordsArray.slice(discussionRecordIndex + 1),
-                ];
-                console.log("Updated Record : after remove", updatedRecord);
+                // Wrap the whole deletion process inside a promise
+                const deleteProcess = (async () => {
+                // Step 1: Delete all replies from the subcollection
+                const repliesRef = collection(discussionRef, "Comments");
+                const repliesSnapshot = await getDocs(repliesRef);
 
-                await updateDoc(discussionRecordRef, { Discussions: updatedRecord });
+                const deleteRepliesPromises = repliesSnapshot.docs.map((reply) =>
+                    deleteDoc(doc(repliesRef, reply.id))
+                );
+
+                await Promise.all(deleteRepliesPromises);
+                console.log("All replies deleted successfully");
+
+                // Step 2: Delete the discussion document
+                await deleteDoc(discussionRef);
+                console.log("Discussion deleted successfully");
+
+                // Step 3: Remove discussion reference from user's DiscussionRecords
+                const discussionRecordRef = doc(db, "DiscussionRecords", user?.DiscussionRecordRefId as string);
+                const discussionRecorSnap = await getDoc(discussionRecordRef);
+
+                if (discussionRecorSnap.exists()) {
+                    let recordsArray = discussionRecorSnap.data().Discussions || [];
+                    console.log("Discussion Records Array before remove : ", recordsArray);
+
+                    const discussionRecordIndex = recordsArray.findIndex(
+                    (discussion: any) => discussion.discussionId === discussionId
+                    );
+                    console.log("Index of discussion record to remove : ", discussionRecordIndex);
+
+                    if (discussionRecordIndex !== -1) {
+                    const updatedRecord = [
+                        ...recordsArray.slice(0, discussionRecordIndex),
+                        ...recordsArray.slice(discussionRecordIndex + 1),
+                    ];
+                    console.log("Updated Record : after remove", updatedRecord);
+
+                    await updateDoc(discussionRecordRef, { Discussions: updatedRecord });
+                    }
                 }
+
+                console.log("Removed discussion reference from DiscussionRecords");
+                })();
+
+                // Run the process with timeout protection
+                await Promise.race([deleteProcess, timeoutPromise]);
+
+                setDeletePostLoading(false);
             }
-
-            console.log("Removed discussion reference from DiscussionRecords");
-            })();
-
-            // Run the process with timeout protection
-            await Promise.race([deleteProcess, timeoutPromise]);
-
-            setDeletePostLoading(false);
+           
         } catch (err: any) {
+            setShowDeletePostProcess(false)
             setDeletePostLoading(false);
 
             if (err.message === "timeout") {
@@ -1137,7 +1191,10 @@ useEffect(() => {
                     <View style={stylesDiscussionContent.commentContainer}>
                         
                         <TouchableOpacity style={stylesDiscussionContent.commentActionWrapper} onPress={()=>navigateToComment(discussionid as string)}>
-                            <Text style={stylesDiscussionContent.CommentActionText}>Join Discussion</Text>
+                            <Text style={stylesDiscussionContent.CommentActionText}>
+                                {language === "en" ? "Join Discussion" : "Mag Komento"}
+                                
+                            </Text>
                         </TouchableOpacity>
 
                     </View>
@@ -1163,12 +1220,27 @@ useEffect(() => {
                 </View>
                 <View style={stylesDataDoesntExist.wrapper}>
                     <MaterialIcons name="error-outline" size={28} color="#E63946" />
-                    <Text style={stylesDataDoesntExist.primaryText}>This discussion is no longer available</Text>
-                    <Text style={stylesDataDoesntExist.secondaryText}>It may have been removed for violating community guidelines.</Text>
+                    <Text style={stylesDataDoesntExist.primaryText}>
+                        {language === "en"
+                        ? "This discussion is no longer available"
+                        : "Hindi na ma-access ang talakayang ito."}
+                      
+                    </Text>
+                    <Text style={stylesDataDoesntExist.secondaryText}>
+                       
+                        {language === "en"
+                        ? "It may have been removed for violating community guidelines."
+                        : "Posibleng inalis ito dahil sa paglabag sa mga alituntunin ng komunidad."}    
+                    </Text>
 
                     {signatureId === user?.UserId && (
                         <TouchableOpacity style={stylesDataDoesntExist.actionWrapper} onPress={deleteLeftover}>
-                            <Text style={stylesDataDoesntExist.actionText}>Delete from your records</Text>
+                            <Text style={stylesDataDoesntExist.actionText}>
+                               {language === "en"
+                        ? "Delete from your records"
+                        : "Burahin sa iyong mga rekord."} 
+                                
+                            </Text>
                         </TouchableOpacity>
                     )}
 
@@ -1484,7 +1556,7 @@ const stylesDiscussionContent = StyleSheet.create({
        
     },
     CommentActionText:{
-        color:"#D7D8Da"
+        color:"#333333"
     },
 
 })

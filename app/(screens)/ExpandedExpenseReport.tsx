@@ -9,12 +9,12 @@ import { fetchSpecificRecord } from '../controllers/ExpenseControllers/fetchSpec
 
 //icon
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper'
+import { Button, Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper'
 import { router } from 'expo-router'
 import { deleteExpenseRecord } from '../controllers/ExpenseControllers/deleteExpenseRecord'
 import { useLanguage } from '../Context/LanguageContex'
 
-
+import {globalStyles} from '../../assets/globalStyle'
 interface cartItem{
     id:string,
     itemName : string,
@@ -95,8 +95,9 @@ const ExpandedExpenseReport = () => {
         
 
         }catch(err){
-            setLoadingDelete(false)
             setShowDeleteProcess(false)
+            setLoadingDelete(false)
+            
             setShowError(true)
         }
     }
@@ -109,16 +110,16 @@ const ExpandedExpenseReport = () => {
    
         <Portal>
 
-            <Dialog visible={showDeleteConfirmation} onDismiss={()=>{setShowDeleteConfirmation(false)}}>
+            <Dialog style={globalStyles.dialogContainer} visible={showDeleteConfirmation} onDismiss={()=>{setShowDeleteConfirmation(false)}} >
 
                 <Dialog.Title>
-                    <Text>
+                    <Text style={{color:'#37474F'}}>
                         {language === "en" ? "Delete Expense Record?" : "Tanggalin ang Rekord ng Gastos?"}
                     </Text>
                 </Dialog.Title>
 
                 <Dialog.Content>
-                    <Text>
+                    <Text style={{fontSize:16,color:'#475569'}}>
                         {language === "en" 
                             ? "This action will permanently remove this expense and all its items from your records. You won’t be able to undo this." 
                             : "Ang aksyong ito ay permanenteng magtatanggal ng gastos at lahat ng item nito mula sa iyong talaan. Hindi mo na ito maibabalik."}
@@ -126,13 +127,21 @@ const ExpandedExpenseReport = () => {
                 </Dialog.Content>
 
                 <Dialog.Actions>
-                    <TouchableOpacity onPress={()=>{deleteRecord()}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
 
-                        <Text style={{color:'white'}}>
-                            {language === "en" ? "Continue" : "Tuloy"}
-                        </Text>
-
-                    </TouchableOpacity>
+                    <Button onPress={()=>setShowDeleteConfirmation(false)}             
+                        mode="outlined"
+                        style={globalStyles.buttonSecondary}
+                        labelStyle={globalStyles.buttonLabelSecondary}>
+                        {language === "en" ? "Cancel" : "Kanselahin"}
+                    </Button>
+                    <Button
+                    mode="contained"
+                    onPress={() => deleteRecord()}
+                    style={[globalStyles.buttonPrimary]}
+                    labelStyle={globalStyles.buttonLabelPrimary}
+                    >
+                    {language === "en" ? "Continue" : "Magpatuloy"}
+                    </Button>
                 </Dialog.Actions>
 
             </Dialog>
@@ -143,17 +152,17 @@ const ExpandedExpenseReport = () => {
     const renderProcessDeletePost = () => (
     
         <Portal>
-            <Dialog visible={showDeletePostProcess} onDismiss={()=>{}}>
+            <Dialog style={globalStyles.dialogContainer} visible={showDeletePostProcess} onDismiss={()=>{}}>
 
                 {deletePostLoading ? (
                     <Dialog.Title>
-                        <Text>
+                        <Text style={{color:'#37474F'}}>
                             {language === "en" ? "Deleting Expense..." : "Binubura ang Gastos..."}
                         </Text>
                     </Dialog.Title>
                 ) :(
                     <Dialog.Title>
-                        <Text>
+                        <Text style={{color:'#37474F'}}>
                             {language === "en" ? "Expense Deleted" : "Natanggal na ang Gastos"}
                         </Text>
                     </Dialog.Title>
@@ -163,7 +172,7 @@ const ExpandedExpenseReport = () => {
 
                 {deletePostLoading ? (
                     <Dialog.Content>
-                        <Text>
+                        <Text style={{fontSize:16,color:'#475569'}}>
                             {language === "en" ? 
                                 "Please wait while we remove this record. This may take a few seconds." 
                                 : 
@@ -172,7 +181,7 @@ const ExpandedExpenseReport = () => {
                     </Dialog.Content>
                 ) : (
                     <Dialog.Content>
-                        <Text>
+                        <Text style={{fontSize:16,color:'#475569'}}>
                             {language === "en" ? 
                                 "The expense record has been successfully removed from your records!" 
                                 : 
@@ -188,13 +197,14 @@ const ExpandedExpenseReport = () => {
                 ) : (
                     <Dialog.Actions>
 
-                        <TouchableOpacity onPress={()=>{router.push('/(main)/expenses')}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-                            <Text style={{color:'white'}}>
-                                {language === "en" ? "Continue" : "Tuloy"}
-                            </Text>
-
-                        </TouchableOpacity>
+                    <Button
+                    mode="contained"
+                    onPress={() => router.push('/(main)/expenses')}
+                    style={[globalStyles.buttonPrimary]}
+                    labelStyle={globalStyles.buttonLabelPrimary}
+                    >
+                    {language === "en" ? "Continue" : "Tuloy"}
+                    </Button>
 
                     </Dialog.Actions>
                 )}
@@ -207,7 +217,7 @@ const ExpandedExpenseReport = () => {
     const renderError = ()=>(
 
         <Portal>
-              <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
+              <Dialog style={globalStyles.dialogContainer} visible={showError} onDismiss={()=>setShowError(false)}>
       
                   <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
       
@@ -219,7 +229,7 @@ const ExpandedExpenseReport = () => {
                   </Dialog.Title>
                   
                   <Dialog.Content>
-                      <Text style={{color:'#475569'}}>
+                      <Text style={{fontSize:16,color:'#475569'}}>
                        {language === "en" ? "An unexpected error occured. Please try again later" : "Nagkaroon ng hindi inaasahang error. Pakisubukang muli mamaya."}
                         
                       </Text>
@@ -229,13 +239,14 @@ const ExpandedExpenseReport = () => {
       
                   <Dialog.Actions>
       
-                  <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-      
-                      <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                          OK
-                      </Text>
-      
-                  </TouchableOpacity>
+                    <Button
+                    mode="contained"
+                    onPress={() => setShowError(false)}
+                    style={[globalStyles.buttonPrimary]}
+                    labelStyle={globalStyles.buttonLabelPrimary}
+                    >
+                    OK
+                    </Button>
       
                   </Dialog.Actions>
       

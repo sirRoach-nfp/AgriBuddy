@@ -1,4 +1,4 @@
-import { ActivityIndicator, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, FlatList, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Ionicons from '@expo/vector-icons/Ionicons'
@@ -11,7 +11,7 @@ import { useSearchParams } from 'expo-router/build/hooks'
 
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import ArticleCard from '@/components/genComponents/ArticleCard'
-
+import { useLanguage } from '../Context/LanguageContex';
 interface ArticleData {
     cover:string,
     title:string,
@@ -20,129 +20,114 @@ interface ArticleData {
 
 
 const ArticleSearchResult = () => {
+  const {language} = useLanguage()
+    const [articleData, setArticleData] = useState<ArticleData[]>([]);
+    const [loadingResult, setLoadingResult] = useState(false);
+    const searchParams = useSearchParams();
 
-
-    const [articleData,setArticleData] = useState<ArticleData[]>([])
-    const searchParams = useSearchParams()
-
-    const queryString = searchParams.get('searchQuery')
-    const [loadingResult,setLoadingResult] = useState(false)
+    const queryString = searchParams.get('searchQuery');
 
     const preprocessSearch = (text: string): string[] => {
-      return text
-        .toLowerCase()
-        .replace(/[^\w\s]/gi, '')
-        .split(/\s+/)
-        .filter((word, index, self) => 
-          word.length > 1 && self.indexOf(word) === index
-        );
+        return text
+            .toLowerCase()
+            .replace(/[^\w\s]/gi, '')
+            .split(/\s+/)
+            .filter((word, index, self) => word.length > 1 && self.indexOf(word) === index);
     };
 
-    useEffect(()=>{
+    useEffect(() => {
+        const fetchArticles = async () => {
+            if (!queryString) return;
 
-        const fetchArticles = async()=>{
-
-            try{
-
-                setLoadingResult(true)
-
-                const keywords = preprocessSearch(queryString as string).slice(0,10);
+            setLoadingResult(true);
+            try {
+                const keywords = preprocessSearch(queryString).slice(0, 10);
 
                 const q = query(
-                    collection(db,'Articles'),
-                    where("keywords","array-contains-any",keywords)
-                )
+                    collection(db, 'Articles'),
+                    where("keywords", "array-contains-any", keywords)
+                );
 
+                const articleDocSnap = await getDocs(q);
 
-       
-                const articleDocSnap = await getDocs(q)
+                const rawData = articleDocSnap.docs.map((doc) => ({
+                    cover: doc.data().cover,
+                    title: doc.data().title,
+                    articleId: doc.id,
+                }));
 
+                console.log("Fetched Article Data:", rawData);
+                setArticleData(rawData);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoadingResult(false);
+            }
+        };
 
+        fetchArticles();
+    }, [queryString]);
 
-                if(articleDocSnap){
-                    const rawData = articleDocSnap.docs.map((doc)=>{
-                        return{
-                            cover:doc.data().cover,
-                            title:doc.data().title,
-                            articleId:doc.id
-                        }
-                    })
+    const renderItem = ({ item }: { item: ArticleData }) => (
+        <ArticleCard articleId={item.articleId} cover={item.cover} title={item.title} />
+    );
 
-                    console.log("Fetched Article Data : ", rawData)
-                    setArticleData(rawData)
+    return (
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#F4F5F7'}}>
+            <View style={styles.headerContainer}>
+                <TouchableOpacity
+                    style={{ alignSelf: 'flex-start', marginLeft: 10 }}
+                    onPress={() => router.back()}
+                >
+                    <Ionicons name="arrow-back" size={25} color="#607D8B" />
+                </TouchableOpacity>
 
-                    setLoadingResult(false)
-                }else{
-                  setLoadingResult(false)
-                }
-            }catch(err){console.error(err)}
-            
+                <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={{ marginLeft: 10, fontSize: 18, fontWeight: 500, color: '#37474F' }}
+                >
+                  "{queryString}"
+                </Text>
+            </View>
 
-        }
-
-        fetchArticles()
-    },[])
-  return (
-
-
-    <SafeAreaView style={{flex:1,borderWidth:0,flexDirection:'column',display:'flex',alignItems:'center'}}>
-
-        <View style={styles.headerContainer}>
-
-            <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10,marginTop:'auto',marginBottom:'auto'}} onPress={()=> router.back()}>
-
-                <Ionicons name="arrow-back" size={25} color="#607D8B" />
-
-            </TouchableOpacity>
-
-            <Text numberOfLines={2} ellipsizeMode="tail" style={{marginLeft:10,fontSize:18,fontWeight:500,color:'#37474F'}} >
-                Search Results For {queryString}
-            </Text>
-
-
-
-
-
-
-        </View>
-
-        {loadingResult === true ? (
-              <View style={{borderWidth:0,flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-  
-                  <ActivityIndicator size={75 }color="#607D8B"  />
-              </View>
-        ) : (
-
-          <ScrollView style={styles.scrollContainer}  contentContainerStyle={{alignItems:'center'}}>
-            {articleData && articleData.length > 0 ? articleData.map((article,index)=>(
-
-
-              <ArticleCard articleId={article.articleId} cover={article.cover} title={article.title} key={article.articleId}/>
-
-
-
-              )) : (
-                <View style={{marginTop:100,borderWidth:0,display:'flex',flexDirection:'column', alignItems:'center',justifyContent:'center'}}>
-                  
-                  <MaterialIcons name="search-off" size={75} color="#607D8B" />
-                  <Text style={{fontSize:25,fontWeight:600, color:"#37474F"}}>No Result Found</Text>
-                  <Text style={{fontSize:16,fontWeight:400,color:"#333333"}}>We Can't Find Any Article Matching Yourself</Text>
+            {loadingResult ? (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator size={75} color="#607D8B" />
                 </View>
-              )}
-          </ScrollView>
+            ) : (
+                <FlatList
+                    data={articleData}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.articleId}
+                    contentContainerStyle={{
+                        flexGrow: 1,
+                        justifyContent: articleData.length === 0 ? 'center' : 'flex-start',
+                        paddingHorizontal:10,
+                        paddingVertical: 10,
+                        borderWidth:0,
+                        width:'100%',
+                    }}
+                    ListEmptyComponent={
+                        <View style={{ alignItems: 'center', marginTop: 0 }}>
+                            <MaterialIcons name="search-off" size={75} color="#607D8B" />
+                            <Text style={{ fontSize: 25, fontWeight: 600, color: "#37474F" }}>
+                               {language === "en" ? "No Result Found" : "Walang natagpuang resulta"}
+                            </Text>
+                            <Text style={{textAlign:'center', fontSize: 16, fontWeight: 400, color: "#333333" }}>
+                              {language === "en" ? "We can't find any article matching your search" : "Hindi namin makita ang anumang article na akma sa iyong search."}
+                                
+                            </Text>
+                        </View>
+                    }
+                />
+            )}
+        </SafeAreaView>
+    );
+};
 
-        )}
+export default ArticleSearchResult;
 
-
-
-
-
-
-    </SafeAreaView>
-  )
-}
-
-export default ArticleSearchResult
 
 const styles = StyleSheet.create({
     
@@ -154,7 +139,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         alignItems:'center',
         backgroundColor:'white',
-        paddingVertical:10,
+        paddingVertical:15,
         borderColor:'#E2E8F0'
         //backgroundColor:'#2E6F40',
         //marginBottom:20,

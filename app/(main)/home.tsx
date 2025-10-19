@@ -16,7 +16,7 @@ import { ScrollView } from 'react-native-gesture-handler'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import RecordMinCard from '@/components/genComponents/recordMinCard'
 import { db } from '../firebaseconfig'
-import { collection, doc, getDoc, getDocs, limit, orderBy, query } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query } from 'firebase/firestore'
 import { useUserContext } from '../Context/UserContext'
 import { Image } from 'react-native';
 
@@ -28,6 +28,9 @@ import Carousel, {
   Pagination,
 } from "react-native-reanimated-carousel";
 import { LinearGradient } from 'expo-linear-gradient'
+import {  listenToArticlesHome } from '../controllers/ArticleControllers/fetchArticleController';
+import { listenToCurrentCrops } from '../controllers/CurrentCropsController/CurrentCropsController';
+import { useLanguage } from '../Context/LanguageContex';
 
 
 const { width } = Dimensions.get('window');
@@ -60,7 +63,7 @@ interface ArticleData {
 
 const home = () => {
   const {user} = useUserContext();
-
+const {language} = useLanguage()
   const [currentCrop, setCurrentCrop] = useState<CurrentCrop>({crop:[]})
 
 
@@ -81,124 +84,41 @@ const home = () => {
 
 
   useFocusEffect(
-
-
-    useCallback(()=>{
-
-    
-      const fetchCurrentCrop = async()=>{
-
-        if (!user?.CurrentCropsRefId) {
-          console.error("CurrentCropsRefId is undefined");
-          return;
-        }
-        console.log("Fetching current crops ......")
-        try{
-          console.log("Fetching current crops  2 ......")
-          const userRef = doc(db,"CurrentCrops",user?.CurrentCropsRefId as string);
-  
-          const docSnap = await getDoc(userRef);
-  
-          if(docSnap.exists()){
-            const rawData = docSnap.data().CurrentCrops as any[];
-            const filteredCrops: cropType[] = rawData.map(crop => ({
-              CropName: crop.CropName,
-              CropId: crop.CropId,
-              SessionId: crop.SessionId,
-              PlotAssoc: crop.PlotAssoc,
-              PlotName: crop.PlotName,
-              CropThumbnail:crop.CropCover,
-            }));
-            setCurrentCrop({ crop: filteredCrops });
-   
-            console.log(docSnap.data().CurrentCrops)
-          }else{
-            console.log("document does not exist")
-          }
-  
-        }catch(err){
-          console.error(err)
-        }
-      }
-
-      fetchCurrentCrop()
-      fetchArticlesFromFirebase()
-    },[])
-  )
-
-  useEffect(()=>{
-    const fetchCurrentCrop = async()=>{
-
+    useCallback(() => {
       if (!user?.CurrentCropsRefId) {
         console.error("CurrentCropsRefId is undefined");
         return;
       }
-      console.log("Fetching current crops ......")
-      try{
-        console.log("Fetching current crops  2 ......")
-        const userRef = doc(db,"CurrentCrops",user?.CurrentCropsRefId as string);
 
-        const docSnap = await getDoc(userRef);
+      console.log("Subscribing to Firestore data...");
 
-        if(docSnap.exists()){
-          const rawData = docSnap.data().CurrentCrops as any[];
-          const filteredCrops: cropType[] = rawData.map(crop => ({
-            CropName: crop.CropName,
-            CropId: crop.CropId,
-            SessionId: crop.SessionId,
-            PlotAssoc: crop.PlotAssoc,
-            PlotName: crop.PlotName,
-            CropThumbnail:crop.CropCover,
-          }));
+      const unsubscribeCrop = listenToCurrentCrops(
+        user.CurrentCropsRefId,
+        (filteredCrops) => {
           setCurrentCrop({ crop: filteredCrops });
- 
-          console.log(docSnap.data().CurrentCrops)
-        }else{
-          console.log("document does not exist")
-        }
-
-      }catch(err){
-        console.error(err)
-      }
-    }
-
-    fetchCurrentCrop()
-    fetchArticlesFromFirebase()
-  },[user])
-
-
-  const testDataFetched = () => {
-    console.log(currentCrop)
-  }
-
-
-
-  const fetchArticlesFromFirebase = async () => {
-    try {
-      const articleQuery = query(
-        collection(db, 'Articles'),
-        orderBy('CreatedAt', 'desc'),
-        limit(5)
+          console.log("✅ Crops updated (cache/server):", filteredCrops);
+        },
+        (error) => console.error("Error fetching crops:", error)
       );
+
   
-      const articleSnapshot = await getDocs(articleQuery);
-  
-      if (articleSnapshot) {
-        const rawData = articleSnapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            cover: data.cover,
-            title: data.title,
-            articleId: doc.id
-          };
-        });
-  
-        setArticleData(rawData);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
+      const unsubscribeArticles = listenToArticlesHome(
+        (rawData) => {
+          setArticleData(rawData);
+          console.log("✅ Articles updated (cache/server):", rawData);
+        },
+        (error) => console.error("Error fetching articles:", error)
+      );
+
+      // ✅ Cleanup on screen unfocus
+      return () => {
+        unsubscribeCrop();
+        unsubscribeArticles();
+        console.log("Unsubscribed from Firestore listeners");
+      };
+    }, [user])
+  );
+
   
   return (
 
@@ -307,7 +227,10 @@ const home = () => {
 
             <View style={styles.currentCropHeader}>
               <Entypo name="leaf" size={24} color="#607D8B" />
-              <Text style={styles.currentCropHeaderTitle }>Current Crop</Text>
+              <Text style={styles.currentCropHeaderTitle }>
+                {language === "en" 
+                  ? "Current Crop" 
+                  : "Kasalukuyang Tanim"}</Text>
             </View>
 
 
@@ -329,9 +252,14 @@ const home = () => {
                 />
               ))
             ) : (
-              <View style={{ gap:10,width:"100%",height:200,borderWidth:0,display:'flex',flexDirection:"column",alignItems:'center',justifyContent:'center'}}> 
-                <FontAwesome6 name="note-sticky" size={30} color="#607D8B" />
-                <Text style={{color:'#333333', fontSize:17,fontWeight:400}}>You're currently not tracking any crop</Text>
+              <View style={{ gap:10,width:"100%",height:200,borderWidth:1,borderColor:"#e2e8f0",borderRadius:16,display:'flex',flexDirection:"column",alignItems:'center',justifyContent:'center'}}> 
+                <FontAwesome6 name="seedling" size={30} color="#607D8B" />
+                <Text style={{fontSize:16,color:'#475569'}}>
+                  {language === "en" 
+                  ? "You're currently not tracking any crop" 
+                  : "Wala kang gulay na nakatanim sa ngayon"}
+                  
+                </Text>
 
               </View>
             )}
@@ -393,7 +321,7 @@ const styles = StyleSheet.create({
     fontSize:18,
     fontWeight:600,
     letterSpacing:0.5,
-    marginLeft:5
+  
   },
   currentCropContentWrapper:{
     //borderWidth: 1,

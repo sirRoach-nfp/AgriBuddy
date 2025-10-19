@@ -1,5 +1,5 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useCallback, useEffect, useState } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,8 +15,8 @@ import cropsData from '../CropsData/Crops/Crops.json'
 
 import CropMinCard from '@/components/genComponents/cropMinCard';
 import PlanMinCard from '@/components/genComponents/PlanMinCard';
-import { router } from 'expo-router';
-import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
+import { router, useFocusEffect } from 'expo-router';
+import { collection, doc, getDoc, getDocs, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebaseconfig';
 import { useUserContext } from '../Context/UserContext';
 
@@ -87,6 +87,7 @@ const crops = () => {
   const [rotationPlan,SetRotationPlan] = useState<RotationPlan[]>([])
 
 
+  /* Legacy fetch
 
   useEffect(()=> {
 
@@ -123,8 +124,38 @@ const crops = () => {
     fetchCropsFromFirebase()
 
 
-  },[])
+  },[])*/
 
+ const fetchCropsFromFirebase = useCallback(() => {
+    console.log("Listening to Crops collection...");
+
+    const cropDocRef = collection(db, "Crops");
+
+    // onSnapshot automatically detects changes (add, update, delete)
+    const unsubscribe = onSnapshot(cropDocRef, (snapshot) => {
+      console.log("Displaying Crops...");
+      const rawData = snapshot.docs.map((doc) => ({
+        cropId: doc.id,
+        cropName: doc.data().cropName,
+        cropScientificName: doc.data().scientificName,
+        cropCover: doc.data().cropCover,
+        optimalSeason: doc.data().optimalSeason,
+      }));
+      SetCropData(rawData);
+    });
+
+    // Return unsubscribe to clean up listener when screen is unfocused
+    return unsubscribe;
+  }, []);
+
+  // 👇 Runs when the screen is focused, and cleans up on blur
+  useFocusEffect(
+    useCallback(() => {
+      const unsubscribe = fetchCropsFromFirebase();
+      return () => unsubscribe && unsubscribe();
+    }, [fetchCropsFromFirebase])
+  );
+  
   const [selectedOption, setSelectedOption] = useState<String>('crops');
 
   const handleSegmentChange = (value:String) => {
@@ -177,82 +208,32 @@ const crops = () => {
 
       
 
-      <View style={[styles.segmentContainer,{display:'none'}]}>
-        <TouchableOpacity
-          style={styles.segmentButton}
-          onPress={() => handleSegmentChange('crops')}
-        >
-          <Text
-            style={[
-              styles.segmentText,
-              selectedOption === 'crops' && styles.activeText,
-            ]}
-          >
-            Crops
-          </Text>
-          {selectedOption === 'crops' && (
-            <View style={styles.activeLine} />
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.segmentButton}
-          onPress={() => handleSegmentChange('plans')}
-        >
-          <Text
-            style={[
-              styles.segmentText,
-              selectedOption === 'plans' && styles.activeText,
-            ]}
-          >
-            Plans
-          </Text>
-          {selectedOption === 'plans' && (
-            <View style={styles.activeLine} />
-          )}
-        </TouchableOpacity>
-      </View>
+
 
       
+      <FlatList
+        style={styles.scrollContentWrapper}
+        contentContainerStyle={{ 
+          alignItems: 'center',
+          paddingBottom: 20, // move padding here!
+          paddingTop: 20
+        }}
+        data={cropData}
+        keyExtractor={(item, index) => item.cropId?.toString() || index.toString()}
+        renderItem={({ item }) => (
+          <CropMinCard
+            cropId={item.cropId}
+            commonName={item.cropName}
+            scientificName={item.cropScientificName}
+            imgUrl={item.cropCover}
+            optimalSeason={item.optimalSeason}
+          />
+        )}
+        showsVerticalScrollIndicator={false}
+      />
+          
 
 
-
-      {selectedOption === 'crops' && 
-      
-      <ScrollView style={styles.scrollContentWrapper} contentContainerStyle={{alignItems:'center'}}>
-
-
-
-        {cropData && cropData.length > 0 && cropData.map((crop,index)=>(
-
-            <CropMinCard 
-            cropId={crop.cropId} 
-            key={index} commonName={crop.cropName} 
-            scientificName={crop.cropScientificName} 
-            imgUrl={crop.cropCover}
-            optimalSeason={crop.optimalSeason}
-            />
-
-        ))}
-      </ScrollView> 
-
-      }
-
-
-      {selectedOption === 'plans' && 
-      
-      <ScrollView style={styles.scrollContentWrapper} contentContainerStyle={{alignItems:'center'}}>
-        
-
-
-
-        <Text>Crop Rotation Planner Is Currently Unavailable</Text>
-
-
-
- 
-      </ScrollView> 
-
-      }
 
 
 
@@ -312,17 +293,18 @@ const styles = StyleSheet.create({
   
 
   mainContainer : {
-    //borderWidth:1,
+    borderWidth:0,
     flex:1,
     display:'flex',
     flexDirection:'column'
   },
 
   scrollContentWrapper: {
-    //borderWidth:1,
+    borderWidth:0,
     display:'flex',
     flexDirection:'column',
-    paddingTop:20
+    paddingTop:20,
+    paddingBottom:550,
  
   },
 

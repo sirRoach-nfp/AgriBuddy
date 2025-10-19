@@ -43,6 +43,10 @@ import { Picker } from '@react-native-picker/picker'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import Feather from '@expo/vector-icons/Feather'
 import { useLanguage } from '../Context/LanguageContex'
+
+
+
+import {globalStyles} from '../../assets/globalStyle'
 interface guideStep{
     header: string;
     content: string;
@@ -111,6 +115,8 @@ const CropProfile = () => {
     
     const [selectedLandUnit,setSelectedUnit] = useState("Hectare");
     const [area,setArea] = useState<number>(0);
+    const [areaText, setAreaText] = useState('');
+
     const [result,setResult] = useState<number | null>(null);
     const seedsPerHectare = 0;
     const currentMonth = new Date().getMonth()+1
@@ -146,7 +152,7 @@ const CropProfile = () => {
 
     const renderAddCropConfirmationDialog = (cropId:string,commonName:string) => (
         <Portal>
-            <Dialog visible={showConfirmationVisible} onDismiss={()=>{}}>
+            <Dialog visible={showConfirmationVisible} onDismiss={()=>{}} style={globalStyles.dialogContainer}>
 
                 <Dialog.Icon
                     icon={isSuitable ? "check-circle-outline" : "alert-circle-outline"}
@@ -204,14 +210,31 @@ const CropProfile = () => {
                     )}
 
                 </Dialog.Content>
-                <Dialog.Actions>
-                    <Button onPress={()=>setShowConfirmationVisible(false)} style={{borderWidth:1,borderColor:'#7b7b7b',width:'49%',borderRadius:5}}>
-                        {language === "en" ? "Cancel" : "Kanselahin"}
-                    </Button>
-                    <Button onPress={() => AddToCurrent(cropId,commonName)} style={[{borderWidth:1,width:'49%',borderRadius:5},
-                        isSuitable ?{backgroundColor:'#17A34A',borderColor:'#17A34A'} :{backgroundColor:'#FFA000',borderColor:'#FFA000'}]}>
-                        {language === "en" ? "Proceed" : "Ituloy"}
-                    </Button>
+                <Dialog.Actions style={{ justifyContent: "space-between" }}>
+                {/* Cancel Button (outlined secondary style) */}
+                <Button
+                    mode="outlined"
+                    onPress={() => setShowConfirmationVisible(false)}
+                    style={[globalStyles.buttonSecondary, { width: "49%" }]}
+                    labelStyle={globalStyles.buttonLabelSecondary}
+                >
+                    {language === "en" ? "Cancel" : "Kanselahin"}
+                </Button>
+
+                {/* Proceed Button (dynamic color) */}
+                <Button
+                    mode="contained"
+                    onPress={() => AddToCurrent(cropId, commonName)}
+                    style={[
+                    { width: "49%", borderRadius: 5 },
+                    isSuitable
+                        ? { backgroundColor: "#17A34A", borderColor: "#17A34A" } // green
+                        : { backgroundColor: "#FFA000", borderColor: "#FFA000" }, // orange
+                    ]}
+                    labelStyle={globalStyles.buttonLabelPrimary}
+                >
+                    {language === "en" ? "Proceed" : "Ituloy"}
+                </Button>
                 </Dialog.Actions>
             </Dialog>
         </Portal>
@@ -219,7 +242,7 @@ const CropProfile = () => {
 
     const renderSlowInternet = () => (
             <Portal>
-                <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)}>
+                <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)} style={globalStyles.dialogContainer}>
     
                     <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
     
@@ -250,7 +273,7 @@ const CropProfile = () => {
     const renderError = ()=>(
 
     <Portal>
-            <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
+            <Dialog visible={showError} onDismiss={()=>setShowError(false)} style={globalStyles.dialogContainer}>
     
                 <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
     
@@ -272,14 +295,15 @@ const CropProfile = () => {
     
                 <Dialog.Actions>
     
-                <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-    
-                    <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                        OK
-                    </Text>
-    
-                </TouchableOpacity>
-    
+                    <Button
+                    mode="contained"
+                    onPress={() => setShowError(false)}
+                    style={globalStyles.buttonPrimary}
+                    labelStyle={globalStyles.buttonLabelPrimary}
+                    >
+                    OK
+                    </Button>
+                        
                 </Dialog.Actions>
     
             </Dialog>
@@ -396,7 +420,9 @@ const CropProfile = () => {
     const commonName = searchParams.get('commonName'); // should return "bellpepper"
     const scientificName = searchParams.get('scientificName');
     const imgUrl = searchParams.get('imgUrl');
+    
 
+    const[noData,setNoData] = useState<boolean>(true)
 
     const [cropData,setCropData] = useState<CropData>()
     
@@ -431,6 +457,9 @@ const CropProfile = () => {
                     }
                     setCropBestSeason(rawData.optimalSeason)
                     setCropData(rawData)
+                    setNoData(false)
+                } else {
+                    setNoData(true)
                 }
             }catch(err){
                 console.error(err)
@@ -688,8 +717,13 @@ const CropProfile = () => {
 
                                    <TextInput
                                         onChangeText={(text) => {
-                                            const value = Number(text);
-                                            setArea(isNaN(value) ? 0 : value); // fallback to 0 if invalid
+                                            // Remove any invalid characters immediately
+                                            const sanitized = text.replace(/[^0-9.]/g, '');
+                                            setAreaText(sanitized);
+
+                                            // Convert to number for your logic
+                                            const value = Number(sanitized);
+                                            setArea(isNaN(value) ? 0 : value);
                                         }}
                                         keyboardType="number-pad"
                                         style={fieldStyles.textInput}
@@ -732,7 +766,12 @@ const CropProfile = () => {
 
                                 {result !== null && (
                                     <View style={subContainer.calculatorWrapperMain__resultWrapper}>
-                                        <Text style ={subContainer.calculatorWrapperMain__resultText}>You will need <Text style={subContainer.calculatorWrapperMain__resultTextHighlight}>{result}</Text> grams of seeds for the provided area size</Text>
+                                        <Text style={subContainer.calculatorWrapperMain__resultText}>
+                                        {language === "en"
+                                            ? <>You will need <Text style={subContainer.calculatorWrapperMain__resultTextHighlight}>{result}</Text> grams of seeds for the provided area size</>
+                                            : <>Kakailanganin mo ng <Text style={subContainer.calculatorWrapperMain__resultTextHighlight}>{result}</Text> gramo ng binhi para sa ibinigay na laki ng lupa</>}
+                                        </Text>
+
                                     </View>
                                 )}
 
@@ -815,7 +854,7 @@ const CropProfile = () => {
                                         <View style={subContainer.badgeWrapper__imageWrapper}>
                                             <Image source={soilImages['loamy']} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
                                         </View>
-                                        <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Loamy") && {backgroundColor:'#F0FDF4'}]}>
+                                        <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Loamy") && {backgroundColor:'#DCFCE7'}]}>
                                             <Text  style={styles.badgesText}>Loamy</Text>
                                         </View>
                                         
@@ -828,7 +867,7 @@ const CropProfile = () => {
                                         <View style={subContainer.badgeWrapper__imageWrapper}>
                                             <Image source={soilImages['sandy']} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
                                         </View>
-                                        <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Sandy") && {backgroundColor:'#F0FDF4'}]}>
+                                        <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Sandy") && {backgroundColor:'#DCFCE7'}]}>
                                             <Text style={styles.badgesText}>Sandy</Text>
                                         </View>
 
@@ -842,7 +881,7 @@ const CropProfile = () => {
                                             <Image source={soilImages['clay']} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
                                         </View>
                                         
-                                        <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Clayey") && {backgroundColor:'#F0FDF4'}]}>
+                                        <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Clayey") && {backgroundColor:'#DCFCE7'}]}>
                                             <Text style={styles.badgesText}>Clayey</Text>
                                         </View>
                                         
@@ -856,7 +895,7 @@ const CropProfile = () => {
                                             <Image source={soilImages['silty']} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
                                         </View>
                                         
-                                        <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Silty") && {backgroundColor:'#F0FDF4'}]}>
+                                        <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Silty") && {backgroundColor:'#DCFCE7'}]}>
                                             <Text  style={styles.badgesText}>Silty</Text>
                                         </View>
                                         
@@ -869,7 +908,7 @@ const CropProfile = () => {
                                             <Image source={soilImages['peaty']} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
                                         </View>
 
-                                        <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Peaty") && {backgroundColor:'#F0FDF4'}]}>
+                                        <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Peaty") && {backgroundColor:'#DCFCE7'}]}>
                                             <Text style={styles.badgesText}>Peaty</Text>
                                         </View>
 
@@ -881,7 +920,7 @@ const CropProfile = () => {
                                             <Image source={soilImages['sandyLoam']} style={{width:'100%',height:'100%', borderTopLeftRadius:3,borderTopRightRadius:3}}/>
                                         </View>
 
-                                        <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Sandy loam") && {backgroundColor:'#F0FDF4'}]}>
+                                        <View style={[subContainer.badgeWrapper__infoWrapper,cropData?.soilType.includes("Sandy loam") && {backgroundColor:'#DCFCE7'}]}>
                                             <Text style={styles.badgesText}>Sandy Loam</Text>
                                         </View>
                                         
@@ -901,7 +940,7 @@ const CropProfile = () => {
                                         </View>
                                         <View style={[
                                             subContainer.badgeWrapper__infoWrapper, 
-                                            cropData?.soilType.includes("Clay Loam") && { backgroundColor: '#F0FDF4' }
+                                            cropData?.soilType.includes("Clay Loam") && { backgroundColor: '#DCFCE7' }
                                         ]}>
                                             <Text style={styles.badgesText}>Clay Loam</Text>
                                         </View>
@@ -920,7 +959,7 @@ const CropProfile = () => {
                                         </View>
                                         <View style={[
                                             subContainer.badgeWrapper__infoWrapper, 
-                                            cropData?.soilType.includes("Silty Loam") && { backgroundColor: '#F0FDF4' }
+                                            cropData?.soilType.includes("Silty Loam") && { backgroundColor: '#DCFCE7' }
                                         ]}>
                                             <Text style={styles.badgesText}>Silty Loam</Text>
                                         </View>
@@ -939,7 +978,7 @@ const CropProfile = () => {
                                         </View>
                                         <View style={[
                                             subContainer.badgeWrapper__infoWrapper, 
-                                            cropData?.soilType.includes("Sandy Clay Loam") && { backgroundColor: '#F0FDF4' }
+                                            cropData?.soilType.includes("Sandy Clay Loam") && { backgroundColor: '#DCFCE7' }
                                         ]}>
                                             <Text style={styles.badgesText}>Sandy Clay Loam</Text>
                                         </View>
@@ -1008,9 +1047,11 @@ const CropProfile = () => {
    
 
 
-                        <Button onPressIn={()=>{setShowConfirmationVisible(true)}} style={{marginTop:20,marginBottom:20,borderRadius:5}} icon={() => <FontAwesomeIcon icon={faLeaf} size={20} color="#FFFFFF" />} mode="contained-tonal" onPress={() => console.log('Pressed')} buttonColor="#2E6F40" textColor="#FFFFFF"
+                        <Button 
+                            disabled={noData}
+                            onPressIn={()=>{setShowConfirmationVisible(true)}} style={{marginTop:20,marginBottom:20,borderRadius:5}} icon={() => <FontAwesomeIcon icon={faLeaf} size={20} color="#FFFFFF" />} mode="contained-tonal" onPress={() => console.log('Pressed')} buttonColor="#2E6F40" textColor="#FFFFFF"
                         >
-                            Start Planting
+                            {language === "en" ? "Start Planting" : "Magsimulang Magtanim"}
                         </Button>
 
              

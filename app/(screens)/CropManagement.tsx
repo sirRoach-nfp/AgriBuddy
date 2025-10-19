@@ -26,6 +26,7 @@ import { useSearchParams } from 'expo-router/build/hooks'
 import { Image } from 'react-native';
 import { router } from 'expo-router'
 
+import {globalStyles} from '../../assets/globalStyle'
 
 interface guideStep{
   header: string;
@@ -126,6 +127,8 @@ import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Entypo from '@expo/vector-icons/Entypo';
 import { useLanguage } from '../Context/LanguageContex';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 
 
@@ -155,7 +158,10 @@ const CropManagement = () => {
   const cropName = searchParams.get('cropName');
   const cropId = searchParams.get('cropId');
   const sessionId = searchParams.get('SessionId');
-  const PlotAssoc= searchParams.get('PlotAssoc');
+  const PlotAssocFromParam = searchParams.get('PlotAssoc');
+
+  const[PlotAssoc,setPlotAssoc] = useState<string | null>(PlotAssocFromParam)
+  //const PlotAssoc= searchParams.get('PlotAssoc');
   const PlotName = searchParams.get('PlotName');
 
 
@@ -598,7 +604,7 @@ const CropManagement = () => {
       
 
       await setCurrentCropToPlot(cropId,cropName,cropSessionId,plotId,cropData?.thumbnail as string)
-
+      setPlotAssoc(plotId)
       await setPlotToCurrentCrop(plotId,plotName)
       setDialogVisible(false)
       console.log("Updated plot and crop")
@@ -1039,13 +1045,13 @@ const CropManagement = () => {
 
   const renderDialog = (plotId:any,plotName:any,cropId:any,cropName:any,cropSessionId:any) => (
   <Portal>
-    <Dialog visible={dialogVisible} onDismiss={hideDialog}>
+    <Dialog visible={dialogVisible} onDismiss={hideDialog} style={globalStyles.dialogContainer}>
       <Dialog.Title>
         {language === "en" ? "Assign to Plot?" : "Italaga sa Plot?"}
       </Dialog.Title>
 
       <Dialog.Content>
-        <Text>
+        <Text style={globalStyles.dialogBodyText}>
           {language === "en"
             ? `Assign to plot #${selectedPlot}?`
             : `Italaga sa plot #${selectedPlot}?`}
@@ -1053,11 +1059,15 @@ const CropManagement = () => {
       </Dialog.Content>
 
       <Dialog.Actions>
-        <Button onPress={hideDialog}>
+        <Button onPress={hideDialog}             mode="outlined"
+            style={globalStyles.buttonSecondary}
+            labelStyle={globalStyles.buttonLabelSecondary}>
           {language === "en" ? "Cancel" : "Kanselahin"}
         </Button>
         <Button
+          mode="contained"
           onPress={() => setPlotFun(plotId, plotName, cropId, cropName, cropSessionId)}
+          labelStyle={globalStyles.buttonLabelPrimary} style={globalStyles.buttonPrimary}
         >
           {language === "en" ? "OK" : "Sige"}
         </Button>
@@ -1067,7 +1077,7 @@ const CropManagement = () => {
   );
   const renderConfirmationDeletion = (plotAssoc:any,sessionId:any) => (
     <Portal>
-      <Dialog visible={dialogDeleteVisible} onDismiss={hideDeleteDialog}>
+      <Dialog visible={dialogDeleteVisible} onDismiss={hideDeleteDialog} style={globalStyles.dialogContainer}>
         <Dialog.Title>
           {language === "en" ? "Remove Crop?" : "Alisin ang Pananim?"}
         </Dialog.Title>
@@ -1081,10 +1091,14 @@ const CropManagement = () => {
         </Dialog.Content>
 
         <Dialog.Actions>
-          <Button onPress={hideDeleteDialog}>
+          <Button onPress={hideDeleteDialog}       
+            mode="outlined"
+            style={globalStyles.buttonSecondary}
+            labelStyle={globalStyles.buttonLabelSecondary}
+            >
             {language === "en" ? "Cancel" : "Kanselahin"}
           </Button>
-          <Button onPress={() => deleteCurrentCrop(plotAssoc, sessionId)}>
+          <Button mode="contained" onPress={() => deleteCurrentCrop(plotAssoc, sessionId)} labelStyle={globalStyles.buttonLabelPrimary} style={globalStyles.buttonPrimary}>
             {language === "en" ? "Confirm" : "Kumpirmahin"}
           </Button>
         </Dialog.Actions>
@@ -1095,7 +1109,7 @@ const CropManagement = () => {
   const renderError = ()=>(
 
     <Portal>
-            <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
+            <Dialog visible={showError} onDismiss={()=>setShowError(false)} style={globalStyles.dialogContainer}>
     
                 <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
     
@@ -1117,13 +1131,14 @@ const CropManagement = () => {
     
                 <Dialog.Actions>
     
-                <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-    
-                    <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                        OK
-                    </Text>
-    
-                </TouchableOpacity>
+                  <Button
+                    mode="contained"
+                    onPress={() => setShowError(false)}
+                    style={globalStyles.buttonPrimary}
+                    labelStyle={globalStyles.buttonLabelPrimary}
+                  >
+                    OK
+                  </Button>
     
                 </Dialog.Actions>
     
@@ -1135,7 +1150,7 @@ const CropManagement = () => {
 
   const renderSlowInternet = () => (
     <Portal>
-        <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)}>
+        <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)} style={globalStyles.dialogContainer}>
 
             <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
 
@@ -1152,11 +1167,14 @@ const CropManagement = () => {
             </Dialog.Content>
 
             <Dialog.Actions>
-                <TouchableOpacity onPress={()=> setShowInternetError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-                    <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                        {language === "en" ? "OK" : "Sige"}
-                    </Text>
-                </TouchableOpacity>
+              <Button
+                mode="contained"
+                onPress={() => setShowInternetError(false)}
+                style={globalStyles.buttonPrimary}
+                labelStyle={globalStyles.buttonLabelPrimary}
+              >
+                {language === "en" ? "OK" : "Sige"}
+              </Button>
             </Dialog.Actions>
 
         </Dialog>
@@ -1195,11 +1213,23 @@ const CropManagement = () => {
           </Text>
         </Dialog.Content>
 
+
         <Dialog.Actions>
-          <Button onPress={hideEntryPosteDialog}>
+          <Button
+            mode="outlined"
+            onPress={hideEntryPosteDialog}
+            style={globalStyles.buttonSecondary}
+            labelStyle={globalStyles.buttonLabelSecondary}
+          >
             {language === "en" ? "Cancel" : "Kanselahin"}
           </Button>
-          <Button onPress={() => logData(cropName, plotAssoc)}>
+
+          <Button
+            mode="contained"
+            onPress={() => logData(cropName, plotAssoc)}
+            style={globalStyles.buttonPrimary}
+            labelStyle={globalStyles.buttonLabelPrimary}
+          >
             {language === "en" ? "Confirm" : "Kumpirmahin"}
           </Button>
         </Dialog.Actions>
@@ -1208,7 +1238,7 @@ const CropManagement = () => {
   )
   const renderSuccessLogEntry= () => (
     <Portal>
-      <Dialog visible={dialogEntrySuccessVisible} onDismiss={() => {}}>
+      <Dialog visible={dialogEntrySuccessVisible} onDismiss={() => {}} style={globalStyles.dialogContainer}>
         <Dialog.Title>
           {language === "en" ? "Log Entry Success!" : "Matagumpay ang Pag-log ng Entry!"}
         </Dialog.Title>
@@ -1222,7 +1252,12 @@ const CropManagement = () => {
         </Dialog.Content>
 
         <Dialog.Actions>
-          <Button onPress={hideEntrySuccessDialog}>
+          <Button
+            mode="contained"
+            onPress={hideEntrySuccessDialog}
+            style={globalStyles.buttonPrimary}
+            labelStyle={globalStyles.buttonLabelPrimary}
+          >
             {language === "en" ? "Continue" : "Magpatuloy"}
           </Button>
         </Dialog.Actions>
@@ -1232,7 +1267,7 @@ const CropManagement = () => {
   const renderDeleteSuccess = () => (
 
     <Portal>
-      <Dialog visible={dialogRemoveVisible} onDismiss={() => {}}>
+      <Dialog visible={dialogRemoveVisible} onDismiss={() => {}} style={globalStyles.dialogContainer}>
         <Dialog.Icon icon="check" />
         <Dialog.Title>
           {language === "en" ? "Remove Success" : "Matagumpay na Naalis"}
@@ -1246,11 +1281,14 @@ const CropManagement = () => {
           </Text>
         </Dialog.Content>
 
-        <Dialog.Actions>
-          <Button onPress={() => {router.back()}}>
-            {language === "en" ? "Go Back" : "Bumalik"}
-          </Button>
-        </Dialog.Actions>
+        <Button
+          mode="outlined"
+          onPress={() => router.back()}
+          style={globalStyles.buttonSecondary}
+          labelStyle={globalStyles.buttonLabelSecondary}
+        >
+          {language === "en" ? "Go Back" : "Bumalik"}
+        </Button>
       </Dialog>
     </Portal>
 
@@ -1287,7 +1325,7 @@ const CropManagement = () => {
 
       
       //remove currentCrop if the crop is assigned to a plot
-
+      
       if(plotAssoc !== null){
 
 
@@ -1432,15 +1470,20 @@ const CropManagement = () => {
         <View style={stylesDataDoesntExist.wrapper}>
           <MaterialIcons name="error-outline" size={28} color="#E63946" />
           <Text style={stylesDataDoesntExist.primaryText}>
-            This crop data is no longer available
+            {language === "en" ? "This crop data is no longer available" : "Hindi na available ang datos ng pananim na ito."}
+            
           </Text>
           <Text style={stylesDataDoesntExist.secondaryText}>
-            It may have been removed or not found.
+            {language === "en" ? "It may have been removed or not found." : "Posibleng inalis o wala na."}
+            
           </Text>
 
           <TouchableOpacity style={stylesDataDoesntExist.actionWrapper} 
               onPress={()=>deleteCurrentCropNoModal(PlotAssoc,sessionId)}>
-              <Text style={stylesDataDoesntExist.actionText}>Delete from your tracklist</Text>
+              <Text style={stylesDataDoesntExist.actionText}>
+              {language === "en" ? "Delete from your tracklist" : "Alisin mula sa iyong talaan"}
+                
+              </Text>
           </TouchableOpacity>
 
         </View>
@@ -1728,7 +1771,10 @@ const CropManagement = () => {
                   onDismiss={closeMenu}
                   anchor={
                     <TouchableOpacity style={stylesButtons.plotAssign} onPress={openMenu}>
-                      <Text>Not assigned to any plot</Text>
+                      <Text style={styles.BadgeText}>
+                        {language === "en" ? "Not assigned to any plot" : "Hindi naka assign sa anumang plot"}
+                      </Text>
+                      
                     </TouchableOpacity>
                   }
                 >
@@ -1801,7 +1847,6 @@ const CropManagement = () => {
 
           <View style={stylesRecords.container}>
 
-              <Text style={stylesRecords.header}>Progress Logging</Text>
 
 
 
@@ -1809,7 +1854,9 @@ const CropManagement = () => {
 
 
                 <View style={stylesRecords.inputHeader}>
-                  <View style={stylesRecords.iconWrapper}></View>
+                  <View style={stylesRecords.iconWrapper}>
+                    <FontAwesome6 name="bugs" size={20} color="white" />
+                  </View>
                   <Text style={stylesRecords.inputText}>{language === "en" ? "Spotted Pests" : "Mga Napansing Peste"}</Text>
                 </View>
 
@@ -1869,7 +1916,7 @@ const CropManagement = () => {
 
 
                 <View style={stylesRecords.inputHeader}>
-                  <View style={stylesRecords.iconWrapper}></View>
+                  <View style={stylesRecords.iconWrapper}><FontAwesome5 name="disease" size={20} color="white" /></View>
                   <Text style={stylesRecords.inputText}>{language === "en" ? "Spotted Diseases" : "Mga Napansing Sakit"}</Text>
                 </View>
 
@@ -1965,7 +2012,7 @@ const CropManagement = () => {
 
 
                 <View style={stylesRecords.inputHeaderNormal}>
-                  <View style={stylesRecords.iconWrapper}></View>
+                  <View style={stylesRecords.iconWrapper}><MaterialCommunityIcons name="sack" size={20} color="white" /></View>
                   <Text style={stylesRecords.inputText}>{language === "en" ? "Applied Fertilizer" : "Ginamit na Pataba"}</Text>
                 </View>
 
@@ -2083,11 +2130,12 @@ const CropManagement = () => {
           </View>
 
 
-          <Button style={{marginTop:20,marginBottom:20}} icon={() => <FontAwesomeIcon icon={faFileArrowDown} size={20} color="#FFFFFF" />} mode="contained-tonal" onPress={showEntryDialog} buttonColor="#2e6f40" textColor="#FFFFFF"
-          
+          <Button icon={() => <FontAwesomeIcon icon={faFileArrowDown} size={20} color="#FFFFFF" />} mode="contained-tonal" onPress={showEntryDialog} 
+          labelStyle={globalStyles.buttonLabelPrimary} style={globalStyles.buttonPrimary}
           disabled={assocPlot === null || assocPlot === "null" || logProcess}
           >
-              Log Crop Data
+    
+              {language === "en" ? "Log Crop Data" : "I-Log ang datos"}
           </Button>
 
 
@@ -2367,16 +2415,20 @@ const stylesDataDoesntExist = StyleSheet.create({
 const stylesButtons = StyleSheet.create({
   plotAssign:{
     ///borderWidth:1,
-    alignSelf:'flex-start',
+    borderWidth:0,
+  
     display:'flex',
-    paddingTop:5,
-    paddingBottom:5,
-    paddingLeft:10,
-    paddingRight:10,
-    backgroundColor:'#E9A800',
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'center',
+  
+    paddingTop:11,
+    paddingBottom:11,
+    paddingLeft:25,
+    paddingRight:25,
     borderRadius:5,
-    marginTop:15,
-    marginBottom:15
+    backgroundColor:'#E9A800',
+
     //width:'fit-content',
   }
 })
@@ -2593,6 +2645,7 @@ const stylesRecords = StyleSheet.create({
     //borderWidth:1,
     display:'flex',
     flexDirection:'row',
+    alignItems:'center',
     marginBottom:10
   },
   inputHeaderNormal:{
@@ -2620,8 +2673,12 @@ const stylesRecords = StyleSheet.create({
     marginBottom:20
   },
   iconWrapper:{
-    width:25,
-    height:25,
+    width:30,
+    height:30,
+    display:'flex',
+    flexDirection:'column',
+    alignItems:'center',
+    justifyContent:'center',
     borderRadius:5,
     backgroundColor:'#37474F'
   },

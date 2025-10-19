@@ -51,7 +51,11 @@ const ExpensesReportCard = ({title,date,total,amountItems,expenseId}:Props) => {
       </View>
 
       <View style={styles.infoWrapper}>
-        <Text style={textStyle.titleText}>{title}</Text>
+        <Text style={textStyle.titleText}   
+            numberOfLines={2}       // limits text to 1 line
+            ellipsizeMode="tail" >
+                {title}
+        </Text>
 
         <View style={styles.subInfoInnerWrapper}>
             <AntDesign name="calendar" size={20} color="#607D8B" />
@@ -110,6 +114,7 @@ const styles = StyleSheet.create({
         //borderWidth:1,
         paddingVertical:5,
         paddingLeft:10,
+        paddingRight:10,
         //borderTopWidth:1,
         //borderBottomWidth:1,
         elevation:.5

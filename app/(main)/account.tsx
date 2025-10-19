@@ -33,6 +33,7 @@ import Feather from '@expo/vector-icons/Feather';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import LanguageSwitchComponent from '@/components/AccountScreenComponents/LanguageSwitchComponent';
 import { useLanguage } from '../Context/LanguageContex';
+import { globalStyles } from '@/assets/globalStyle';
 
 interface CurrentCrops{
 
@@ -150,13 +151,16 @@ const account = () => {
 
   const renderAddPlotConfirmationDialog = (plotLength: any) => (
     <Portal>
-      <Dialog visible={confirmationForAddPlotVisible} onDismiss={() => {}}>
+      <Dialog visible={confirmationForAddPlotVisible} onDismiss={() => {}} style={globalStyles.dialogContainer}>
         <Dialog.Title>
-          {language === "en" ? "Plot Creation" : "Paglikha ng Plot"}
+          <Text style={{color:'#37474F'}}>
+            {language === "en" ? "Plot Creation" : "Paglikha ng Plot"}
+          </Text>
+         
         </Dialog.Title>
 
         <Dialog.Content>
-          <Text>
+          <Text style={{fontSize:16,color:'#475569'}} >
             {language === "en"
               ? "Create another plot?"
               : "Gumawa ng panibagong plot?"}
@@ -164,21 +168,29 @@ const account = () => {
         </Dialog.Content>
 
         <Dialog.Actions>
-          <Button onPress={hideAddPlotConfirmation}>
-            {language === "en" ? "Cancel" : "Kanselahin"}
-          </Button>
+            <Button
+              mode="outlined"
+              onPress={hideAddPlotConfirmation}
+              style={globalStyles.buttonSecondary}
+              labelStyle={globalStyles.buttonLabelSecondary}
+            >
+              {language === "en" ? "Cancel" : "Kanselahin"}
+            </Button>
 
-          <Button
-            onPress={() =>
-              createNewPlot(
-                plotLength,
-                user?.PlotsRefId as string,
-                user?.RecordsRefId as string
-              )
-            }
-          >
-            {language === "en" ? "Confirm" : "Kumpirmahin"}
-          </Button>
+            <Button
+              mode="contained"
+              onPress={() =>
+                createNewPlot(
+                  plotLength,
+                  user?.PlotsRefId as string,
+                  user?.RecordsRefId as string
+                )
+              }
+              style={globalStyles.buttonPrimary}
+              labelStyle={globalStyles.buttonLabelPrimary}
+            >
+              {language === "en" ? "Confirm" : "Kumpirmahin"}
+            </Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>
@@ -533,7 +545,12 @@ const account = () => {
                                 ,alignItems:'center',
                                 justifyContent:'center'}}> 
                     <Octicons name="comment-discussion" size={30} color="#37474F" />
-                    <Text style={{color:'#333333', fontSize:17,fontWeight:400}}>You have not posted any discussion yet</Text>
+                    <Text style={{color:'#333333', fontSize:17,fontWeight:400,textAlign:'center'}}>
+                      
+                        {language === "en"
+                        ? "You have not posted any discussion yet"
+                        : "Hindi ka pa nakapag-post ng anumang talakayan."}   
+                      </Text>
       
                   </View>
                 )}

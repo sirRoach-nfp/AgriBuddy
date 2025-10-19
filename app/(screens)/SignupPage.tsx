@@ -1,10 +1,11 @@
-import { Alert, Button, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { auth, db } from '../firebaseconfig'
 import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore'
-import { Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper'
+import { Button, Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper'
 import { router } from 'expo-router'
+import { globalStyles } from '@/assets/globalStyle'
 
 export default function SignupPage() {
 
@@ -41,10 +42,10 @@ export default function SignupPage() {
 
 
         <Portal>
-            <Dialog visible={passwordWarningVisible} onDismiss={()=>setPasswordWarningVisible(false)}>
+            <Dialog visible={passwordWarningVisible} onDismiss={()=>setPasswordWarningVisible(false)} style={globalStyles.dialogContainer}>
 
                 <Dialog.Content>
-                    <Text>{errorCode}</Text>
+                    <Text style={{fontSize:16,color:'#475569'}}>{errorCode}</Text>
                 </Dialog.Content>
 
             </Dialog>
@@ -57,17 +58,17 @@ export default function SignupPage() {
 
     const renderSignUpProcess = () => (
         <Portal>
-        <Dialog visible={showSignUpProcess} onDismiss={()=>{}} style={{borderWidth:0,paddingTop:10,paddingBottom:15}}>
+        <Dialog visible={showSignUpProcess} onDismiss={()=>{}} style={[globalStyles.dialogContainer,{borderWidth:0,paddingTop:10,paddingBottom:15}]}>
 
 
             {processDone ? (
 
-                <Dialog.Title style={{color:'#253D2C'}}><Text>Account Created</Text></Dialog.Title>
+                <Dialog.Title style={{color:'#37474F'}}><Text>Account Created</Text></Dialog.Title>
 
             ):(
 
 
-                <Dialog.Title style={{color:'#253D2C'}}><Text>Creating Your Account</Text></Dialog.Title>
+                <Dialog.Title style={{color:'#37474F'}}><Text>Creating Your Account</Text></Dialog.Title>
 
             )}
           
@@ -76,13 +77,13 @@ export default function SignupPage() {
 
           {!processDone ? (
             <Dialog.Content>
-                <Text style={{color:'#7F7B72'}}>Please wait while we create your account</Text>
+                <Text style={{fontSize:16,color:'#475569'}}>Please wait while we create your account</Text>
             </Dialog.Content>
 
           ) : (
 
             <Dialog.Content>
-                <Text style={{color:'#7F7B72'}} >Your account has been successfully created you can now proceed to login</Text>
+                <Text style={{fontSize:16,color:'#475569'}} >Your account has been successfully created you can now proceed to login</Text>
             </Dialog.Content>
 
           )}
@@ -94,13 +95,14 @@ export default function SignupPage() {
 
                 <Dialog.Actions>
 
-                     <TouchableOpacity onPress={()=>{router.push('/(screens)/LoginPage')}} style={{borderWidth:0,alignSelf:'flex-start',backgroundColor:'#253D2C',paddingLeft:10,paddingRight:10,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-                            <Text style={{color:'white'}}>
-                                Continue To Login
-                            </Text>
-
-                     </TouchableOpacity>
+                    <Button
+                    mode="contained"
+                    onPress={() => router.push('/(screens)/LoginPage')}
+                    style={globalStyles.buttonPrimary}
+                    labelStyle={globalStyles.buttonLabelPrimary}
+                    >
+                    Continue To Login
+                    </Button>
                      
                 </Dialog.Actions>
 
@@ -198,19 +200,39 @@ export default function SignupPage() {
             await setDoc(doc(db,"ExpensesCollection",ExpenseRecordRefId),{ExpenseLog:[]})
 
 
-            Alert.alert("Account Created Successfully")
 
             setProcessDone(true)
 
 
-        }catch(err){
-            console.error(err)
+        }catch (err: any) {
+            console.error(err);
+            setShowSignUpProcess(false)
+            setProcessDone(true);
+
+            // --- Handle Firebase Auth errors clearly ---
+            switch (err.code) {
+            case "auth/email-already-in-use":
+                setPasswordWarning("This email is already registered");
+                break;
+            case "auth/invalid-email":
+                setPasswordWarning("Invalid email format");
+                break;
+            case "auth/weak-password":
+                setPasswordWarning("Password should be at least 6 characters long");
+                break;
+            default:
+                setPasswordWarning("An unexpected error occurred. Please try again.");
+            }
+
+            setPasswordWarningVisible(true);
+           
         }
 
 
 
     }
 
+ 
 
 
     useEffect(() => {

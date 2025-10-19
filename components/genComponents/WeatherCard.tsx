@@ -50,33 +50,42 @@ const WeatherCard = () => {
       const getWeatherIcon = (status:string) => {
 
         switch(status){
+          case 'Fog':
+           return  <MaterialCommunityIcons name="weather-fog" size={80} color="#607D8B" />
+           break;
           case 'Clear sky':
-           return  <MaterialCommunityIcons name="weather-sunny" size={80} color="#253D2C" />
+           return  <MaterialCommunityIcons name="weather-sunny" size={80} color="#607D8B" />
            break;
           case 'Partly cloudy':
-            return  <MaterialCommunityIcons name="weather-partly-cloudy" size={80} color="#253D2C" />
+            return  <MaterialCommunityIcons name="weather-partly-cloudy" size={80} color="#607D8B" />
             break;
           case 'Cloudy':
-            return  <MaterialCommunityIcons name="weather-cloudy" size={80} color="#253D2C" />
+            return  <MaterialCommunityIcons name="weather-cloudy" size={80} color="#607D8B" />
+            break;
+          case 'Heavy rain' :
+            return  <MaterialCommunityIcons name="weather-lightning-rainy" size={80} color="#607D8B" />
+            break;
+          case 'Moderate rain' :
+            return  <MaterialCommunityIcons name="weather-pouring" size={80} color="#607D8B" />
             break;
           case 'Slight rain' :
-            return  <MaterialCommunityIcons name="weather-rainy" size={80} color="#253D2C" />
+            return  <MaterialCommunityIcons name="weather-rainy" size={80} color="#607D8B" />
             break;
     
           case 'Light drizzle':
-            return <Feather name="cloud-drizzle" size={80} color="#253D2C" />
+            return <Feather name="cloud-drizzle" size={80} color="#607D8B" />
             break;
 
           case 'Overcast':
-            return <Ionicons name="cloudy-sharp" size={80} color="#253D2C" />
+            return <Ionicons name="cloudy-sharp" size={80} color="#607D8B" />
     
           case 'Thunderstorm' : 
-            <Ionicons name="thunderstorm-outline" size={80} color="#253D2C" />
+            <Ionicons name="thunderstorm-outline" size={80} color="#607D8B" />
             break
 
-            case 'Mainly clear' : 
-              return  <MaterialCommunityIcons name="weather-sunny" size={80} color="#253D2C" />
-            break
+          case 'Mainly clear' : 
+            return  <MaterialCommunityIcons name="weather-sunny" size={80} color="#607D8B" />
+          break
      
          
         }
@@ -320,27 +329,28 @@ const styles = StyleSheet.create({
     locationText : {
         fontSize: 25,
         fontWeight:600,
-        color:'#253D2C',
-        marginLeft: 10
+        color:'#475569',
+        marginLeft: 10,
+        borderWidth:0,
     },
 
     dateText : {
         fontSize: 16,
         marginLeft:10,
         fontWeight:600,
-        color:'#253D2C',
+        color:'#475569',
     },
 
     tempText : {
         fontSize: 40,
         fontWeight:600,
-        color:'#253D2C',
+        color:'#607D8B',
         marginRight: 20,
         marginLeft: 'auto',
     },
 
     weatherStatus : {
-        color:'#253D2C',
+        color:'#475569',
         marginLeft: 10,
         fontSize: 15,
         fontWeight:600,

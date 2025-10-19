@@ -1,4 +1,4 @@
-import { ActivityIndicator, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, FlatList, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Ionicons from '@expo/vector-icons/Ionicons'
@@ -11,7 +11,7 @@ import { useSearchParams } from 'expo-router/build/hooks'
 
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import PostCard from '@/components/DiscussionBoardComponents/PostCard'
-
+import { useLanguage } from '../Context/LanguageContex';
 interface DiscussionData {
     DocumentId:string,
     Author:string,
@@ -26,236 +26,163 @@ interface DiscussionData {
 
 
 const DiscussionSearchResult = () => {
+    const {language} = useLanguage()
+    const [discussionData, setDiscussionData] = useState<DiscussionData[]>([]);
+    const searchParams = useSearchParams();
+    const [loadingResult, setLoadingResult] = useState(false);
 
-
-    const [discussionData,setDiscussionData] = useState<DiscussionData[]>([])
-    const searchParams = useSearchParams()
-    const [loadingResult,setLoadingResult] = useState(false)
-
-
-    const queryString = searchParams.get('searchQuery')
+    const queryString = searchParams.get('searchQuery');
 
     const preprocessSearch = (text: string): string[] => {
         return text
-          .toLowerCase()
-          .replace(/[^\w\s]/gi, '')
-          .split(/\s+/)
-          .filter((word, index, self) => 
-            word.length > 1 && self.indexOf(word) === index
-          );
-      };
-
-
-    const getReplyCount = async (discussionID:string) => {
-        const repliesRef = collection(db, "Discussions", discussionID, "Comments");
-        const snapshot = await getDocs(repliesRef);
-        return snapshot.size; // Number of replies
+            .toLowerCase()
+            .replace(/[^\w\s]/gi, '')
+            .split(/\s+/)
+            .filter((word, index, self) => word.length > 1 && self.indexOf(word) === index);
     };
 
-
-
-
-    useEffect(()=>{
-        /*
-        const searchDiscussions = async(searchText:string)=>{
-
-            try{
-                setLoadingResult(true)
-
-                const keywords = preprocessSearch(searchText).slice(0,10);
-                if (keywords.length === 0) return [];
-
-
-
-                const q = query(
-                    collection(db,'Discussions'),
-                    where("Keyword","array-contains-any",keywords)
-                )
-
-
-
-
- 
-                const discussionDocSnap = await getDocs(q)
-
-
-
-                const discussions = await Promise.all(
-                    discussionDocSnap.docs.map(async (doc) => {
-                      const replyCount = await getReplyCount(doc.id); // Await reply count
-                      return {
-                        DocumentId: doc.id,
-                        Author: doc.data().Author,
-                        Content: doc.data().Content,
-                        CreatedAt: doc.data().CreatedAt,
-                        Title: doc.data().Title,
-                        ReplyCount: replyCount,
-                        Tag:doc.data().Tag,
-                      };
-                    })
-                  );
-                console.log("Returned Data : ", discussions)
-
-                
-                setDiscussionData(discussions)
-                setTimeout(()=>{
-            
-                },5000)
-                setLoadingResult(false)
-
-
-
-            }catch(err){console.error(err)}
-            
-
-        }*/
-
-
+    useEffect(() => {
         const searchDiscussion = async (searchText: string) => {
+            setLoadingResult(true);
             try {
-                // Step 1: Preprocess search keywords
                 const keywords = preprocessSearch(searchText).slice(0, 10);
                 if (keywords.length === 0) {
-                return [];
+                    setDiscussionData([]);
+                    setLoadingResult(false);
+                    return;
                 }
 
-                // Step 2: Build query using keywords
                 const discussionRef = query(
-                collection(db, "Discussions"),
-                where("Keyword", "array-contains-any", keywords),
-                orderBy("CreatedAt", "desc")
+                    collection(db, "Discussions"),
+                    where("Keyword", "array-contains-any", keywords),
+                    orderBy("CreatedAt", "desc")
                 );
 
-                // Step 3: Fetch snapshot
                 const snapshot = await getDocs(discussionRef);
                 const docs = snapshot.docs as QueryDocumentSnapshot<DiscussionData>[];
 
-                // Step 4: Map discussions
                 const discussions = await Promise.all(
-                docs.map(async (docSnap) => {
-                    const repliesRef = collection(db, "Discussions", docSnap.id, "Comments");
-                    const repliesSnap = await getDocs(repliesRef);
+                    docs.map(async (docSnap) => {
+                        const repliesRef = collection(db, "Discussions", docSnap.id, "Comments");
+                        const repliesSnap = await getDocs(repliesRef);
 
-                    return {
-                    DocumentId: docSnap.id,
-                    Author: docSnap.data().Author,
-                    Content: docSnap.data().Content,
-                    CreatedAt: docSnap.data().CreatedAt,
-                    Title: docSnap.data().Title,
-                    ReplyCount: repliesSnap.size,
-                    Tag: docSnap.data().Tag,
-                    };
-                })
+                        return {
+                            DocumentId: docSnap.id,
+                            Author: docSnap.data().Author,
+                            Content: docSnap.data().Content,
+                            CreatedAt: docSnap.data().CreatedAt,
+                            Title: docSnap.data().Title,
+                            ReplyCount: repliesSnap.size,
+                            Tag: docSnap.data().Tag,
+                        };
+                    })
                 );
 
-                // Step 5: Collect all unique Author UIDs
                 const authorIds = [...new Set(discussions.map((d) => d.Author))];
                 const userDocs = await Promise.all(
-                authorIds.map(async (uid) => {
-                    const userSnap = await getDoc(doc(db, "Users", uid));
-                    return userSnap.exists()
-                    ? { uid, Username: userSnap.data().Username }
-                    : { uid, Username: "Unknown" };
-                })
+                    authorIds.map(async (uid) => {
+                        const userSnap = await getDoc(doc(db, "Users", uid));
+                        return userSnap.exists()
+                            ? { uid, Username: userSnap.data().Username }
+                            : { uid, Username: "Unknown" };
+                    })
                 );
 
-                // Step 6: Build lookup map
                 const userMap = userDocs.reduce<Record<string, string>>((acc, u) => {
-                acc[u.uid] = u.Username;
-                return acc;
+                    acc[u.uid] = u.Username;
+                    return acc;
                 }, {});
 
-                // Step 7: Attach usernames
                 const discussionsWithNames = discussions.map((d) => ({
-                ...d,
-                AuthorName: userMap[d.Author] || "Unknown",
+                    ...d,
+                    AuthorName: userMap[d.Author] || "Unknown",
                 }));
 
-                //return discussionsWithNames;
-                setDiscussionData(discussionsWithNames)
+                setDiscussionData(discussionsWithNames);
             } catch (err) {
                 console.error(err);
-                return [];
+            } finally {
+                setLoadingResult(false);
             }
-            };
+        };
 
-        searchDiscussion(queryString as string)
+        if (queryString) searchDiscussion(queryString);
+    }, [queryString]);
 
+    const renderItem = ({ item }: { item: DiscussionData & { AuthorName: string } }) => (
+        <PostCard
+            Tag={item.Tag}
+            AuthorName={item.AuthorName}
+            Author={item.Author}
+            CreatedAt={item.CreatedAt}
+            Content={item.Content}
+            Id={item.DocumentId}
+            Title={item.Title}
+            ReplyCount={item.ReplyCount}
+        />
+    );
 
-    },[])
-  return (
+    return (
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#F4F5F7' }}>
+            <View style={styles.headerContainer}>
+                <TouchableOpacity
+                    style={{ alignSelf: 'flex-start', marginLeft: 10,borderWidth:0, }}
+                    onPress={() => router.back()}
+                >
+                    <Ionicons name="arrow-back" size={30} color="#607D8B" />
+                </TouchableOpacity>
 
-
-    <SafeAreaView style={{flex:1,borderWidth:0,flexDirection:'column',display:'flex',alignItems:'center',backgroundColor:'#F4F5F7'}}>
-
-        <View style={styles.headerContainer}>
-
-            <TouchableOpacity style={{alignSelf:'flex-start',marginLeft:10,marginTop:'auto',marginBottom:'auto'}} onPress={()=> router.back()}>
-
-                <Ionicons name="arrow-back" size={30} color="#607D8B" />
-
-            </TouchableOpacity>
-
-            <Text numberOfLines={2} ellipsizeMode="tail" style={{fontSize:18,fontWeight:600,color:'#37474F',marginLeft:10}}>
-                Search Results For {queryString}
-            </Text>
-
-
-
-
-
-
-        </View>
-
-        {loadingResult === true ? (
-
-            <View style={{borderWidth:0,flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-
-                <ActivityIndicator size={75 }color="#607D8B"  />
+                <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={{ fontSize: 18, fontWeight: 600, color: '#37474F', marginLeft: 10 }}
+                >
+                    "{queryString}"
+                </Text>
             </View>
-                 
-        ) : (
 
-            <ScrollView style={styles.scrollContainer}  contentContainerStyle={{    flexGrow: 1,
-                justifyContent: discussionData.length === 0 ? 'center' : 'flex-start',
-                alignItems: 'center',}} >
-
-
-                    {discussionData && discussionData.length > 0 ? discussionData.map((data,index)=>(
-
-
-                        <PostCard Tag={data.Tag} AuthorName={data.AuthorName} Author={data.Author} CreatedAt={data.CreatedAt} Content={data.Content} Id={data.DocumentId} key={index} Title={data.Title} ReplyCount={data.ReplyCount}/>
-
-
-
-                    )) : (
-                    <View style={{marginTop:0,borderWidth:0,display:'flex',flexDirection:'column', alignItems:'center',justifyContent:'center'}}>
-                        
+            {loadingResult ? (
+                <View
+                    style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
+                    <ActivityIndicator size={75} color="#607D8B" />
+                </View>
+            ) : (
+                <FlatList
+                    data={discussionData}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.DocumentId}
+                    contentContainerStyle={{
+                        flexGrow: 1,
+                        justifyContent: discussionData.length === 0 ? 'center' : 'flex-start',
+                        alignItems: 'center',
+                        paddingVertical: 10,
+                        borderWidth:0,
+                        paddingHorizontal:10,
+                    }}
+                    ListEmptyComponent={
+                        <View style={{ alignItems: 'center' }}>
                             <MaterialIcons name="search-off" size={75} color="#607D8B" />
-                            <Text style={{fontSize:25,fontWeight:600, color:"#37474F"}}>No Result Found</Text>
-                            <Text style={{fontSize:16,fontWeight:400,color:"#333333"}}>We Can't Find Any Discussion Matching Your search</Text>
-                    </View>
-                    )}
+                            <Text style={{ fontSize: 25, fontWeight: 600, color: '#37474F' }}>
+                     
+                                {language === "en" ? "No Result Found" : "Walang natagpuang resulta"}
+                            </Text>
+                            <Text style={{textAlign:'center' ,fontSize: 16, fontWeight: 400, color: '#333333' }}>
+                                
+                                {language === "en" ? "We can't find any discussion matching your search" : "Hindi namin makita ang anumang talakayan na akma sa iyong search."}
+                            </Text>
+                        </View>
+                    }
+                />
+            )}
+        </SafeAreaView>
+    );
+};
 
-
-            </ScrollView>
-
-
-
-
-        )}
-
-
-  
-
-
-
-
-
-
-    </SafeAreaView>
-  )
-}
 
 export default DiscussionSearchResult
 
@@ -263,7 +190,7 @@ const styles = StyleSheet.create({
     
     headerContainer:{
         width:'100%',
-        height:56,
+        paddingVertical:12,
         borderBottomWidth:1,
         display:'flex',
         flexDirection:'row',

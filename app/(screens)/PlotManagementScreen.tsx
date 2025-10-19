@@ -559,7 +559,12 @@ const PlotManagementScreen = () => {
                 <Image source={{uri:plotData.PlotThumbnail}} style={styles.headerContainer__metaDataWrapper__thumbnail}/>
 
                 <View style={{display:'flex',flexDirection:'column',justifyContent:'center'}}>
-                    <Text style={fonts.headerSecondary}>{plotData.PlotName}</Text>
+                    <Text style={fonts.headerSecondary}>
+                    {plotData.PlotName.length > 20 
+                        ? plotData.PlotName.slice(0, 20) + '…' 
+                        : plotData.PlotName
+                    }
+                    </Text>
                     
                 </View>
 
@@ -571,7 +576,6 @@ const PlotManagementScreen = () => {
                 <Ionicons name="options" size={25} color="#607D8B" />
 
             </TouchableOpacity>
-
             
 
 
@@ -589,8 +593,8 @@ const PlotManagementScreen = () => {
 
                 <View style={styles.plotInfoContainer}>
 
-                    
-                    {plotData.PlotThumbnail.length > 0 ? (
+
+                    {plotData?.currentCrops?.CropCover && plotData.currentCrops.CropCover.length > 0 ?  (
                         <View style={styles.thumbnail}>
                             <Image source={{uri:plotData.currentCrops.CropCover as string}} style={{width:90,height:90,objectFit:'cover',borderRadius:45}}  />
                         </View>
@@ -620,14 +624,19 @@ const PlotManagementScreen = () => {
 
                             {plotData.currentCrops.CropAssocId ? (
                                 <>
-                                    <Text  style={styles.plotName}>Growing {plotData.currentCrops.CropName}</Text>
+                                    <Text  style={[styles.plotName,{textAlign:'center'}]}>{language === "en" ? "Growing" : "Nagpapalago ng"}{'\n'}{plotData.currentCrops.CropName}</Text>
   
                                 </>
                             ) : (
                                 <>
                                 
-                                <Text  style={styles.plotName}>Plot is Resting</Text>
-                                <Text style={{fontSize:14,color:'#64748B'}}>This plot is currently not growing any crops</Text>
+                                <Text  style={[styles.plotName,{textAlign:'center'}]} >
+                                    {language === "en" ? "Plot is Resting" : "Ang plot ay kasalukuyang hindi ginagamit."}
+                                    </Text>
+                                <Text style={{fontSize:15,color:'#64748B'}}>
+                                    {language === "en" ? "This plot is currently not growing any crops" : ""}
+                                    
+                                </Text>
                                 
                                 </>
                             )}
@@ -650,13 +659,19 @@ const PlotManagementScreen = () => {
 
                             <TouchableOpacity style={{borderRadius:5,paddingVertical:8,paddingHorizontal:16,backgroundColor:'#607D8B',display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center',gap:5}}>
                                 <FontAwesome6 name="add" size={16} color="white" />
-                               <Text style={{color:'white',fontWeight:600,fontSize:14}}>Plant New Crop</Text>
+                               <Text style={{color:'white',fontWeight:600,fontSize:14}}>
+                                    {language === "en" ? "Plant New Crop" : "Maglagay ng bagong tanim"}
+                                    
+                                </Text>
                             </TouchableOpacity>
                         )}
 
 
                     </View>
+                    <View style={{width:'100%',borderTopWidth:1,display:'flex',flexDirection:'row',paddingVertical:4,borderColor:'#e2e8f0'}}>
 
+
+                    </View>
                 </View>
 
 
@@ -755,7 +770,7 @@ const PlotManagementScreen = () => {
 
             ) : (
                 <View style={{width:'100%',borderWidth:0,marginTop:15,backgroundColor:'#ffffff',height:220,borderRadius:5,display:'flex',alignItems:'center',justifyContent:'center'}}> 
-                    <Text style={{fontSize:15,fontWeight:600,color:'#909090'}}>No Available Data To Display</Text>
+                    <Text style={{fontSize:15,fontWeight:600,color:'#909090'}}>{language === "en" ? "No Available Data To Display" : "Walang Datos na Maipapakita"}</Text>
                 </View>
             )}
             
@@ -907,7 +922,7 @@ const PlotManagementScreen = () => {
                         </>
                     ):(                
                         <View style={{width:'100%',borderWidth:0,marginTop:15,backgroundColor:'#D2D2D2',height:220,borderRadius:5,display:'flex',alignItems:'center',justifyContent:'center'}}> 
-                            <Text style={{fontSize:15,fontWeight:600,color:'#909090'}}>No Available Data To Display</Text>
+                            <Text style={{fontSize:15,fontWeight:600,color:'#909090'}}>{language === "en" ? "No Available Data To Display" : "Walang Datos na Maipapakita"}</Text>
                         </View>
                     )}
 
@@ -948,7 +963,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         alignItems:'center',
         paddingVertical:10,
-        paddingHorizontal:10,
+        paddingHorizontal:15,
        // height:50,
         //backgroundColor:'#2E6F40',
         //marginBottom:20,

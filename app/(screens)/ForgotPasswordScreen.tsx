@@ -10,6 +10,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useUserContext } from '@/app/Context/UserContext'
 import { sendPasswordResetEmail } from 'firebase/auth'
 import { sendPaswordRequestToEmail } from '@/app/controllers/AccountAuth/Auth'
+import { globalStyles } from '@/assets/globalStyle'
 
 const forgotPasswordScreen = () => {
 
@@ -48,7 +49,7 @@ const forgotPasswordScreen = () => {
   const renderSuccess = () => (
         <Portal>
         
-        <Dialog visible={showSuccess} >
+        <Dialog visible={showSuccess} style={globalStyles.dialogContainer} >
 
             <Dialog.Title>
             <Text style={{color:'#37474F'}}>
@@ -57,7 +58,7 @@ const forgotPasswordScreen = () => {
             </Dialog.Title>
 
             <Dialog.Content>
-            <Text style={{color:'#475569'}}>
+            <Text style={{fontSize:16,color:'#475569'}}>
                 If this email is registered, you’ll receive a reset link.
             </Text>
             </Dialog.Content>
@@ -88,7 +89,7 @@ const forgotPasswordScreen = () => {
   const renderError = ()=>(
       
           <Portal>
-              <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
+              <Dialog visible={showError} onDismiss={()=>setShowError(false)} style={globalStyles.dialogContainer}>
       
                   <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
       
@@ -100,7 +101,7 @@ const forgotPasswordScreen = () => {
                   </Dialog.Title>
                   
                   <Dialog.Content>
-                      <Text style={{color:'#475569'}}>An unexpected error occured. Please try again later</Text>
+                      <Text style={{fontSize:16,color:'#475569'}}>An unexpected error occured. Please try again later</Text>
                   </Dialog.Content>
       
       
@@ -127,7 +128,7 @@ const forgotPasswordScreen = () => {
   const renderErrorInput = ()=>(
       
           <Portal>
-              <Dialog visible={showInputError} onDismiss={()=>setShowInputError(false)}>
+              <Dialog visible={showInputError} onDismiss={()=>setShowInputError(false)} style={globalStyles.dialogContainer}>
       
                   <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
       
@@ -139,7 +140,7 @@ const forgotPasswordScreen = () => {
                   </Dialog.Title>
                   
                   <Dialog.Content>
-                      <Text style={{color:'#475569'}}>Please enter a valid email address to continue.</Text>
+                      <Text style={{fontSize:16,color:'#475569'}}>Please enter a valid email address to continue.</Text>
                   </Dialog.Content>
       
       
@@ -164,7 +165,7 @@ const forgotPasswordScreen = () => {
 
   const renderEmailNotFound = () => (
     <Portal>
-              <Dialog visible={showEmailNotFoundError} onDismiss={()=>setShowEmailNotFoundError(false)}>
+              <Dialog visible={showEmailNotFoundError} onDismiss={()=>setShowEmailNotFoundError(false)} style={globalStyles.dialogContainer}>
       
                   <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
       
@@ -176,7 +177,7 @@ const forgotPasswordScreen = () => {
                   </Dialog.Title>
                   
                   <Dialog.Content>
-                      <Text style={{color:'#475569'}}>We couldn’t find an account associated with this email. Please check for typos or try signing up with a new account.</Text>
+                      <Text style={{fontSize:16,color:'#475569'}}>We couldn’t find an account associated with this email. Please check for typos or try signing up with a new account.</Text>
                   </Dialog.Content>
       
       
@@ -200,7 +201,7 @@ const forgotPasswordScreen = () => {
 
   const renderSlowInternet = () => (
               <Portal>
-                  <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)}>
+                  <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)} style={globalStyles.dialogContainer}>
       
                       <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
       
@@ -212,7 +213,7 @@ const forgotPasswordScreen = () => {
                       </Dialog.Title>
                       
                       <Dialog.Content>
-                          <Text style={{color:'#475569'}}>Connection seems slow. Please try again.</Text>
+                          <Text style={{fontSize:16,color:'#475569'}}>Connection seems slow. Please try again.</Text>
                       </Dialog.Content>
       
       

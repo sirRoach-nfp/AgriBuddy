@@ -76,7 +76,7 @@ const ExpandedFertilizerLog = () => {
                 
                 <View style={styles.contentSubContainer}>
                     <Text style={styles.contentText}>Inorganic</Text>
-                    <Text style={styles.contentText}>Inorganic</Text>
+                    <Text style={styles.contentText}>{fertilizerType === "Organic Fertilizer" ? "Organic Fertilizer" :"Inorganic"}</Text>
                 </View>
 
 

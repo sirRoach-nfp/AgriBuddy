@@ -1,6 +1,6 @@
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, TextInput, Touchable } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Dialog, MD3Colors, PaperProvider, Portal, ProgressBar, Title } from 'react-native-paper'
+import { Button, Dialog, MD3Colors, PaperProvider, Portal, ProgressBar, Title } from 'react-native-paper'
 import Feather from '@expo/vector-icons/Feather';
 import { ScrollView } from 'react-native-gesture-handler';
 import * as ImagePicker from "expo-image-picker";
@@ -16,7 +16,7 @@ import { router } from 'expo-router';
 
 import { uploadPostController } from '../controllers/PostControllers/uploadPost';
 
-
+import {globalStyles} from '../../assets/globalStyle'
 //icons 
 
 import EvilIcons from '@expo/vector-icons/EvilIcons';
@@ -56,7 +56,7 @@ const PostScreen = () => {
     const renderPostConfirmation = ()=>(
 
         <Portal>
-            <Dialog visible={showConfirmation} onDismiss={()=>setShowConfirmation(false)}>
+            <Dialog visible={showConfirmation} onDismiss={()=>setShowConfirmation(false)} style={globalStyles.dialogContainer}>
 
                 <Dialog.Title>
                     <Text style={{color:'#37474F'}}>
@@ -65,7 +65,7 @@ const PostScreen = () => {
                 </Dialog.Title>
                 
                 <Dialog.Content>
-                    <Text style={{color:'#475569'}}>
+                    <Text style={{fontSize:16,color:'#475569'}}>
                         {language === "en" 
                             ? "Are you sure you want to post this discussion? Once submitted, it will be visible to others." 
                             : "Sigurado ka bang i-post ang discussion na ito? Kapag naisubmit na, makikita ito ng iba."}
@@ -73,11 +73,20 @@ const PostScreen = () => {
                 </Dialog.Content>
 
                 <Dialog.Actions>
-                    <TouchableOpacity onPress={uploadPost} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-                        <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                            {language === "en" ? "Post" : "I-Post"}
-                        </Text>
-                    </TouchableOpacity>
+                    <Button onPress={()=>setShowConfirmation(false)}             
+                        mode="outlined"
+                        style={globalStyles.buttonSecondary}
+                        labelStyle={globalStyles.buttonLabelSecondary}>
+                        {language === "en" ? "Cancel" : "Kanselahin"}
+                    </Button>
+                    <Button
+                        mode="contained"
+                        onPress={uploadPost}
+                        style={[globalStyles.buttonPrimary]}
+                        labelStyle={globalStyles.buttonLabelPrimary}
+                    >
+                    {language === "en" ? "Post" : "I-Post"}
+                    </Button>
                 </Dialog.Actions>
 
             </Dialog>
@@ -88,7 +97,7 @@ const PostScreen = () => {
     const renderError = ()=>(
 
         <Portal>
-              <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
+              <Dialog visible={showError} onDismiss={()=>setShowError(false)} style={globalStyles.dialogContainer}>
       
                   <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
       
@@ -100,7 +109,7 @@ const PostScreen = () => {
                   </Dialog.Title>
                   
                   <Dialog.Content>
-                      <Text style={{color:'#475569'}}>
+                      <Text style={{fontSize:16,color:'#475569'}}>
                        {language === "en" ? "An unexpected error occured. Please try again later" : "Nagkaroon ng hindi inaasahang error. Pakisubukang muli mamaya."}
                         
                       </Text>
@@ -109,14 +118,15 @@ const PostScreen = () => {
       
       
                   <Dialog.Actions>
-      
-                  <TouchableOpacity onPress={()=> setShowError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-      
-                      <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                          OK
-                      </Text>
-      
-                  </TouchableOpacity>
+
+                        <Button
+                        mode="contained"
+                        onPress={() => setShowError(false)}
+                        style={[globalStyles.buttonPrimary, { alignSelf: 'flex-start' }]}
+                        labelStyle={globalStyles.buttonLabelPrimary}
+                        >
+                        OK
+                        </Button>
       
                   </Dialog.Actions>
       
@@ -128,7 +138,7 @@ const PostScreen = () => {
 
     const renderSlowInternet = () => (
         <Portal>
-            <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)}>
+            <Dialog visible={showInternetError} onDismiss={()=>setShowInternetError(false)} style={globalStyles.dialogContainer}>
 
                 <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
 
@@ -139,17 +149,20 @@ const PostScreen = () => {
                 </Dialog.Title>
                 
                 <Dialog.Content>
-                    <Text style={{color:'#475569'}}>
+                    <Text style={{fontSize:16,color:'#475569'}}>
                         {language === "en" ? "Connection seems slow. Please try again." : "Mabagal ang koneksyon. Pakisubukang muli."}
                     </Text>
                 </Dialog.Content>
 
                 <Dialog.Actions>
-                    <TouchableOpacity onPress={()=> setShowInternetError(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-                        <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                            {language === "en" ? "OK" : "Sige"}
-                        </Text>
-                    </TouchableOpacity>
+                    <Button
+                    mode="contained"
+                    onPress={() => setShowInternetError(false)}
+                    style={[globalStyles.buttonPrimary, { alignSelf: 'flex-start' }]}
+                    labelStyle={globalStyles.buttonLabelPrimary}
+                    >
+                    {language === "en" ? "OK" : "Sige"}
+                    </Button>
                 </Dialog.Actions>
 
             </Dialog>
@@ -160,23 +173,23 @@ const PostScreen = () => {
     const renderProcess = () => (
 
         <Portal>
-            <Dialog visible={showProcess} onDismiss={()=>{}}>
+            <Dialog visible={showProcess} onDismiss={()=>{}} style={globalStyles.dialogContainer}>
 
                 <Dialog.Title>
-                    <Text>
+                    <Text style={{color:'#37474F'}}> 
                         {language === "en" ? "Posting Discussion" : "Nagpo-post ng Talakayan"}
                     </Text>
                 </Dialog.Title>
 
                 {postLoading ? (
                     <Dialog.Content>
-                        <Text>
+                        <Text style={{fontSize:16,color:'#475569'}}>
                             {language === "en" ? "Your discussion is being posted. Please wait..." : "Ipinopost ang iyong talakayan. Pakihintay..."}
                         </Text>
                     </Dialog.Content>
                 ) : (
                     <Dialog.Content>
-                        <Text>
+                        <Text style={{fontSize:16,color:'#475569'}}>
                             {language === "en" ? "Your discussion is Posted Successfully!" : "Matagumpay na naipost ang iyong talakayan!"}
                         </Text>
                     </Dialog.Content>
@@ -186,11 +199,14 @@ const PostScreen = () => {
                     <ProgressBar indeterminate color={MD3Colors.error50} style={{marginBottom:20,width:'80%',marginLeft:'auto',marginRight:'auto',borderRadius:'50%'}} />
                 ) : (
                     <Dialog.Actions>
-                        <TouchableOpacity onPress={()=>{router.back()}} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-                            <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                                {language === "en" ? "Continue" : "Tuloy"}
-                            </Text>
-                        </TouchableOpacity>
+                    <Button
+                        mode="contained"
+                        onPress={() => router.back()}
+                        style={[globalStyles.buttonPrimary, { alignSelf: 'flex-start' }]}
+                        labelStyle={globalStyles.buttonLabelPrimary}
+                    >
+                        {language === "en" ? "Continue" : "Tuloy"}
+                    </Button>
                     </Dialog.Actions>
                 )}
 
@@ -241,13 +257,30 @@ const PostScreen = () => {
 
         try{
 
+            /*
             const timeoutPromise = new Promise((_, reject) =>
                 setTimeout(() => reject(new Error("timeout")), 20000)
             );
 
             await Promise.race([
                 uploadPostController(imageUri,title,body,user,selectedTag),timeoutPromise
-            ])
+            ])*/
+
+
+
+            const simulateSlowInternet = false; // set to true to force timeout
+            if (simulateSlowInternet) {
+            await new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 2000)); // 2s fake delay
+            } else {
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error("timeout")), 20000)
+                );
+
+                await Promise.race([
+                    uploadPostController(imageUri, title, body, user, selectedTag),
+                    timeoutPromise
+                ]);
+            }
         
 
             setPostLoading(false);
@@ -258,8 +291,9 @@ const PostScreen = () => {
             setImageUri([])
         
         }catch(err:any){
-            setPostLoading(false);
             setShowProcess(false)
+            setPostLoading(false);
+            
 
             if(err.message === "timeout") {
                 setShowInternetError(true)

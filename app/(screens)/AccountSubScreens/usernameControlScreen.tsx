@@ -1,6 +1,6 @@
-import {StyleSheet, Text, TouchableOpacity, View,ScrollView,TextInput, Button, Touchable } from 'react-native'
+import {StyleSheet, Text, TouchableOpacity, View,ScrollView,TextInput, Touchable } from 'react-native'
 import React, { useState } from 'react'
-import { Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper'
+import { Button, Dialog, MD3Colors, PaperProvider, Portal, ProgressBar } from 'react-native-paper'
 import Feather from '@expo/vector-icons/Feather'
 import { router } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -14,6 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useLanguage } from '@/app/Context/LanguageContex'
 
 import { UserData } from '@/app/Context/UserContext'
+import { globalStyles } from '@/assets/globalStyle'
 const usernameControlScreen = () => {
 
   const{language,setLanguage} = useLanguage()
@@ -51,7 +52,7 @@ const usernameControlScreen = () => {
   const renderConfirmation = () => (
     <Portal>
       
-      <Dialog visible={showConfirmation} >
+      <Dialog visible={showConfirmation}  style={globalStyles.dialogContainer}>
 
         <Dialog.Title>
           <Text style={{color:'#37474F'}}>
@@ -60,7 +61,7 @@ const usernameControlScreen = () => {
         </Dialog.Title>
 
         <Dialog.Content>
-          <Text style={{color:'#475569'}}>
+          <Text style={{fontSize:16,color:'#475569'}}>
             {language === "en" ? "Are you sure you want to update your username? This action will change how your name appears across the app." 
             : "Sigurado ka bang gusto mong i-update ang iyong username? Magbabago nito kung paano lalabas ang iyong pangalan sa buong app."}
             
@@ -71,23 +72,25 @@ const usernameControlScreen = () => {
         <Dialog.Actions>
 
 
-          <TouchableOpacity onPress={() => setShowConfirmation(false)} style={{borderColor:'#475569',borderWidth:1,alignSelf:'flex-start',backgroundColor:'transparent',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
+          <Button
+            mode="outlined"
+            onPress={() => setShowConfirmation(false)}
+            style={globalStyles.buttonSecondary}
+            labelStyle={globalStyles.buttonLabelSecondary}
+          >
+            {language === "en" ? "Cancel" : "Kanselahin"}
+          </Button>
 
-              <Text style={{color:'#475569',fontSize:16,fontWeight:500}}>
-                {language === "en" ? "Cancel" : "Kanselahin"}
-              </Text>
-
-          </TouchableOpacity>
 
 
-
-          <TouchableOpacity onPress={() => updateUsername()} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-              <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                  {language === "en" ? "Continue" : "Magpatuloy"}
-              </Text>
-
-          </TouchableOpacity>
+          <Button
+            mode="contained"
+            onPress={updateUsername}
+            style={globalStyles.buttonPrimary}
+            labelStyle={globalStyles.buttonLabelPrimary}
+          >
+            {language === "en" ? "Continue" : "Magpatuloy"}
+          </Button>
 
 
 
@@ -104,7 +107,7 @@ const usernameControlScreen = () => {
   const renderProcess = () => (
     <Portal>
       
-      <Dialog visible={showProcessDialog} >
+      <Dialog visible={showProcessDialog} style={globalStyles.dialogContainer} >
 
 
         {process? (
@@ -128,7 +131,7 @@ const usernameControlScreen = () => {
 
         {process ? (
         <Dialog.Content>
-          <Text style={{color:'#475569'}}>
+          <Text style={{fontSize:16,color:'#475569'}}>
             {language === "en" ? "Please wait while we update your username. This may take a few seconds." 
             : "Mangyaring maghintay habang ina-update ang iyong username. Maaaring ilang segundo itong tumagal."}
             
@@ -136,7 +139,7 @@ const usernameControlScreen = () => {
         </Dialog.Content>
         ) : (
         <Dialog.Content>
-          <Text style={{color:'#475569'}}>
+          <Text style={{fontSize:16,color:'#475569'}}>
             {language === "en" ? "Your username has been successfully updated." 
             : "Matagumpay na na-update ang iyong username."}
           </Text>
@@ -153,13 +156,14 @@ const usernameControlScreen = () => {
         ) : (
           <Dialog.Actions>
 
-            <TouchableOpacity onPress={() => setShowProcessDialog(false)} style={{borderColor:'#607D8B',borderWidth:1,alignSelf:'flex-start',backgroundColor:'#607D8B',paddingLeft:20,paddingRight:20,paddingTop:5,paddingBottom:5,borderRadius:5}}>
-
-                <Text style={{color:'white',fontSize:16,fontWeight:500}}>
-                    {language === "en" ? "Continue" : "Magpatuloy"}
-                </Text>
-
-            </TouchableOpacity>
+          <Button
+            mode="contained"
+            onPress={() => setShowProcessDialog(false)}
+            style={globalStyles.buttonPrimary}
+            labelStyle={globalStyles.buttonLabelPrimary}
+          >
+            {language === "en" ? "Continue" : "Magpatuloy"}
+          </Button>
 
           </Dialog.Actions>
         )}
@@ -182,10 +186,10 @@ const usernameControlScreen = () => {
 
 
       <Portal>
-          <Dialog visible={passwordWarningVisible} onDismiss={()=>setPasswordWarningVisible(false)}>
+          <Dialog visible={passwordWarningVisible} onDismiss={()=>setPasswordWarningVisible(false)} style={globalStyles.dialogContainer}>
 
               <Dialog.Content>
-                  <Text>{errorCode}</Text>
+                  <Text style={{fontSize:16,color:'#475569'}}>{errorCode}</Text>
               </Dialog.Content>
 
           </Dialog>
@@ -199,7 +203,7 @@ const usernameControlScreen = () => {
   const renderError = ()=>(
       
           <Portal>
-              <Dialog visible={showError} onDismiss={()=>setShowError(false)}>
+              <Dialog visible={showError} onDismiss={()=>setShowError(false)} style={globalStyles.dialogContainer}>
       
                   <Dialog.Icon  icon="alert-circle" size={60} color='#ef9a9a'/>
       
@@ -211,7 +215,7 @@ const usernameControlScreen = () => {
                   </Dialog.Title>
                   
                   <Dialog.Content>
-                      <Text style={{color:'#475569'}}>
+                      <Text style={{fontSize:16,color:'#475569'}}>
                        {language === "en" ? "An unexpected error occured. Please try again later" : "Nagkaroon ng hindi inaasahang error. Pakisubukang muli mamaya."}
                         
                       </Text>
@@ -268,17 +272,20 @@ const usernameControlScreen = () => {
 
 
       const q = query(
-        collection(db,"users"),
-        where("username","==",newUsername)
+        collection(db,"Users"),
+        where("Username","==",newUsername)
       )
 
       const querySnapshot = await getDocs(q);
-
+      console.log("Query snapshot for username similar: ",querySnapshot)
       if (!querySnapshot.empty) {
         // Username already taken
-        setPasswordWarning("Username already exists");
-        setPasswordWarningVisible(true);
+        const warning = language === "en" ? "Username already exists" : "Mangyaring gumamit ng ibang username."
+        setShowProcessDialog(false)
         setProcess(false)
+        setPasswordWarning(warning);
+        setPasswordWarningVisible(true);
+        
         return;
       }
 
@@ -308,6 +315,8 @@ const usernameControlScreen = () => {
       await AsyncStorage.setItem("userData",JSON.stringify(updatedUserData));
       storeUserData(updatedUserData)
       console.log("Updated User Data : ",user)
+      setConfirmNewUsername("")
+      setNewUsername("")
       setProcess(false)
 
 
@@ -376,7 +385,7 @@ const usernameControlScreen = () => {
                 {language === "en" ? "New Username" : "Bagong Username"}
               </Text>
 
-              <TextInput style={fieldStyles.textInput} placeholder='Enter New Username' onChange={(e)=>setNewUsername(e.nativeEvent.text)}/>
+              <TextInput maxLength={22} value={newUsername} style={fieldStyles.textInput} placeholder='Enter New Username' onChange={(e)=>setNewUsername(e.nativeEvent.text)}/>
             </View>
 
             <View style={fieldStyles.fieldWrapper}>
@@ -385,7 +394,7 @@ const usernameControlScreen = () => {
                 {language === "en" ? "Confirm New Username" : "Kumpirmahin ang Bagong Username"}
               </Text>
 
-              <TextInput style={fieldStyles.textInput} placeholder='Confirm New Username' onChange={(e)=>setConfirmNewUsername(e.nativeEvent.text)}/>
+              <TextInput maxLength={22} value={confirmNewUsername} style={fieldStyles.textInput} placeholder='Confirm New Username' onChange={(e)=>setConfirmNewUsername(e.nativeEvent.text)}/>
             </View>
 
             <View style={buttonStyles.buttonContainers}>
@@ -411,8 +420,10 @@ const usernameControlScreen = () => {
                 paddingVertical:10,
                 borderRadius:5,
                 borderWidth:2,
-                borderColor:'#e2e8f0'
-                }}>
+                borderColor:'#e2e8f0',
+                }}
+                onPress={()=>router.back()}
+                >
                 <Text style={{color:'#37474F',fontSize:16, fontWeight:600}}>Cancel</Text>
               </TouchableOpacity>
 
@@ -477,7 +488,7 @@ const styles = StyleSheet.create({
 
 
   mainContainer:{
-    borderWidth:1,
+    borderWidth:0,
     flex:1,
     display:'flex',
     flexDirection:'column',

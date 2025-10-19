@@ -252,7 +252,7 @@ const passwordControlScreen = () => {
                 }}
                 onPress={()=> router.back()}
                 >
-                <Text style={{color:'#37474F',fontSize:16, fontWeight:600}}>Didn't mean to reset?</Text>
+                <Text style={{color:'#37474F',fontSize:16, fontWeight:600}}>{language === "en" ? "Didn't mean to reset?" : "Hindi Ko Nais Mag Reset"}</Text>
               </TouchableOpacity>
 
             </View>
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
 
 
   mainContainer:{
-    borderWidth:1,
+    borderWidth:0,
     flex:1,
     display:'flex',
     flexDirection:'column',

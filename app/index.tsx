@@ -33,13 +33,7 @@ export default function App(){
 
 
 
-        <TouchableOpacity style={styles.logButtonWrapper} onPress={()=>{router.push(`/(screens)/LoginPage`)}}>
 
-
-            <Text style={styles.logButtonText}>Continue</Text>
-
-
-        </TouchableOpacity>
                 
 
 

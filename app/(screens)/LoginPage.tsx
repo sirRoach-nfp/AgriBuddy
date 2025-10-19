@@ -95,7 +95,7 @@ export default function LoginPage(){
             <Dialog visible={loginErrorVisible} onDismiss={()=>setlogInErrorVisible(false)}>
 
                 <Dialog.Content>
-                    <Text>The email or password you entered is incorrect. Check your details and try again.</Text>
+                    <Text style={{fontSize:16,color:'#475569'}}>The email or password you entered is incorrect. Check your details and try again.</Text>
                 </Dialog.Content>
 
             </Dialog>
@@ -118,7 +118,7 @@ export default function LoginPage(){
                 </Dialog.Title>
                 
                 <Dialog.Content>
-                    <Text style={{color:'#475569'}}>Connection seems slow. Please try again.</Text>
+                    <Text style={{fontSize:16,color:'#475569'}}>Connection seems slow. Please try again.</Text>
                 </Dialog.Content>
 
 
